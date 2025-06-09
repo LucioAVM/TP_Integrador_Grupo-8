@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "nombre": "Impresora 3D Creality Ender 3",
+    "descripcion": "Impresora 3D de alta precisión, ideal para principiantes.",
+    "precio": 250000,
+    "imagen": "FrontEnd/assets/img/ender3.jpg",
+    "categoria": "impresoras",
+    "tipo": "filamento",
+    "activo": true
+  },
+  {
+    "id": 2,
+    "nombre": "Impresora 3D Anycubic Photon Mono",
+    "descripcion": "Impresora 3D de resina, excelente para detalles finos.",
+    "precio": 320000,
+    "imagen": "FrontEnd/assets/img/photonmono.jpg",
+    "categoria": "impresoras",
+    "tipo": "resina",
+    "activo": true
+  },
+  {
+    "id": 3,
+    "nombre": "Impresora 3D Bambu Lab A1",
+    "descripcion": "Impresora compacta y veloz, ideal para uso general y doméstico.",
+    "precio": 450000,
+    "imagen": "FrontEnd/assets/img/bambulab_a1.jpg",
+    "categoria": "impresoras",
+    "tipo": "filamento",
+    "activo": true
+  },
+  {
+    "id": 4,
+    "nombre": "Impresora 3D Creality Ender-3 V3 SE",
+    "descripcion": "Versión mejorada de la Ender 3, fácil de usar y económica.",
+    "precio": 270000,
+    "imagen": "FrontEnd/assets/img/ender3v3se.jpg",
+    "categoria": "impresoras",
+    "tipo": "filamento",
+    "activo": true
+  },
+  {
+    "id": 5,
+    "nombre": "Impresora 3D Anycubic Kobra 3 Combo",
+    "descripcion": "Impresora multifilamento rápida y versátil, ideal para principiantes.",
+    "precio": 390000,
+    "imagen": "FrontEnd/assets/img/kobra3combo.jpg",
+    "categoria": "impresoras",
+    "tipo": "filamento",
+    "activo": true
+  },
+  {
+    "id": 6,
+    "nombre": "Impresora 3D Original Prusa MK4S",
+    "descripcion": "Modelo profesional con gran precisión y fiabilidad para prototipado.",
+    "precio": 780000,
+    "imagen": "FrontEnd/assets/img/prusa_mk4s.jpg",
+    "categoria": "impresoras",
+    "tipo": "filamento",
+    "activo": true
+  },
+  {
+    "id": 7,
+    "nombre": "Impresora 3D Elegoo Neptune 4 Max",
+    "descripcion": "Impresora FDM de gran formato, ideal para piezas grandes.",
+    "precio": 520000,
+    "imagen": "FrontEnd/assets/img/neptune4max.jpg",
+    "categoria": "impresoras",
+    "tipo": "filamento",
+    "activo": true
+  },
+  {
+    "id": 8,
+    "nombre": "Impresora 3D Anycubic Photon M3 Max",
+    "descripcion": "Impresora de resina de gran volumen, perfecta para modelos detallados.",
+    "precio": 680000,
+    "imagen": "FrontEnd/assets/img/photonm3max.jpg",
+    "categoria": "impresoras",
+    "tipo": "resina",
+    "activo": true
+  }
+]

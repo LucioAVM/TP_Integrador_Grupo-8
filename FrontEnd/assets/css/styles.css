@@ -1,0 +1,191 @@
+:root {
+  --azul-oscuro: #0a192f;
+  --azul: #1565c0;
+  --celeste: #90caf9;
+  --dorado: #ffd700;
+  --blanco: #f8f9fa;
+  --gris: #212529;
+  --azul-hielo: #B8D8E2;
+}
+
+/* Fondo general */
+body.bg-dark {
+  background-color: var(--azul-oscuro) !important;
+  color: var(--blanco);
+}
+body.bg-light {
+  background-color: var(--blanco) !important;
+  color: var(--gris);
+}
+
+/* Header y navbar */
+body.bg-dark header,
+body.bg-dark .navbar {
+  background-color: var(--azul-oscuro) !important;
+  color: var(--blanco) !important;
+  border-bottom: 3px solid var(--celeste);
+}
+
+body.bg-light header,
+body.bg-light .navbar {
+  background-color: var(--celeste) !important;
+  color: var(--azul-oscuro) !important;
+  border-bottom: 3px solid var(--azul);
+}
+
+/* Opcional: enlaces dentro del header/navbar */
+body.bg-dark header .nav-link,
+body.bg-dark .navbar .nav-link,
+body.bg-dark header .navbar-brand,
+body.bg-dark .navbar .navbar-brand {
+  color: var(--blanco) !important;
+}
+body.bg-light header .nav-link,
+body.bg-light .navbar .nav-link,
+body.bg-light header .navbar-brand,
+body.bg-light .navbar .navbar-brand {
+  color: var(--azul-oscuro) !important;
+}
+
+/* Cards de productos */
+.product-card {
+  width: 300px;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--azul);
+  background: var(--celeste);
+  color: var(--azul-oscuro);
+}
+body.bg-light .product-card {
+  background: var(--blanco);
+  border: 2px solid var(--azul-hielo);
+  color: var(--gris);
+}
+.product-card .card-title {
+  color: var(--azul-oscuro);
+}
+body.bg-light .product-card .card-title {
+  color: var(--azul);
+}
+.product-card .btn-primary {
+  background-color: var(--azul);
+  border: none;
+  color: var(--blanco);
+  font-weight: bold;
+}
+.product-card .btn-primary:hover {
+  background-color: var(--dorado);
+  color: var(--azul-oscuro);
+}
+body.bg-light .product-card .btn-primary {
+  background-color: var(--celeste);
+  color: var(--azul-oscuro);
+}
+body.bg-light .product-card .btn-primary:hover {
+  background-color: var(--azul);
+  color: var(--blanco);
+}
+
+/* Mini carrito y filtros */
+#mini-carrito-container .card,
+#filtros-container .card {
+  background: var(--azul-oscuro);
+  color: var(--blanco);
+  border: 2px solid var(--celeste);
+}
+body.bg-light #mini-carrito-container .card,
+body.bg-light #filtros-container .card {
+  background: var(--azul-hielo);
+  color: var(--azul-oscuro);
+  border: 2px solid var(--azul);
+}
+#mini-carrito-container .card-body.text-muted {
+  color: var(--azul-hielo) !important;
+}
+body.bg-light #mini-carrito-container .card-body.text-muted {
+  color: var(--azul) !important;
+}
+#mini-carrito-container .list-group-item {
+  background: var(--azul-oscuro) !important;
+  color: var(--celeste) !important;
+  border: none;
+}
+body.bg-light #mini-carrito-container .list-group-item {
+  background: var(--azul-hielo) !important;
+  color: var(--azul-oscuro) !important;
+}
+
+/* Botón carrito */
+#mini-carrito-container .btn-success {
+  background: var(--celeste);
+  color: var(--azul-oscuro);
+  border: none;
+  font-weight: bold;
+}
+#mini-carrito-container .btn-success:hover {
+  background: var(--azul);
+  color: var(--blanco);
+}
+body.bg-light #mini-carrito-container .btn-success {
+  background: var(--azul);
+  color: var(--blanco);
+}
+body.bg-light #mini-carrito-container .btn-success:hover {
+  background: var(--dorado);
+  color: var(--azul-oscuro);
+}
+
+/* Badge cantidad */
+.badge.bg-primary {
+  background: var(--celeste) !important;
+  color: var(--azul-oscuro) !important;
+}
+body.bg-light .badge.bg-primary {
+  background: var(--azul) !important;
+  color: var(--blanco) !important;
+}
+
+/* Otros detalles */
+a, .navbar-brand, .nav-link {
+  color: var(--celeste) !important;
+}
+a:hover, .nav-link:hover {
+  color: var(--dorado) !important;
+}
+body.bg-light a, 
+body.bg-light .navbar-brand, 
+body.bg-light .nav-link {
+  color: var(--azul) !important;
+}
+body.bg-light a:hover, 
+body.bg-light .nav-link:hover {
+  color: var(--dorado) !important;
+}
+
+.product-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.parallax-overlay {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transition: background 0.2s;
+  border-radius: inherit;
+}
+
+
+
+
+
+
+/*
+.parallax-title-float {
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,0.35));
+  transition: transform 0.5s cubic-bezier(.4,2,.6,1), filter 0.5s cubic-bezier(.4,2,.6,1);
+}*/
+
+
