@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TP</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <link rel="stylesheet" href="/assets/css/header.css" />
+    <link rel="stylesheet" href="/assets/css/productos.css" />
+    <link rel="stylesheet" href="/assets/css/filtros.css" />
+    <link rel="stylesheet" href="/assets/css/miniCarrito.css" />
+    <link rel="stylesheet" href="/assets/css/tema.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-dark">
+    <header class="bg-light border-bottom mb-4" id="header-container"></header>
+    <div class="container-fluid">
+      <div class="row">
+      <div class="col-12 col-md-8 offset-md-2">
+        <h2 class="text-light mb-4">Ticket de Compra</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="text-light fs-5"><strong>Fenrir 3D</strong></span>
+          <span id="ticket-date" class="text-light"></span>
+        </div>
+        <div id="cart-items" class="mb-4"></div>
+        <div class="card bg-secondary text-light p-3">
+          <div class="d-flex justify-content-between">
+            <span><strong>Total:</strong></span>
+            <span id="cart-total">$0.00</span>
+          </div>
+        </div>
+        <script>
+          // Mostrar fecha actual
+          const dateSpan = document.getElementById('ticket-date');
+          const now = new Date();
+          const formattedDate = now.toLocaleDateString('es-AR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          dateSpan.textContent = formattedDate;
+
+          // Obtener carrito de localStorage
+          const cart = JSON.parse(localStorage.getItem('cart')) || [];
+          const cartItemsDiv = document.getElementById('cart-items');
+          const cartTotalSpan = document.getElementById('cart-total');
+          let total = 0;
+
+          if (cart.length === 0) {
+            cartItemsDiv.innerHTML = '<div class="alert alert-warning">El carrito está vacío.</div>';
+          } else {
+            // Tabla de productos
+            const table = document.createElement('table');
+            table.className = 'table table-dark table-striped';
+            table.innerHTML = `
+              <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+          </tr>
+              </thead>
+              <tbody>
+          ${cart.map(item => {
+            const subtotal = item.price * item.quantity;
+            total += subtotal;
+            return `
+              <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td>$${subtotal.toFixed(2)}</td>
+              </tr>
+            `;
+          }).join('')}
+              </tbody>
+            `;
+            cartItemsDiv.appendChild(table);
+
+            // Lista simple de productos, cantidad y precio
+            const list = document.createElement('ul');
+            list.className = 'list-group mb-3';
+            cart.forEach(item => {
+              const li = document.createElement('li');
+              li.className = 'list-group-item bg-dark text-light d-flex justify-content-between align-items-center';
+              li.innerHTML = `
+          <span>${item.name}</span>
+          <span>Cantidad: ${item.quantity}</span>
+          <span>Precio: $${item.price.toFixed(2)}</span>
+              `;
+              list.appendChild(li);
+            });
+            cartItemsDiv.appendChild(list);
+
+            cartTotalSpan.textContent = `$${total.toFixed(2)}`;
+          }
+        </script>
+      </div>
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/assets/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+  </body>
+</html>
