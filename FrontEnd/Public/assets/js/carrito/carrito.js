@@ -1,6 +1,6 @@
 import { renderMiniCarrito } from '../components/miniCarrito.js';
 
-let carrito = [];
+let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
 export function agregarAlCarrito(producto) {
   const existe = carrito.find(item => item.id === producto.id);
@@ -9,6 +9,7 @@ export function agregarAlCarrito(producto) {
   } else {
     carrito.push({ ...producto, cantidad: 1 });
   }
+  guardarCarritoEnLocalStorage();
   renderMiniCarritoEnDOM();
 }
 
@@ -18,4 +19,8 @@ export function renderMiniCarritoEnDOM() {
 
 export function getCarrito() {
   return carrito;
+}
+
+function guardarCarritoEnLocalStorage() {
+  localStorage.setItem('carrito', JSON.stringify(carrito));
 }
