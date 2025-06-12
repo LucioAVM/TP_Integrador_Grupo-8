@@ -1,45 +1,34 @@
-#mini-carrito-container .card {
-  background: var(--azul-oscuro);
-  color: var(--blanco);
-  border: 2px solid var(--celeste);
-}
-body.bg-light #mini-carrito-container .card {
-  background: var(--azul-hielo);
-  color: var(--azul-oscuro);
-  border: 2px solid var(--azul);
-}
-#mini-carrito-container .card-body.text-muted {
-  color: var(--azul-hielo) !important;
-}
-body.bg-light #mini-carrito-container .card-body.text-muted {
-  color: var(--azul) !important;
-}
-#mini-carrito-container .list-group-item {
-  background: var(--azul-oscuro) !important;
-  color: var(--celeste) !important;
-  border: none;
-}
-body.bg-light #mini-carrito-container .list-group-item {
-  background: var(--azul-hielo) !important;
-  color: var(--azul-oscuro) !important;
-}
+/* ...existing code... */
 
-/* Botón carrito */
-#mini-carrito-container .btn-success {
-  background: var(--celeste);
-  color: var(--azul-oscuro);
-  border: none;
-  font-weight: bold;
+/* Efecto hover en el producto del mini carrito */
+.mini-carrito-item {
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s;
 }
-#mini-carrito-container .btn-success:hover {
-  background: var(--azul);
-  color: var(--blanco);
+.mini-carrito-item .mini-carrito-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 1;
+  border-radius: 6px;
+  pointer-events: none;
 }
-body.bg-light #mini-carrito-container .btn-success {
-  background: var(--azul);
-  color: var(--blanco);
+.mini-carrito-item:hover .mini-carrito-overlay {
+  opacity: 1;
 }
-body.bg-light #mini-carrito-container .btn-success:hover {
-  background: var(--dorado);
-  color: var(--azul-oscuro);
+.mini-carrito-item .btn-eliminar-carrito {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 2;
+}
+.mini-carrito-item:hover .btn-eliminar-carrito {
+  opacity: 1;
+  pointer-events: auto;
 }
