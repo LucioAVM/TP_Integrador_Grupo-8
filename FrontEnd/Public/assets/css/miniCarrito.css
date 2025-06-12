@@ -1,0 +1,45 @@
+#mini-carrito-container .card {
+  background: var(--azul-oscuro);
+  color: var(--blanco);
+  border: 2px solid var(--celeste);
+}
+body.bg-light #mini-carrito-container .card {
+  background: var(--azul-hielo);
+  color: var(--azul-oscuro);
+  border: 2px solid var(--azul);
+}
+#mini-carrito-container .card-body.text-muted {
+  color: var(--azul-hielo) !important;
+}
+body.bg-light #mini-carrito-container .card-body.text-muted {
+  color: var(--azul) !important;
+}
+#mini-carrito-container .list-group-item {
+  background: var(--azul-oscuro) !important;
+  color: var(--celeste) !important;
+  border: none;
+}
+body.bg-light #mini-carrito-container .list-group-item {
+  background: var(--azul-hielo) !important;
+  color: var(--azul-oscuro) !important;
+}
+
+/* Botón carrito */
+#mini-carrito-container .btn-success {
+  background: var(--celeste);
+  color: var(--azul-oscuro);
+  border: none;
+  font-weight: bold;
+}
+#mini-carrito-container .btn-success:hover {
+  background: var(--azul);
+  color: var(--blanco);
+}
+body.bg-light #mini-carrito-container .btn-success {
+  background: var(--azul);
+  color: var(--blanco);
+}
+body.bg-light #mini-carrito-container .btn-success:hover {
+  background: var(--dorado);
+  color: var(--azul-oscuro);
+}

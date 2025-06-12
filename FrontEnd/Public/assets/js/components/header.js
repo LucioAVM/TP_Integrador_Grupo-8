@@ -2,7 +2,7 @@ export function renderHeader() {
   return `
     <div class="container py-2 d-flex align-items-center justify-content-between">
       <div class="d-flex align-items-center">
-        <img src="FrontEnd/assets/img/favicon.png" alt="Logo" width="48" height="48" class="me-3" />
+        <img src="/assets/img/favicon.png" alt="Logo" width="48" height="48" class="me-3" />
         <span class="fs-4 fw-bold">Fenrir 3D</span>
       </div>
       <div class="text-end">

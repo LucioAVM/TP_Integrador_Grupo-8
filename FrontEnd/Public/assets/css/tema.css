@@ -1,0 +1,26 @@
+/* Badge cantidad */
+.badge.bg-primary {
+  background: var(--celeste) !important;
+  color: var(--azul-oscuro) !important;
+}
+body.bg-light .badge.bg-primary {
+  background: var(--azul) !important;
+  color: var(--blanco) !important;
+}
+
+/* Otros detalles de enlaces */
+a, .navbar-brand, .nav-link {
+  color: var(--celeste) !important;
+}
+a:hover, .nav-link:hover {
+  color: var(--dorado) !important;
+}
+body.bg-light a, 
+body.bg-light .navbar-brand, 
+body.bg-light .nav-link {
+  color: var(--azul) !important;
+}
+body.bg-light a:hover, 
+body.bg-light .nav-link:hover {
+  color: var(--dorado) !important;
+}
