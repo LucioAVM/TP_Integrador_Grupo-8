@@ -1,0 +1,10 @@
+#filtros-container .card {
+  background: var(--azul-oscuro);
+  color: var(--blanco);
+  border: 2px solid var(--celeste);
+}
+body.bg-light #filtros-container .card {
+  background: var(--azul-hielo);
+  color: var(--azul-oscuro);
+  border: 2px solid var(--azul);
+}

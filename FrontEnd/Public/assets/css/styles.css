@@ -1,0 +1,19 @@
+:root {
+  --azul-oscuro: #0a192f;
+  --azul: #1565c0;
+  --celeste: #90caf9;
+  --dorado: #ffd700;
+  --blanco: #f8f9fa;
+  --gris: #212529;
+  --azul-hielo: #B8D8E2;
+}
+
+/* Fondo general */
+body.bg-dark {
+  background-color: var(--azul-oscuro) !important;
+  color: var(--blanco);
+}
+body.bg-light {
+  background-color: var(--blanco) !important;
+  color: var(--gris);
+}

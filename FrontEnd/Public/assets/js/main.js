@@ -3,15 +3,20 @@ import { renderNavbar } from './components/navbar.js';
 import { renderProductCard } from './components/card.js';
 import { renderFiltros } from './components/filtros.js';
 import { renderMiniCarrito } from './components/miniCarrito.js';
-import { animarProductos, animarMiniCarrito, animarCambioModo, animarHeader, animarFiltros, activarParalajeCards } from './animations.js';
 
+import { animarProductos } from './animations/productos.animations.js';
+import { animarMiniCarrito } from './animations/miniCarrito.animations.js';
+import { animarHeader } from './animations/header.animations.js';
+import { animarFiltros } from './animations/filtros.animations.js';
+import { animarCambioModo } from './animations/tema.animations.js';
+import { activarParalajeCards } from './animations/paralaje.animations.js';
 document.getElementById('header-container').innerHTML =
   renderHeader() + renderNavbar();
 
 let productosGlobal = [];
 let carrito = [];
 
-fetch('FrontEnd/assets/data/productos.json')
+fetch('/assets/data/productos.json')
   .then(response => response.json())
   .then(productos => {
     productosGlobal = productos;

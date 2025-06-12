@@ -1,0 +1,27 @@
+body.bg-dark header,
+body.bg-dark .navbar {
+  background-color: var(--azul-oscuro) !important;
+  color: var(--blanco) !important;
+  border-bottom: 3px solid var(--celeste);
+}
+
+body.bg-light header,
+body.bg-light .navbar {
+  background-color: var(--celeste) !important;
+  color: var(--azul-oscuro) !important;
+  border-bottom: 3px solid var(--azul);
+}
+
+/* Enlaces dentro del header/navbar */
+body.bg-dark header .nav-link,
+body.bg-dark .navbar .nav-link,
+body.bg-dark header .navbar-brand,
+body.bg-dark .navbar .navbar-brand {
+  color: var(--blanco) !important;
+}
+body.bg-light header .nav-link,
+body.bg-light .navbar .nav-link,
+body.bg-light header .navbar-brand,
+body.bg-light .navbar .navbar-brand {
+  color: var(--azul-oscuro) !important;
+}
