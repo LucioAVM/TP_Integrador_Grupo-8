@@ -17,7 +17,8 @@ export function renderMiniCarrito(carrito) {
             <img src="${item.imagen}" alt="${item.nombre}" width="40" height="40" class="me-2 rounded" />
             <span class="flex-grow-1">${item.nombre}</span>
             <span class="badge bg-primary rounded-pill ms-2">${item.cantidad}</span>
-            <button class="btn btn-danger btn-sm btn-eliminar-carrito" data-id="${item.id}" style="position:absolute; right:10px; top:10px; transition:opacity 0.2s;">Eliminar</button></li>
+            <button class="btn btn-danger btn-sm btn-eliminar-carrito" data-id="${item.id}">Eliminar</button>
+          </li>
         `).join('')}
       </ul>
       <div class="card-body">
