@@ -45,3 +45,7 @@ export function getCarrito() {
 function guardarCarritoEnLocalStorage() {
   localStorage.setItem('carrito', JSON.stringify(carrito));
 }
+
+export function initCarrito() {
+  renderMiniCarritoEnDOM();
+}
