@@ -1,7 +1,23 @@
-/* Estilos para la pantalla de bienvenida */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#header-container {
+  flex: 0 0 auto; /* Altura automática según contenido */
+}
+
 #bienvenida-container {
+  flex: 1 1 auto; /* Ocupa el resto del espacio */
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 0; /* Para evitar overflow */
 }

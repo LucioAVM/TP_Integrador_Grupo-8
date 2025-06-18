@@ -11,9 +11,6 @@ export function renderNavbar() {
             <li class="nav-item"><a class="nav-link" href="producto.html">Productos</a></li>
             <li class="nav-item"><a class="nav-link" href="carrito.html">Carrito</a></li>
             <li class="nav-item"><a class="nav-link" href="ticket.html">Ticket</a></li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Login Admin</a>
-            </li>
           </ul>
         </div>
       </div>
