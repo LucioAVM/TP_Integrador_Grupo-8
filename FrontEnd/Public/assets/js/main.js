@@ -3,11 +3,12 @@ import { renderNavbar } from './components/navbar.js';
 import { initBienvenida } from './/bienvenida/bienvenida.js';
 import { initProducto } from './producto/producto.js';
 import { initCarrito } from './carrito/carrito.js';
-// ...otros módulos
+import { animarHeader } from './animations/header.animations.js';
+import { initTicket } from './ticket/ticket.js';
 
-// Renderiza header y navbar en todas las páginas
-document.getElementById('header-container').innerHTML =
-  renderHeader() + renderNavbar();
+document.getElementById('header-container').innerHTML = renderHeader() + renderNavbar();
+
+animarHeader();
 
 const path = window.location.pathname;
 
@@ -17,4 +18,6 @@ if (path.endsWith('index.html') || path === '/') {
   initProducto();
 } else if (path.endsWith('carrito.html')) {
   initCarrito();
+}else if (path.endsWith('ticket.html')) {
+  initTicket();
 }
