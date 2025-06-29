@@ -1,0 +1,1 @@
+// Configuración principal de la aplicación Express: inicializa middlewares, rutas y vistas.

@@ -1,0 +1,1 @@
+// Middleware de manejo de errores: captura y responde a errores de la aplicación.

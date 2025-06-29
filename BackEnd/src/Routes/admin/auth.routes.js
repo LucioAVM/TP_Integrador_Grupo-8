@@ -1,0 +1,1 @@
+// Rutas de autenticación (admin): define los endpoints para login y autenticación de administradores.

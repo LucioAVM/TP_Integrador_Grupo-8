@@ -1,0 +1,1 @@
+// Controlador de productos: maneja la lógica de negocio y las respuestas para las rutas de productos.

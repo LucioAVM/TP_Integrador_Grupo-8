@@ -1,0 +1,1 @@
+// Rutas de logs (API): define los endpoints para operaciones sobre logs.

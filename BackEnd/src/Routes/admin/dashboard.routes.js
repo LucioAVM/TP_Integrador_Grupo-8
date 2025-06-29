@@ -1,0 +1,1 @@
+// Rutas de dashboard (admin): define los endpoints para el panel de administración.

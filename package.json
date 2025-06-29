@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "animejs": "^4.0.2",
     "express": "^5.1.0"
   },
   "devDependencies": {

@@ -1,0 +1,1 @@
+// Middleware de validación: valida los datos recibidos en las peticiones.

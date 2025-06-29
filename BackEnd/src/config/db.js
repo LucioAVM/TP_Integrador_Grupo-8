@@ -1,0 +1,1 @@
+// Configuración de la base de datos: parámetros de conexión y setup inicial.

@@ -1,0 +1,1 @@
+// Modelo de log: define la estructura y métodos del log en la base de datos.

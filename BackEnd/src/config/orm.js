@@ -1,0 +1,1 @@
+// Configuración del ORM (por ejemplo, Sequelize): define la conexión y modelos.

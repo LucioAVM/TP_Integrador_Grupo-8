@@ -1,0 +1,1 @@
+// Modelo de producto: define la estructura y métodos del producto en la base de datos.

@@ -1,0 +1,1 @@
+// Rutas de productos (API): define los endpoints para operaciones sobre productos.

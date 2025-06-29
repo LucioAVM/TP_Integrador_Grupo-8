@@ -1,0 +1,1 @@
+// Modelo de usuario: define la estructura y métodos del usuario en la base de datos.
