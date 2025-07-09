@@ -1,11 +1,16 @@
 import express from 'express';
+import { getProductos } from './BackEnd/src/config/db.js'; // Importa desde la carpeta backend
 
 const app = express();
-/*const PORT = 5000;*/
-
 const PORT = process.env.PORT || 8080;
 
 app.use(express.static('FrontEnd/Public'));
+
+// Endpoint para obtener productos desde la base de datos
+app.get('/api/productos', async (req, res) => {
+  const productos = await getProductos();
+  res.json(productos);
+});
 
 app.listen(PORT, () => {
   console.log(`el server esta corriendo en el puerto: ${PORT}`);

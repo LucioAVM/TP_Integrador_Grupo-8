@@ -1,22 +1,16 @@
-// Configuración de la base de datos: parámetros de conexión y setup inicial.
+const sql = require('mssql');
 
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+const config = process.env.SQLCONNSTR_FENRIRDB;
 
-const pool = mysql.createPool({
-  host: 'fenrir3d-server-test.database.windows.net',
-  port: 1433,
-  user: 'Milaneso',           
-  password: 'QueLindo.SeriaPromocionar-EstaMateria_123',     
-  database: 'Fenrir3d-productos',
-  ssl: {
-    rejectUnauthorized: true
-  },
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+async function getProductos() {
+  try {
+    await sql.connect(config);
+    const result = await sql.query('SELECT * FROM Productos WHERE activo = 1');
+    return result.recordset;
+  } catch (err) {
+    console.error('Error al consultar productos:', err);
+    return [];
+  }
+}
 
-module.exports = pool;
-
-
+module.exports = { getProductos };
