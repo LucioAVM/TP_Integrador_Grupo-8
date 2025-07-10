@@ -1,1 +1,9 @@
-// Modelo de usuario: define la estructura y métodos del usuario en la base de datos.
+const mongoose = require('mongoose');
+
+const usuarioSchema = new mongoose.Schema({
+    nombre: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    contraseña: { type: String, required: true }
+});
+
+module.exports = mongoose.model('Usuario', usuarioSchema);
