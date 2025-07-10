@@ -1,9 +1,29 @@
 import sql from 'mssql';
-import 'dotenv/config';
 
+// Función para parsear la cadena de conexión de Azure a objeto
+function parseConnectionString(connStr) {
+  const params = {};
+  connStr.split(';').forEach(part => {
+    const [key, value] = part.split('=');
+    if (key && value) params[key.trim().toLowerCase()] = value.trim();
+  });
+  return {
+    user: params.uid,
+    password: params.pwd,
+    server: params.server.replace('tcp:', '').split(',')[0],
+    database: params.database,
+    port: parseInt(params.server.split(',')[1], 10) || 1433,
+    options: {
+      encrypt: params.encrypt === 'yes',
+      trustServerCertificate: params.trustservercertificate === 'yes'
+    }
+  };
+}
+
+// Detecta si está en Azure (cadena de conexión) o local (.env)
 let config;
 if (process.env.SQLCONNSTR_FENRIRDB) {
-  config = process.env.SQLCONNSTR_FENRIRDB; // Azure
+  config = parseConnectionString(process.env.SQLCONNSTR_FENRIRDB); // Azure: parsea la cadena
 } else {
   config = {
     user: process.env.DB_USER,
