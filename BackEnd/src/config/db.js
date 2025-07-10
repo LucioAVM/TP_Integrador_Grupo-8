@@ -1,9 +1,29 @@
 import sql from 'mssql';
 
+// Función para parsear la cadena de conexión en Azure
+function parseConnectionString(connStr) {
+  const params = {};
+  connStr.split(';').forEach(part => {
+    const [key, value] = part.split('=');
+    if (key && value) params[key.trim().toLowerCase()] = value.trim();
+  });
+  return {
+    user: params.uid,
+    password: params.pwd,
+    server: params.server.replace('tcp:', '').split(',')[0],
+    database: params.database,
+    port: parseInt(params.server.split(',')[1], 10) || 1433,
+    options: {
+      encrypt: params.encrypt === 'yes',
+      trustServerCertificate: params.trustservercertificate === 'yes'
+    }
+  };
+}
+
 let config;
 if (process.env.SQLCONNSTR_FENRIRDB) {
-  // En Azure
-  config = process.env.SQLCONNSTR_FENRIRDB;
+  // En Azure: parsea la cadena de conexión
+  config = parseConnectionString(process.env.SQLCONNSTR_FENRIRDB);
 } else {
   // En local
   config = {
@@ -22,7 +42,8 @@ if (process.env.SQLCONNSTR_FENRIRDB) {
 export async function getProductos() {
   try {
     await sql.connect(config);
-    const result = await sql.query('SELECT * FROM impresoras WHERE activo = 1');    return result.recordset;
+    const result = await sql.query('SELECT * FROM impresoras WHERE activo = 1');
+    return result.recordset;
   } catch (err) {
     console.error('Error al consultar productos:', err);
     return [];
