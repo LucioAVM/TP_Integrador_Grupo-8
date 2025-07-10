@@ -9,8 +9,15 @@ app.use(express.static('FrontEnd/Public'));
 
 // Endpoint para obtener productos desde la base de datos
 app.get('/api/productos', async (req, res) => {
-  const productos = await getProductos();
-  res.json(productos);
+  try {
+    console.log('Consultando productos...');
+    const productos = await getProductos();
+    console.log('Productos obtenidos:', productos);
+    res.json(productos);
+  } catch (err) {
+    console.error('Error al consultar productos:', err);
+    res.status(500).json({ error: 'Error al consultar productos' });
+  }
 });
 
 app.listen(PORT, () => {
