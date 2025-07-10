@@ -10,9 +10,9 @@ function parseConnectionString(connStr) {
   return {
     user: params.uid,
     password: params.pwd,
-    server: params.server.replace('tcp:', '').split(',')[0],
+    server: params.server?.replace('tcp:', '').split(',')[0],
     database: params.database,
-    port: parseInt(params.server.split(',')[1], 10) || 1433,
+    port: params.server?.includes(',') ? parseInt(params.server.split(',')[1], 10) : 1433,
     options: {
       encrypt: params.encrypt === 'yes',
       trustServerCertificate: params.trustservercertificate === 'yes'
