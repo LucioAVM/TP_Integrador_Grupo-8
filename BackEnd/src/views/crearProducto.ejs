@@ -5,34 +5,22 @@
     <%- include('partials/nav.ejs') %>
 
     <main class="contenedor">
-      <h1 class="titulo">Editar Producto</h1>
+      <h1 class="titulo">Nuevo Producto</h1>
 
       <form
         class="formulario-producto"
-        action="/dashboard/productos/<%= product.id_producto %>/editar"
+        action="/dashboard/productos/nuevo"
         method="POST"
         enctype="multipart/form-data"
       >
         <div class="campo-producto">
           <label for="nombre">Nombre</label>
-          <input
-            id="nombre"
-            name="nombre"
-            type="text"
-            value="<%= product.nombre %>"
-            required
-          />
+          <input id="nombre" name="nombre" type="text" required />
         </div>
 
         <div class="campo-producto">
           <label for="precio">Precio</label>
-          <input
-            id="precio"
-            name="precio"
-            type="number"
-            value="<%= product.precio %>"
-            required
-          />
+          <input id="precio" name="precio" type="number" required />
         </div>
 
         <div class="campo-producto">
@@ -42,45 +30,34 @@
             name="descripcion"
             rows="3"
             required
-          ><%= product.descripcion %></textarea>
+          ></textarea>
         </div>
 
         <div class="campo-producto">
           <label for="active">Activo</label>
           <select id="active" name="active" required>
-            <option value="true" <%= product.active ? 'selected' : '' %>>Sí</option>
-            <option value="false" <%= !product.active ? 'selected' : '' %>>No</option>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
           </select>
         </div>
 
         <div class="campo-producto">
-          <label>Imagen actual:</label><br />
-          <img
-            src="<%= product.imagen %>"
-            alt="Imagen actual"
-            style="width: 100px; margin-bottom: 0.5rem;"
-          /><br />
-          <label for="imagenNueva">Cambiar imagen:</label>
+          <label for="imagen">Imagen</label>
           <input
-            id="imagenNueva"
+            id="imagen"
             name="imagen"
             type="file"
             accept="image/*"
+            required
           />
         </div>
 
         <div class="campo-producto">
           <label for="id_categoria">ID Categoría</label>
-          <input
-            id="id_categoria"
-            name="id_categoria"
-            type="number"
-            value="<%= product.id_categoria %>"
-            required
-          />
+          <input id="id_categoria" name="id_categoria" type="number" required />
         </div>
 
-        <button type="submit" class="boton boton-primario">Guardar Cambios</button>
+        <button type="submit" class="boton boton-primario">Crear Producto</button>
         <button class="boton boton-secundario">
             <a href="/dashboard/productos" class="elemento-a">Cancelar</a>
         </button>

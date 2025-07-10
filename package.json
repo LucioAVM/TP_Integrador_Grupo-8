@@ -23,5 +23,14 @@
   "devDependencies": {
     "morgan": "^1.10.0",
     "nodemon": "^3.1.10"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucioAVM/TP_Integrador_Grupo-8.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/LucioAVM/TP_Integrador_Grupo-8/issues"
+  },
+  "homepage": "https://github.com/LucioAVM/TP_Integrador_Grupo-8#readme"
 }
