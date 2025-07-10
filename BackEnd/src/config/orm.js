@@ -4,21 +4,30 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME || 'Fenrir3d-productos', // Nombre de la base de datos
-  process.env.DB_USER || 'Milaneso',           // Usuario
-  process.env.DB_PASS || 'QueLindo.SeriaPromocionar-EstaMateria_123', // Contraseña
+  process.env.DB_NAME,        // Nombre de la base de datos
+  process.env.DB_USER,        // Usuario
+  process.env.DB_PASSWORD,    // Contraseña
   {
-    host: process.env.DB_HOST || 'fenrir3d-server-test.database.windows.net',
+    host: process.env.DB_SERVER, // Servidor
     dialect: 'mssql',
-    port: 1433,
+    port: parseInt(process.env.DB_PORT, 10) || 1433,
     dialectOptions: {
       options: {
         encrypt: true,
         trustServerCertificate: false
       }
     },
-    logging: false // Cambia a true si quieres ver las queries en consola
+    logging: false
   }
 );
+
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Conexión a la base de datos exitosa');
+  } catch (err) {
+    console.error('Error de conexión a la base de datos:', err);
+  }
+})();
 
 module.exports = sequelize;

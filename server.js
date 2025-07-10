@@ -1,6 +1,6 @@
 import express from 'express';
 import 'dotenv/config';
-import { getProductos } from './BackEnd/src/config/db.js'; // Importa desde la carpeta backend
+import { getProductos } from './BackEnd/src/config/db.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
