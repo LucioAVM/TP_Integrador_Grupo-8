@@ -1,4 +1,5 @@
 import express from 'express';
+import 'dotenv/config';
 import { getProductos } from './BackEnd/src/config/db.js'; // Importa desde la carpeta backend
 
 const app = express();

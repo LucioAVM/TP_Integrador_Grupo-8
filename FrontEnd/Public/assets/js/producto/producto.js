@@ -5,7 +5,7 @@ import { animarMiniCarrito } from '../animations/miniCarrito.animations.js';
 import { animarHeader } from '../animations/header.animations.js';
 import { animarFiltros } from '../animations/filtros.animations.js';
 import { activarParalajeCards } from '../animations/paralaje.animations.js';
-import { getProductos } from '../dbProvisional/productosApi.js';
+import { getProductos } from '../api/productosApi.js';
 import { agregarAlCarrito, renderMiniCarritoEnDOM } from '../carrito/carrito.js';
 
 let productosGlobal = [];
