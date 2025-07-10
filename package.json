@@ -2,7 +2,7 @@
   "name": "tp_integrador_grupo-8",
   "version": "1.0.0",
   "description": "Proyecto integrador para la materia Programación 3, Grupo 8",
-  "main": "index.js",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
