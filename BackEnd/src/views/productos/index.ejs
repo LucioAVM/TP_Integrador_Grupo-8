@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('../partials/head.ejs') %>
+  <body>
+    <%- include('../partials/nav.ejs') %>
+
+    <main class="contenedor">
+      <h1 class="titulo">Gestión de Productos</h1>
+
+      <!-- Buscador por ID -->
+      <div class="buscador">
+        <form method="GET" action="/dashboard/productos">
+          <label for="q">Buscar por ID:</label>
+          <input
+            type="number"
+            id="q"
+            name="q"
+            value="<%= typeof q !== 'undefined' ? q : '' %>"
+            placeholder="ID del producto"
+          />
+          <button type="submit" class="boton boton-secundario">Buscar</button>
+        </form>
+        <form method="GET" action="/dashboard/productos">
+          <button type="submit" class="boton">Reiniciar</button>
+        </form>
+      </div>
+
+      <!-- Botón nuevo producto -->
+      <a href="/dashboard/productos/nuevo" class="boton boton-primario elemento-a">
+        + Nuevo Producto
+      </a>
+
+      <!-- Tabla de productos -->
+      <table class="tabla-productos">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Precio</th>
+            <!-- <th>Descripción</th> -->
+            <th>Activo</th>
+            <th>ID Categoría</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach(prod => { %>
+            <tr>
+              <td><%= prod.id_producto %></td>
+              <td>
+                <img
+                  class="imagen-producto"
+                  src="<%= prod.imagen %>"
+                  alt="Imagen <%= prod.nombre %>"
+                />
+              </td>
+              <td><%= prod.nombre %></td>
+              <td>$<%= prod.precio %></td>
+              <!-- <td><%= prod.descripcion %></td> -->
+              <td><%= prod.active ? 'Sí' : 'No' %></td>
+              <td><%= prod.id_categoria %></td>
+              <td>
+                <a
+                  href="/dashboard/productos/<%= prod.id_producto %>/editar"
+                  class="elemento-a"
+                  title="Editar"
+                >
+                  <img src="/img/boton-editar.png" alt="Editar" class="imagen-acciones">
+                </a>
+                <form
+                  action="/dashboard/productos/<%= prod.id_producto %>/eliminar"
+                  method="POST"
+                  style="display:inline"
+                >
+                  <button
+                    type="submit"
+                    class="boton-acciones"
+                    onclick="return confirm('¿Seguro que querés eliminar este producto?');"
+                    title="Eliminar"
+                  >
+                    <img src="/img/boton-borrar.png" alt="Eliminar" class="imagen-acciones">
+                  </button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+
+      <% if(products.length === 0) { %>
+        <div class="producto-sin-coincidencia">
+          No hay un producto con el ID seleccionado
+        </div>
+      <% } else { %>
+        <!-- Paginación -->
+        <div class="paginacion">
+          <% if (page > 1) { %>
+            <a
+              href="?page=<%= page-1 %>&limit=<%= limit %><% if(q) { %>&q=<%= q %><% } %>"
+              class="boton boton-secundario elemento-a"
+            >
+              « Anterior
+            </a>
+          <% } %>
+          <span>Página <%= page %> de <%= totalPages %></span>
+          <% if (page < totalPages) { %>
+            <a
+              href="?page=<%= page+1 %>&limit=<%= limit %><% if(q) { %>&q=<%= q %><% } %>"
+              class="boton boton-secundario elemento-a"
+            >
+              Siguiente »
+            </a>
+          <% } %>
+        </div>
+      <% } %>
+    </main>
+
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('../partials/head.ejs') %>
+  <body>
+    <%- include('../partials/nav.ejs') %>
+    <main class="contenedor">
+      <h1 class="titulo">Registro</h1>
+      <form action="/auth/registro" method="POST">
+        <label>Nombre:</label>
+        <input type="text" name="nombre" required>
+        <label>Email:</label>
+        <input type="email" name="email" required>
+        <label>Contraseña:</label>
+        <input type="password" name="password" required>
+        <button type="submit" class="boton boton-primario">Registrarse</button>
+      </form>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>

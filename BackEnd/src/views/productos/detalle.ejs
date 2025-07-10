@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('../partials/head.ejs') %>
+  <body>
+    <%- include('../partials/nav.ejs') %>
+    <main class="contenedor">
+      <h1 class="titulo"><%= producto.nombre %></h1>
+      <img src="<%= producto.imagen %>" alt="Imagen <%= producto.nombre %>" class="imagen-producto">
+      <p><strong>Descripción:</strong> <%= producto.descripcion %></p>
+      <p><strong>Precio:</strong> $<%= producto.precio %></p>
+      <p><strong>Stock:</strong> <%= producto.stock %></p>
+      <p><strong>Categoría:</strong> <%= producto.id_categoria %></p>
+      <a href="/dashboard/productos" class="boton boton-secundario">Volver</a>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>

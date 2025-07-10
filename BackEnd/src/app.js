@@ -21,3 +21,10 @@ const DB_NAME = process.env.DB_NAME || 'fenrir_3d';
 
 // JWT
 const JWT_SECRET = process.env.JWT_SECRET || 'tu_clave_secreta';
+
+const productosRouter = require('./routes/productos');
+
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
+
+app.use('/dashboard/productos', productosRouter);
