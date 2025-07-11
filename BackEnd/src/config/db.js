@@ -23,6 +23,7 @@ if (process.env.SQLCONNSTR_FENRIRDB) {
 
 export async function getProductos() {
   try {
+    console.log('Entrando a getProductos');
     console.log('Cadena de conexión:', config);
     await sql.connect(config);
     const result = await sql.query('SELECT * FROM impresoras WHERE activo = 1');
