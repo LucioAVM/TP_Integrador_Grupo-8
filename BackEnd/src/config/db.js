@@ -19,8 +19,6 @@ if (process.env.SQLCONNSTR_FENRIRDB) {
   };
 }
 
-import sql from 'mssql';
-
 export async function getProductos() {
   try {
     await sql.connect(connStr);
