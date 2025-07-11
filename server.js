@@ -1,8 +1,9 @@
 import express from 'express';
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
-import Impresora from './BackEnd/src/Models/impresora.js';
+import session from 'express-session';
 import Admin from './BackEnd/src/Models/admin.js';
+import Impresora from './BackEnd/src/Models/impresora.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -21,22 +22,23 @@ app.set('views', path.join(__dirname, 'BackEnd', 'src', 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Configuración de express-session
+app.use(session({
+  secret: 'un_secreto_seguro', // Cambia esto por un secreto fuerte en producción
+  resave: false,
+  saveUninitialized: false
+}));
+
 // Archivos estáticos del frontend
 app.use(express.static(path.join(__dirname, 'FrontEnd', 'Public')));
 
-// Endpoint para obtener productos desde la base de datos
-app.get('/api/productos', async (req, res) => {
-  console.log('Handler /api/productos ejecutado');
-  try {
-    console.log('Consultando productos...');
-    const productos = await Impresora.findAll({ where: { activo: true } });
-    console.log('Productos obtenidos:', productos);
-    res.json(productos);
-  } catch (err) {
-    console.error('Error al consultar productos:', err);
-    res.status(500).json({ error: 'Error al consultar productos' });
+// Middleware para proteger rutas de admin
+function requireAdmin(req, res, next) {
+  if (!req.session.adminId) {
+    return res.redirect('/login');
   }
-});
+  next();
+}
 
 // Rutas de login administrador
 app.get('/login', (req, res) => {
@@ -53,13 +55,35 @@ app.post('/login', async (req, res) => {
   if (!valid) {
     return res.render('login', { error: 'Usuario o contraseña incorrectos' });
   }
-  // Aquí deberías guardar la sesión, pero por ahora redirige al dashboard
+  // Guardar sesión
+  req.session.adminId = admin.id;
   res.redirect('/dashboard');
 });
 
-// Dashboard del administrador
-app.get('/dashboard', (req, res) => {
-  res.send('<h1>Bienvenido al Dashboard de Administrador</h1>');
+// Logout
+app.get('/logout', (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/login');
+  });
+});
+
+// Dashboard del administrador (protegido)
+app.get('/dashboard', requireAdmin, async (req, res) => {
+  // Busca el admin logueado
+  const admin = await Admin.findByPk(req.session.adminId);
+  // Trae todos los productos (puedes filtrar por activos/inactivos si quieres)
+  const productos = await Impresora.findAll();
+  res.render('dashboard', { admin, productos });
+});
+
+// Endpoint para obtener productos desde la base de datos
+app.get('/api/productos', async (req, res) => {
+  try {
+    const productos = await Impresora.findAll({ where: { activo: true } });
+    res.json(productos);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al consultar productos' });
+  }
 });
 
 // Iniciar el servidor

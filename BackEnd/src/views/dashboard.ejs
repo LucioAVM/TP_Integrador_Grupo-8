@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard Administrador</title>
+  </head>
+  <body>
+    <h1>Bienvenido, <%= admin.nombre %></h1>
+    <a href="/logout">Cerrar sesión</a>
+    <h2>Listado de productos</h2>
+    <table border="1">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th>Precio</th>
+        <th>Categoría</th>
+        <th>Tipo</th>
+        <th>Activo</th>
+        <th>Acciones</th>
+      </tr>
+      <% productos.forEach(producto => { %>
+      <tr>
+        <td><%= producto.id %></td>
+        <td><%= producto.nombre %></td>
+        <td><%= producto.descripcion %></td>
+        <td><%= producto.precio %></td>
+        <td><%= producto.categoria %></td>
+        <td><%= producto.tipo %></td>
+        <td><%= producto.activo ? 'Sí' : 'No' %></td>
+        <td>
+          <!-- Aquí puedes agregar botones para editar, eliminar, reactivar, etc. -->
+          <a href="#">Editar</a>
+          <% if (producto.activo) { %>
+          <a href="#">Desactivar</a>
+          <% } else { %>
+          <a href="#">Reactivar</a>
+          <% } %>
+        </td>
+      </tr>
+      <% }) %>
+    </table>
+    <a href="#">Agregar nuevo producto</a>
+  </body>
+</html>
