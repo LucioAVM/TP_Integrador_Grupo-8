@@ -1,6 +1,6 @@
 import express from 'express';
 import 'dotenv/config';
-import { getProductos } from './BackEnd/src/config/db.js';
+import Impresora from './BackEnd/src/Models/impresora.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -12,7 +12,7 @@ app.get('/api/productos', async (req, res) => {
   console.log('Handler /api/productos ejecutado');
   try {
     console.log('Consultando productos...');
-    const productos = await getProductos();
+    const productos = await Impresora.findAll({ where: { activo: true } });
     console.log('Productos obtenidos:', productos);
     res.json(productos);
   } catch (err) {

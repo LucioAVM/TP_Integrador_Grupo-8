@@ -1,5 +1,5 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db');
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
 const Impresora = sequelize.define('Impresora', {
   id: {
@@ -22,4 +22,4 @@ const Impresora = sequelize.define('Impresora', {
   timestamps: false
 });
 
-module.exports = Impresora;
+export default Impresora;
