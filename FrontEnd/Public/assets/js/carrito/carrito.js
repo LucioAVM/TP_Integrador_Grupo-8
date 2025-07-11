@@ -76,7 +76,7 @@ export function initCarrito() {
     if (btnConfirmar) {
       btnConfirmar.addEventListener("click", function () {
         alert("¡Compra confirmada!");
-        // Aquí puedes agregar la lógica para procesar la compra
+        window.location.href = "/ticket.html";
       });
     }
 
