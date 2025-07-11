@@ -28,17 +28,28 @@
         <td><%= producto.tipo %></td>
         <td><%= producto.activo ? 'Sí' : 'No' %></td>
         <td>
-          <!-- Aquí puedes agregar botones para editar, eliminar, reactivar, etc. -->
-          <a href="#">Editar</a>
+          <a href="/dashboard/productos/<%= producto.id %>/editar">Editar</a>
           <% if (producto.activo) { %>
-          <a href="#">Desactivar</a>
+          <form
+            action="/dashboard/productos/<%= producto.id %>/desactivar"
+            method="POST"
+            style="display: inline"
+          >
+            <button type="submit">Desactivar</button>
+          </form>
           <% } else { %>
-          <a href="#">Reactivar</a>
+          <form
+            action="/dashboard/productos/<%= producto.id %>/reactivar"
+            method="POST"
+            style="display: inline"
+          >
+            <button type="submit">Reactivar</button>
+          </form>
           <% } %>
         </td>
       </tr>
       <% }) %>
     </table>
-    <a href="#">Agregar nuevo producto</a>
+    <a href="/dashboard/productos/agregar">Agregar nuevo producto</a>
   </body>
 </html>

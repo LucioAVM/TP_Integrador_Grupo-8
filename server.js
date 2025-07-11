@@ -69,14 +69,47 @@ app.get('/logout', (req, res) => {
 
 // Dashboard del administrador (protegido)
 app.get('/dashboard', requireAdmin, async (req, res) => {
-  // Busca el admin logueado
   const admin = await Admin.findByPk(req.session.adminId);
-  // Trae todos los productos (puedes filtrar por activos/inactivos si quieres)
   const productos = await Impresora.findAll();
   res.render('dashboard', { admin, productos });
 });
 
-// Endpoint para obtener productos desde la base de datos
+// Formulario de alta de producto
+app.get('/dashboard/productos/agregar', requireAdmin, (req, res) => {
+  res.render('agregarProducto');
+});
+
+// Lógica de alta de producto
+app.post('/dashboard/productos/agregar', requireAdmin, async (req, res) => {
+  await Impresora.create(req.body);
+  res.redirect('/dashboard');
+});
+
+// Formulario de edición de producto
+app.get('/dashboard/productos/:id/editar', requireAdmin, async (req, res) => {
+  const producto = await Impresora.findByPk(req.params.id);
+  res.render('editarProducto', { product: producto });
+});
+
+// Lógica de edición de producto
+app.post('/dashboard/productos/:id/editar', requireAdmin, async (req, res) => {
+  await Impresora.update(req.body, { where: { id: req.params.id } });
+  res.redirect('/dashboard');
+});
+
+// Baja lógica (desactivar)
+app.post('/dashboard/productos/:id/desactivar', requireAdmin, async (req, res) => {
+  await Impresora.update({ activo: false }, { where: { id: req.params.id } });
+  res.redirect('/dashboard');
+});
+
+// Reactivar producto
+app.post('/dashboard/productos/:id/reactivar', requireAdmin, async (req, res) => {
+  await Impresora.update({ activo: true }, { where: { id: req.params.id } });
+  res.redirect('/dashboard');
+});
+
+// Endpoint para obtener productos desde la base de datos (API REST)
 app.get('/api/productos', async (req, res) => {
   try {
     const productos = await Impresora.findAll({ where: { activo: true } });
