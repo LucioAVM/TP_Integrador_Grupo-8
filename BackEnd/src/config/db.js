@@ -17,16 +17,19 @@ if (process.env.SQLCONNSTR_FENRIRDB) {
       trustServerCertificate: false
     }
   };
-}
+};
+
+const connStr = process.env.FENRIRDB;
 
 export async function getProductos() {
   try {
+    console.log('Cadena de conexión:', connStr);
     await sql.connect(connStr);
     const result = await sql.query('SELECT * FROM impresoras WHERE activo = 1');
-    console.log('Resultado SQL:', result); // <-- Agrega este log
+    console.log('Resultado SQL:', result);
     return result.recordset;
   } catch (err) {
-    console.error('Error al consultar productos:', err); // <-- Agrega este log
+    console.error('Error al consultar productos:', err);
     return [];
   } finally {
     await sql.close();
