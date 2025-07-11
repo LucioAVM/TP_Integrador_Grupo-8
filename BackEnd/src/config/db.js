@@ -19,14 +19,12 @@ if (process.env.SQLCONNSTR_FENRIRDB) {
       trustServerCertificate: false
     }
   };
-};
-
-const connStr = process.env.FENRIRDB;
+}
 
 export async function getProductos() {
   try {
-    console.log('Cadena de conexión:', connStr);
-    await sql.connect(connStr);
+    console.log('Cadena de conexión:', config);
+    await sql.connect(config);
     const result = await sql.query('SELECT * FROM impresoras WHERE activo = 1');
     console.log('Resultado SQL:', result);
     return result.recordset;
