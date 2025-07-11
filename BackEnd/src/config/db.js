@@ -1,5 +1,7 @@
 import sql from 'mssql';
 
+console.log('===> db.js actualizado');
+
 let config;
 if (process.env.SQLCONNSTR_FENRIRDB) {
   // En Azure
