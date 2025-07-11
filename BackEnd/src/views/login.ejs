@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login Administrador</title>
+  </head>
+  <body>
+    <h1>Login Administrador</h1>
+    <% if (error) { %>
+    <p style="color: red"><%= error %></p>
+    <% } %>
+    <form method="POST" action="/login">
+      <input type="email" name="email" placeholder="Correo" required />
+      <input
+        type="password"
+        name="password"
+        placeholder="Contraseña"
+        required
+      />
+      <button type="submit">Ingresar</button>
+      <button type="button" onclick="autocompletar()">Acceso rápido</button>
+    </form>
+    <script>
+      function autocompletar() {
+        document.querySelector('[name="email"]').value = "admin@admin.com";
+        document.querySelector('[name="password"]').value = "admin123";
+      }
+    </script>
+  </body>
+</html>
