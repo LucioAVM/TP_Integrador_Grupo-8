@@ -1,30 +1,30 @@
 const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const dotenv = require('dotenv');
+const sequelize = require('./config/db');
+const productosRouter = require('./Routes/api/productos.routes');
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
+const PORT = process.env.PORT || 8080;
+
+// Middleware para parsear JSON
 app.use(express.json());
 
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/impresoras', require('./routes/impresorasRoutes'));
-app.use('/api/insumos', require('./routes/insumosRoutes'));
+// Probar conexión a la base de datos al iniciar
+sequelize.authenticate()
+  .then(() => console.log('Conexión a Azure SQL exitosa'))
+  .catch(err => console.error('Error de conexión a la base de datos:', err));
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
+// Rutas de la API
+app.use('/api/productos', productosRouter);
 
-// Base de datos
-const DB_HOST = process.env.DB_HOST || 'localhost';
-const DB_USER = process.env.DB_USER || 'root';
-const DB_PASS = process.env.DB_PASS || '';
-const DB_NAME = process.env.DB_NAME || 'fenrir_3d';
+// Ruta de prueba
+app.get('/', (req, res) => {
+  res.send('API funcionando');
+});
 
-// JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'tu_clave_secreta';
-
-const productosRouter = require('./routes/productos');
-
-app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views');
-
-app.use('/dashboard/productos', productosRouter);
+// Iniciar el servidor
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
+});

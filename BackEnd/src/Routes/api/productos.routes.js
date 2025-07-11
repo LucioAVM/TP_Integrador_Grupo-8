@@ -1,35 +1,59 @@
 const express = require('express');
-
 const router = express.Router();
+const Producto = require('../../Models/producto');
 
-// Obtener todos los productos
-router.get('/', (req, res) => {
-    // Lógica para obtener productos
-    res.send('Lista de productos');
+// Obtener todos los productos activos
+router.get('/', async (req, res) => {
+  try {
+    const productos = await Producto.findAll({ where: { activo: true } });
+    res.json(productos);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Obtener un producto por ID
-router.get('/:id', (req, res) => {
-    // Lógica para obtener un producto por ID
-    res.send(`Producto con ID: ${req.params.id}`);
+router.get('/:id', async (req, res) => {
+  try {
+    const producto = await Producto.findByPk(req.params.id);
+    if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json(producto);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-// Crear un nuevo producto
-router.post('/', (req, res) => {
-    // Lógica para crear un producto
-    res.send('Producto creado');
+// Crear un producto
+router.post('/', async (req, res) => {
+  try {
+    const producto = await Producto.create(req.body);
+    res.status(201).json(producto);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Actualizar un producto
-router.put('/:id', (req, res) => {
-    // Lógica para actualizar un producto
-    res.send(`Producto actualizado con ID: ${req.params.id}`);
+router.put('/:id', async (req, res) => {
+  try {
+    const [updated] = await Producto.update(req.body, { where: { id: req.params.id } });
+    if (!updated) return res.status(404).json({ error: 'Producto no encontrado' });
+    const producto = await Producto.findByPk(req.params.id);
+    res.json(producto);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
-// Eliminar un producto
-router.delete('/:id', (req, res) => {
-    // Lógica para eliminar un producto
-    res.send(`Producto eliminado con ID: ${req.params.id}`);
+// Baja lógica de un producto
+router.delete('/:id', async (req, res) => {
+  try {
+    const [updated] = await Producto.update({ activo: false }, { where: { id: req.params.id } });
+    if (!updated) return res.status(404).json({ error: 'Producto no encontrado' });
+    res.json({ mensaje: 'Producto dado de baja' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;
