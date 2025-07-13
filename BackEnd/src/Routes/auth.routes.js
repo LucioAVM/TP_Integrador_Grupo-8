@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const authController = require('../controllers/authController');
-const impresorasController = require('../controllers/impresorasController');
+const authController = require('../controllers/auth.controller');
+const impresorasController = require('../controllers/impresoras.controller');
 
 router.post('/register', authController.register);
 router.post('/login', authController.login);
