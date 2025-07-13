@@ -46,7 +46,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Baja lógica de un producto
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {//refactorizar
   try {
     const [updated] = await Producto.update({ activo: false }, { where: { id: req.params.id } });
     if (!updated) return res.status(404).json({ error: 'Producto no encontrado' });

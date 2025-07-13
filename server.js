@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs';
 import session from 'express-session';
 import Admin from './BackEnd/src/Models/admin.js';
 import Impresora from './BackEnd/src/Models/impresora.js';
+import Venta from './BackEnd/src/Models/venta.js';
+import VentaProducto from './BackEnd/src/Models/venta_productos.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -31,6 +33,10 @@ app.use(session({
 
 // Archivos estáticos del frontend
 app.use(express.static(path.join(__dirname, 'FrontEnd', 'Public')));
+
+// Relacionar modelos de ventas
+Venta.hasMany(VentaProducto, { foreignKey: 'venta_id' });
+VentaProducto.belongsTo(Venta, { foreignKey: 'venta_id' });
 
 // Middleware para proteger rutas de admin
 function requireAdmin(req, res, next) {
@@ -117,6 +123,27 @@ app.get('/api/productos', async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Error al consultar productos' });
   }
+});
+
+// Endpoint para guardar una venta
+app.post('/api/ventas', async (req, res) => {
+  try {
+    const { nombre_usuario, productos, total } = req.body;
+    // productos: [{ producto_id, cantidad, precio_unitario }]
+    const venta = await Venta.create({ nombre_usuario, total });
+    for (const p of productos) {
+      await VentaProducto.create({
+        venta_id: venta.id,
+        producto_id: p.producto_id,
+        cantidad: p.cantidad,
+        precio_unitario: p.precio_unitario
+      });
+    }
+    res.status(201).json({ mensaje: 'Venta registrada', venta_id: venta.id });
+  } catch (err) {
+  console.error('Error al registrar la venta:', err);
+  res.status(500).json({ error: 'Error al registrar la venta' });
+}
 });
 
 // Iniciar el servidor

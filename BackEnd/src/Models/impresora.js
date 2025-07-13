@@ -14,7 +14,7 @@ const Impresora = sequelize.define('Impresora', {
   descripcion: DataTypes.TEXT,
   precio: DataTypes.DECIMAL(10, 2),
   imagen: DataTypes.STRING(255),
-  categoria: DataTypes.STRING(50),
+  categoria: DataTypes.STRING(50),//
   tipo: DataTypes.STRING(10),
   activo: DataTypes.BOOLEAN
 }, {
