@@ -1,13 +1,14 @@
 /* Estilo general del cuerpo */
 body {
   font-family: 'Roboto', sans-serif;
-  background-color: #f3f4f6;
+  background-color: #f8f9fa; /* Fondo claro y profesional */
   margin: 0;
   padding: 0;
+  color: #343a40; /* Texto oscuro */
 }
 
-/* Contenedor principal */
-.contenedor {
+/* Contenedor login */
+.contenedor-login {
   margin: 50px auto;
   max-width: 500px;
   padding: 20px;
@@ -16,53 +17,109 @@ body {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Tarjeta estilizada */
-.card {
-  border-radius: 10px;
-  background-color: #ffffff;
+/* Contenedor principal */
+.contenedor {
+  margin: 20px auto;
+  width: 90%; /* Ajusta el ancho para pantallas grandes */
   padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
-
 /* Título estilizado */
 .titulo {
-  font-size: 28px;
-  color: #333333;
-  text-align: center;
+  font-size: 32px;
+  color: #212529;
+  text-align: left;
   margin-bottom: 20px;
+  font-weight: bold;
 }
 
 /* Botón principal */
-.boton-primario {
-  background-color: #007bff;
-  color: #ffffff;
-  border: none;
+.btn {
+  display: inline-block;
   padding: 10px 20px;
-  border-radius: 5px;
   font-size: 16px;
+  font-weight: 500;
+  border-radius: 5px;
+  border: none;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.boton-primario:hover {
+.btn-primary {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
   background-color: #0056b3;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   transform: scale(1.05);
 }
 
-/* Campos del formulario */
-.form-label {
+.btn-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #bd2130;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: #ffffff;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+/* Tabla estilizada */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th,
+.table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.table th {
+  background-color: #f1f3f5;
   font-weight: bold;
-  color: #555555;
 }
 
-.form-control {
-  border: 1px solid #cccccc;
-  border-radius: 5px;
-  padding: 10px;
-  font-size: 14px;
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: #f8f9fa;
 }
 
-.form-control:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+.table-hover tbody tr:hover {
+  background-color: #e9ecef;
+}
+
+/* Animación de hover en filas */
+.table-hover tbody tr {
+  transition: background-color 0.3s ease;
 }
