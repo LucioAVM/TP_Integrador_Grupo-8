@@ -1,18 +1,30 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Agregar Producto</title>
-  </head>
-  <body>
-    <h1>Agregar Producto</h1>
-    <form action="/dashboard/productos/agregar" method="POST">
-      <input type="text" name="nombre" placeholder="Nombre" required />
-      <input type="text" name="descripcion" placeholder="Descripción" />
-      <input type="number" name="precio" placeholder="Precio" required />
-      <input type="text" name="categoria" placeholder="Categoría" />
-      <input type="text" name="tipo" placeholder="Tipo" />
-      <button type="submit">Agregar</button>
-    </form>
-    <a href="/dashboard">Volver al dashboard</a>
-  </body>
-</html>
+<form
+  action="/dashboard/productos/agregar"
+  method="POST"
+  onsubmit="return validarFormulario()"
+>
+  <div class="mb-3">
+    <label class="form-label">Nombre:</label>
+    <input type="text" name="nombre" class="form-control" required />
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Descripción:</label>
+    <textarea name="descripcion" class="form-control" required></textarea>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Precio:</label>
+    <input type="number" name="precio" class="form-control" required />
+  </div>
+  <button type="submit" class="btn btn-primary">Agregar Producto</button>
+</form>
+<script>
+  function validarFormulario() {
+    const nombre = document.querySelector('input[name="nombre"]').value.trim();
+    const precio = document.querySelector('input[name="precio"]').value.trim();
+    if (!nombre || !precio || precio <= 0) {
+      alert("Por favor, completa todos los campos correctamente.");
+      return false;
+    }
+    return true;
+  }
+</script>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('../partials/head.ejs') %>
+  <body>
+    <%- include('../partials/nav.ejs') %>
+    <main class="contenedor">
+      <h1 class="titulo text-center mb-4">Listado de Ventas</h1>
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Usuario</th>
+            <th>Total</th>
+            <th>Fecha</th>
+            <th>Productos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% ventas.forEach(venta => { %>
+          <tr>
+            <td><%= venta.id %></td>
+            <td><%= venta.nombre_usuario %></td>
+            <td>$<%= venta.total %></td>
+            <td><%= new Date(venta.fecha).toLocaleDateString() %></td>
+            <td>
+              <ul>
+                <% venta.VentaProductos.forEach(producto => { %>
+                <li>
+                  Producto ID: <%= producto.producto_id %>, Cantidad: <%=
+                  producto.cantidad %>, Precio Unitario: $<%=
+                  producto.precio_unitario %>
+                </li>
+                <% }) %>
+              </ul>
+            </td>
+            <td>
+              <a href="/ventas/<%= venta.id %>" class="btn btn-info btn-sm"
+                >Ver Detalle</a
+              >
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+/* Estilo general del cuerpo */
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f3f4f6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Contenedor principal */
+.contenedor {
+  margin: 50px auto;
+  max-width: 500px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tarjeta estilizada */
+.card {
+  border-radius: 10px;
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título estilizado */
+.titulo {
+  font-size: 28px;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Botón principal */
+.boton-primario {
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.boton-primario:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* Campos del formulario */
+.form-label {
+  font-weight: bold;
+  color: #555555;
+}
+
+.form-control {
+  border: 1px solid #cccccc;
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}

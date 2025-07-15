@@ -1,28 +1,58 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Login Administrador</title>
-  </head>
+<html lang="es">
+  <%- include('partials/head.ejs') %>
   <body>
-    <h1>Login Administrador</h1>
-    <% if (error) { %>
-    <p style="color: red"><%= error %></p>
-    <% } %>
-    <form method="POST" action="/login">
-      <input type="email" name="email" placeholder="Correo" required />
-      <input
-        type="password"
-        name="password"
-        placeholder="Contraseña"
-        required
-      />
-      <button type="submit">Ingresar</button>
-      <button type="button" onclick="autocompletar()">Acceso rápido</button>
-    </form>
+    <main class="contenedor">
+      <h1 class="titulo text-center mb-4">Login Administrador</h1>
+      <% if (error) { %>
+      <div class="alert alert-danger" role="alert"><%= error %></div>
+      <% } %>
+      <form method="POST" action="/login" id="login-form">
+        <div class="mb-3">
+          <label class="form-label">Correo:</label>
+          <input
+            type="email"
+            name="email"
+            class="form-control"
+            placeholder="Correo"
+            required
+          />
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Contraseña:</label>
+          <input
+            type="password"
+            name="password"
+            class="form-control"
+            placeholder="Contraseña"
+            required
+          />
+        </div>
+        <button type="submit" class="btn btn-primary boton-primario w-100">
+          Ingresar
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary w-100 mt-2"
+          onclick="autocompletar()"
+        >
+          Acceso rápido
+        </button>
+      </form>
+    </main>
+
+    <%- include('partials/footer.ejs') %>
+
     <script>
       function autocompletar() {
-        document.querySelector('[name="email"]').value = "admin@admin.com";
-        document.querySelector('[name="password"]').value = "admin123";
+        const emailField = document.querySelector('[name="email"]');
+        const passwordField = document.querySelector('[name="password"]');
+        if (emailField && passwordField) {
+          emailField.value = "admin@admin.com";
+          passwordField.value = "admin123";
+        } else {
+          console.error("No se encontraron los campos de correo o contraseña.");
+        }
       }
     </script>
   </body>

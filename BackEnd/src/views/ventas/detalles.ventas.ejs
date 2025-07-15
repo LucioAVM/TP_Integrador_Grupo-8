@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('../partials/head.ejs') %>
+  <body>
+    <%- include('../partials/nav.ejs') %>
+    <main class="contenedor">
+      <h1 class="titulo text-center mb-4">Detalle de Venta</h1>
+      <p><strong>ID:</strong> <%= venta.id %></p>
+      <p><strong>Usuario:</strong> <%= venta.nombre_usuario %></p>
+      <p><strong>Total:</strong> $<%= venta.total %></p>
+      <p><strong>Fecha:</strong> <%= venta.fecha.toLocaleDateString() %></p>
+      <h2>Productos</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio Unitario</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% venta.VentaProductos.forEach(producto => { %>
+          <tr>
+            <td><%= producto.producto_id %></td>
+            <td><%= producto.cantidad %></td>
+            <td>$<%= producto.precio_unitario %></td>
+            <td>$<%= producto.cantidad * producto.precio_unitario %></td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>
