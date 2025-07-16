@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
-  <%- include('partials/head.ejs') %>
+  <%- include('../partials/head.ejs') %>
   <body>
-    <%- include('partials/nav.ejs') %>
+    <%- include('../partials/nav.ejs') %>
 
     <main class="contenedor">
       <h1 class="titulo">Nuevo Producto</h1>
 
       <form
         class="formulario-producto"
-        action="/dashboard/productos/nuevo"
+        action="/productos/nuevo"
         method="POST"
         enctype="multipart/form-data"
       >
@@ -57,13 +57,15 @@
           <input id="id_categoria" name="id_categoria" type="number" required />
         </div>
 
-        <button type="submit" class="boton boton-primario">Crear Producto</button>
+        <button type="submit" class="boton boton-primario">
+          Crear Producto
+        </button>
         <button class="boton boton-secundario">
-            <a href="/dashboard/productos" class="elemento-a">Cancelar</a>
+          <a href="/dashboard" class="elemento-a">Cancelar</a>
         </button>
       </form>
     </main>
 
-    <%- include('partials/footer.ejs') %>
+    <%- include('../partials/footer.ejs') %>
   </body>
 </html>

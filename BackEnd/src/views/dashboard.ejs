@@ -5,7 +5,7 @@
     <%- include('partials/nav.ejs') %>
     <main class="contenedor">
       <h2 class="titulo">Listado de productos</h2>
-      <a href="/dashboard/productos/agregar" class="btn btn-primary mb-3"
+      <a href="/productos/nuevo" class="btn btn-primary mb-3"
         >+ Nuevo Producto</a
       >
 
@@ -32,13 +32,13 @@
             <td><%= producto.activo ? 'Sí' : 'No' %></td>
             <td>
               <a
-                href="/dashboard/productos/<%= producto.id %>/editar"
+                href="/productos/<%= producto.id %>/editar"
                 class="btn btn-warning btn-sm"
                 >Editar</a
               >
               <% if (producto.activo) { %>
               <form
-                action="/dashboard/productos/<%= producto.id %>/desactivar"
+                action="/productos/<%= producto.id %>/desactivar"
                 method="POST"
                 style="display: inline"
               >
@@ -48,7 +48,7 @@
               </form>
               <% } else { %>
               <form
-                action="/dashboard/productos/<%= producto.id %>/reactivar"
+                action="/productos/<%= producto.id %>/reactivar"
                 method="POST"
                 style="display: inline"
               >

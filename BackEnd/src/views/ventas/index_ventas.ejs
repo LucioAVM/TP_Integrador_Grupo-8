@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
-  <%- include('../partials/head.ejs') %>
+  <head>
+    <title>Listado de Ventas</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+  </head>
   <body>
-    <%- include('../partials/nav.ejs') %>
     <main class="contenedor">
-      <h1 class="titulo text-center mb-4">Listado de Ventas</h1>
-      <table class="table table-striped table-hover">
+      <h1>Listado de Ventas</h1>
+      <table>
         <thead>
           <tr>
             <th>ID</th>
             <th>Usuario</th>
             <th>Total</th>
-            <th>Fecha</th>
             <th>Productos</th>
             <th>Acciones</th>
           </tr>
@@ -22,7 +23,6 @@
             <td><%= venta.id %></td>
             <td><%= venta.nombre_usuario %></td>
             <td>$<%= venta.total %></td>
-            <td><%= new Date(venta.fecha).toLocaleDateString() %></td>
             <td>
               <ul>
                 <% venta.VentaProductos.forEach(producto => { %>
@@ -35,7 +35,7 @@
               </ul>
             </td>
             <td>
-              <a href="/ventas/<%= venta.id %>" class="btn btn-info btn-sm"
+              <a href="/ventas/<%= venta.id %>" class="btn btn-info"
                 >Ver Detalle</a
               >
             </td>
@@ -44,6 +44,5 @@
         </tbody>
       </table>
     </main>
-    <%- include('../partials/footer.ejs') %>
   </body>
 </html>

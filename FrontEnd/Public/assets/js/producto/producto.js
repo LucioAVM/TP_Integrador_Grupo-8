@@ -14,7 +14,7 @@ export function initProducto() {
   getProductos().then(productos => {
     productosGlobal = productos;
     const categorias = [...new Set(productos.map(p => p.categoria))];
-    const tipos = [...new Set(productos.map(p => p.tipo))];
+    const tipos = [...new Set(productos.map(p => p.tipo_producto))];
     document.getElementById('filtros-container').innerHTML = renderFiltros(categorias, tipos);
     animarFiltros();
     renderProductos(productos);
@@ -25,7 +25,7 @@ export function initProducto() {
         const tipo = document.querySelector('input[name="tipo"]:checked').value;
         let filtrados = productosGlobal;
         if (cat !== 'todas') filtrados = filtrados.filter(p => p.categoria === cat);
-        if (tipo !== 'todos') filtrados = filtrados.filter(p => p.tipo === tipo);
+        if (tipo !== 'todos') filtrados = filtrados.filter(p => p.tipo_producto === tipo);
         renderProductos(filtrados);
       });
     });
@@ -45,6 +45,9 @@ function renderProductos(productos) {
     btn.addEventListener('click', () => {
       const id = Number(btn.getAttribute('data-id'));
       const producto = productosGlobal.find(p => p.id === id);
+      if (!producto) {
+        return;
+      }
       agregarAlCarrito(producto);
     });
   });

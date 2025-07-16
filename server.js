@@ -8,6 +8,7 @@ import Venta from './BackEnd/src/Models/venta.js';
 import VentaProducto from './BackEnd/src/Models/venta_productos.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import VistaProductos from './BackEnd/src/Models/vista_productos.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -84,24 +85,8 @@ app.get('/dashboard', requireAdmin, async (req, res) => {
 // Rutas de productos
 app.get('/productos', requireAdmin, async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 10;
-    const page = parseInt(req.query.page) || 1;
-    const offset = (page - 1) * limit;
-
-    const { count, rows: products } = await Impresora.findAndCountAll({
-      limit,
-      offset,
-    });
-
-    const totalPages = Math.ceil(count / limit);
-
-    res.render('productos/index', {
-      products,
-      activePage: 'productos',
-      page,
-      limit,
-      totalPages,
-    });
+    const productos = await VistaProductos.findAll(); // Usamos VistaProductos
+    res.render('productos/index', { productos, activePage: 'productos' });
   } catch (error) {
     console.error('Error al obtener productos:', error);
     res.render('error', { mensaje: 'Error al cargar los productos', activePage: 'productos' });
@@ -109,7 +94,7 @@ app.get('/productos', requireAdmin, async (req, res) => {
 });
 
 app.get('/productos/:id', requireAdmin, async (req, res) => {
-  const producto = await Impresora.findByPk(req.params.id);
+  const producto = await VistaProductos.findByPk(req.params.id); // Cambiado para usar VistaProductos
   if (!producto) {
     return res.render('error', { mensaje: 'Producto no encontrado', activePage: 'productos' });
   }
@@ -117,37 +102,74 @@ app.get('/productos/:id', requireAdmin, async (req, res) => {
 });
 
 app.get('/productos/nuevo', requireAdmin, (req, res) => {
-  res.render('productos/nuevo', { activePage: 'productos' });
+  res.render('productos/crear_producto', { activePage: 'productos' });
 });
 
 app.post('/productos/nuevo', requireAdmin, async (req, res) => {
-  await Impresora.create(req.body);
-  res.redirect('/productos');
+  try {
+    const { nombre, descripcion, precio, categoria, tipo } = req.body;
+    if (!nombre || !precio || !tipo) {
+      throw new Error('Nombre, precio y tipo son obligatorios.');
+    }
+    await VistaProductos.create({ nombre, descripcion, precio, categoria, tipo, activo: true }); // Cambiado para usar VistaProductos
+    res.redirect('/dashboard?mensaje=Producto creado exitosamente');
+  } catch (err) {
+    console.error('Error al crear producto:', err);
+    res.redirect('/dashboard?error=Error al crear producto');
+  }
 });
 
 app.get('/productos/:id/editar', requireAdmin, async (req, res) => {
-  const producto = await Impresora.findByPk(req.params.id);
-  if (!producto) {
-    return res.render('error', { mensaje: 'Producto no encontrado', activePage: 'productos' });
+  try {
+    const producto = await Impresora.findByPk(req.params.id);
+    if (!producto) {
+      return res.render('error', { mensaje: 'Producto no encontrado', activePage: 'productos' });
+    }
+    const productoPlano = producto.get({ plain: true });
+    console.log('Producto enviado a la vista:', productoPlano); // Depuración
+    res.render('productos/editar_producto', { producto: productoPlano, activePage: 'productos' });
+  } catch (err) {
+    console.error('Error al cargar producto:', err);
+    res.render('error', { mensaje: 'Error al cargar producto', activePage: 'productos' });
   }
-  res.render('productos/editar.producto', { producto, activePage: 'productos' });
 });
 
 app.post('/productos/:id/editar', requireAdmin, async (req, res) => {
-  await Impresora.update(req.body, { where: { id: req.params.id } });
-  res.redirect('/productos');
+  try {
+    const { nombre, descripcion, precio, categoria, tipo } = req.body;
+    if (!nombre || !precio || !tipo) {
+      throw new Error('Nombre, precio y tipo son obligatorios.');
+    }
+    await Impresora.update(
+      { nombre, descripcion, precio, categoria, tipo },
+      { where: { id: req.params.id } }
+    );
+    res.redirect('/dashboard?mensaje=Producto actualizado exitosamente');
+  } catch (err) {
+    console.error('Error al editar producto:', err);
+    res.redirect('/dashboard?error=Error al editar producto');
+  }
 });
 
 app.post('/productos/:id/desactivar', requireAdmin, async (req, res) => {
-  await Impresora.update({ activo: false }, { where: { id: req.params.id } });
-  res.redirect('/productos');
+  try {
+    await Impresora.update({ activo: false }, { where: { id: req.params.id } });
+    res.redirect('/dashboard?mensaje=Producto desactivado exitosamente');
+  } catch (err) {
+    console.error('Error al desactivar producto:', err);
+    res.redirect('/dashboard?error=Error al desactivar producto');
+  }
 });
 
 app.post('/productos/:id/reactivar', requireAdmin, async (req, res) => {
-  await Impresora.update({ activo: true }, { where: { id: req.params.id } });
-  res.redirect('/productos');
+  try {
+    await Impresora.update({ activo: true }, { where: { id: req.params.id } });
+    res.redirect('/dashboard?mensaje=Producto reactivado exitosamente');
+  } catch (err) {
+    console.error('Error al reactivar producto:', err);
+    res.redirect('/dashboard?error=Error al reactivar producto');
+  }
 });
-
 // Rutas de ventas
 app.get('/ventas', requireAdmin, async (req, res) => {
   try {
@@ -157,7 +179,9 @@ app.get('/ventas', requireAdmin, async (req, res) => {
         attributes: ['producto_id', 'cantidad', 'precio_unitario'],
       },
     });
-    res.render('ventas/index.ventas', { ventas, activePage: 'ventas' });
+    console.log('Ventas encontradas:', ventas);
+    console.log('Intentando renderizar vista: ventas/index.ventas');
+    res.render('ventas/index_ventas', { ventas, activePage: 'ventas' });
   } catch (error) {
     console.error('Error al cargar las ventas:', error.message);
     res.render('error', { mensaje: 'Error al cargar las ventas', activePage: 'ventas' });
@@ -169,7 +193,7 @@ app.get('/ventas/:id', requireAdmin, async (req, res) => {
   if (!venta) {
     return res.render('error', { mensaje: 'Venta no encontrada', activePage: 'ventas' });
   }
-  res.render('ventas/detalle', { venta, activePage: 'ventas' });
+  res.render('ventas/detalle_ventas', { venta, activePage: 'ventas' });
 });
 
 app.post('/ventas/nueva', requireAdmin, async (req, res) => {
@@ -189,9 +213,11 @@ app.post('/ventas/nueva', requireAdmin, async (req, res) => {
 // Endpoint para obtener productos desde la base de datos (API REST)
 app.get('/api/productos', async (req, res) => {
   try {
-    const productos = await Impresora.findAll({ where: { activo: true } });
+    const productos = await VistaProductos.findAll();
+    console.log('Productos devueltos por la API:', productos); // Depuración
     res.json(productos);
   } catch (err) {
+    console.error('Error al consultar productos:', err);
     res.status(500).json({ error: 'Error al consultar productos' });
   }
 });
@@ -200,6 +226,16 @@ app.get('/api/productos', async (req, res) => {
 app.post('/api/ventas', async (req, res) => {
   try {
     const { nombre_usuario, productos, total } = req.body;
+
+    // Validar que todos los productos existan en impresoras o insumos
+    for (const p of productos) {
+      const producto = await VistaProductos.findByPk(p.producto_id);
+      if (!producto) {
+        return res.status(400).json({ error: `Producto con ID ${p.producto_id} no encontrado.` });
+      }
+    }
+
+    // Registrar la venta
     const venta = await Venta.create({ nombre_usuario, total });
     for (const p of productos) {
       await VentaProducto.create({
@@ -209,10 +245,11 @@ app.post('/api/ventas', async (req, res) => {
         precio_unitario: p.precio_unitario,
       });
     }
-    res.status(201).json({ mensaje: 'Venta registrada', venta_id: venta.id });
+
+    res.status(201).json({ mensaje: 'Venta registrada exitosamente.' });
   } catch (err) {
     console.error('Error al registrar la venta:', err);
-    res.status(500).json({ error: 'Error al registrar la venta' });
+    res.status(500).json({ error: 'Error al registrar la venta.' });
   }
 });
 
