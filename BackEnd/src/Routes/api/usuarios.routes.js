@@ -1,5 +1,5 @@
-const express = require('express');
-const usuariosController = require('../controllers/usuarios.controller');
+import express from 'express';
+import usuariosController from '../../Controllers/usuarios.controller.js';
 
 const router = express.Router();
 
@@ -18,4 +18,4 @@ router.put('/:id', usuariosController.actualizarUsuario);
 // Eliminar un usuario
 router.delete('/:id', usuariosController.eliminarUsuario);
 
-module.exports = router;
+export default router;

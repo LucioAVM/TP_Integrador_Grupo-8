@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+import { body, validationResult } from 'express-validator';
 
 const validarUsuario = [
     body('email').isEmail().withMessage('Email inválido'),
@@ -13,4 +13,4 @@ const validarUsuario = [
     }
 ];
 
-module.exports = { validarUsuario };
+export { validarUsuario };

@@ -1,6 +1,6 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const Producto = require('../../Models/impresora');
+import Producto from '../../Models/impresora.js';
 
 // Obtener todos los productos activos
 router.get('/', async (req, res) => {
@@ -56,4 +56,4 @@ router.delete('/:id', async (req, res) => {//refactorizar
   }
 });
 
-module.exports = router;
+export default router;

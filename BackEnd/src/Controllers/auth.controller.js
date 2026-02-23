@@ -1,8 +1,8 @@
-const db = require('../config/db');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+import db from '../config/db.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
   const { nombre, email, password } = req.body;
   try {
     const [user] = await db.query('SELECT id FROM usuarios WHERE email = ?', [email]);
@@ -18,7 +18,7 @@ exports.register = async (req, res) => {
   }
 };
 
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const [user] = await db.query('SELECT * FROM usuarios WHERE email = ?', [email]);
@@ -35,3 +35,5 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Error en login' });
   }
 };
+
+export default { register, login };

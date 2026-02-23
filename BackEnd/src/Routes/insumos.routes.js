@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import controller from '../Controllers/insumos.controller.js';
+
 const router = express.Router();
-const controller = require('../controllers/insumos.controller'); //acá no se que iba
 
 router.get('/', controller.getAll);
 
-module.exports = router;
+export default router;

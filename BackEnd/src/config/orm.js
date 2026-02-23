@@ -1,14 +1,15 @@
 // Configuración del ORM (Sequelize) para SQL Server
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
 
-const { Sequelize } = require('sequelize');
-require('dotenv').config();
+dotenv.config();
 
 const sequelize = new Sequelize(
-  process.env.DB_NAME,        // Nombre de la base de datos
-  process.env.DB_USER,        // Usuario
-  process.env.DB_PASSWORD,    // Contraseña
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
   {
-    host: process.env.DB_SERVER, // Servidor
+    host: process.env.DB_SERVER,
     dialect: 'mssql',
     port: parseInt(process.env.DB_PORT, 10) || 1433,
     dialectOptions: {
@@ -30,4 +31,4 @@ const sequelize = new Sequelize(
   }
 })();
 
-module.exports = sequelize;
+export default sequelize;

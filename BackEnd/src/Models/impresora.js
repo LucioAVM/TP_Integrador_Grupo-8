@@ -5,21 +5,40 @@ const Impresora = sequelize.define('Impresora', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
   },
   nombre: {
-    type: DataTypes.STRING(255),
-    allowNull: false
+    type: DataTypes.STRING,
+    allowNull: false,
   },
-  descripcion: DataTypes.TEXT,
-  precio: DataTypes.DECIMAL(10, 2),
-  imagen: DataTypes.STRING(255),
-  categoria: DataTypes.STRING(50),//
-  tipo: DataTypes.STRING(10),
-  activo: DataTypes.BOOLEAN
+  descripcion: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+  precio: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  categoria: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue: 'impresoras',
+  },
+  tipo: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  activo: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: true,
+  },
+  imagen: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
 }, {
   tableName: 'impresoras',
-  timestamps: false
+  timestamps: false,
 });
 
 export default Impresora;

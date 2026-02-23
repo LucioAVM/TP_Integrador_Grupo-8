@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <title>Crear Producto</title>
+    <link rel="stylesheet" href="/assets/css/crearProducto.css" />
+  </head>
+  <body>
+    <h1>Formulario de creación de producto</h1>
+    <form action="/crearProducto" method="POST">
+      <div class="form-group">
+        <label for="tipoProducto">Tipo de Producto:</label>
+        <select id="tipoProducto" name="tipoProducto" required>
+          <option value="">Seleccione un tipo</option>
+          <option value="impresoras">Impresoras</option>
+          <option value="insumos">Insumos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required />
+      </div>
+      <div class="form-group">
+        <label for="precio">Precio:</label>
+        <input type="number" id="precio" name="precio" step="0.01" required />
+      </div>
+      <div class="form-group">
+        <label for="descripcion">Descripción:</label>
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          rows="3"
+          required
+        ></textarea>
+      </div>
+      <div class="form-group">
+        <label for="activo">Activo:</label>
+        <select id="activo" name="activo" required>
+          <option value="true">Sí</option>
+          <option value="false">No</option>
+        </select>
+      </div>
+      <div id="camposImpresoras" style="display: none">
+        <div class="form-group">
+          <label for="tipoImpresora">Tipo de Impresora:</label>
+          <select id="tipoImpresora" name="tipoImpresora">
+            <option value="filamento">Filamento</option>
+            <option value="resina">Resina</option>
+          </select>
+        </div>
+      </div>
+      <div id="camposInsumos" style="display: none">
+        <div class="form-group">
+          <label for="tipoInsumo">Tipo de Insumo:</label>
+          <select id="tipoInsumo" name="tipoInsumo">
+            <option value="filamento">Filamento</option>
+            <option value="resina">Resina</option>
+          </select>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Crear Producto</button>
+      <a href="/dashboard" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </body>
+</html>
