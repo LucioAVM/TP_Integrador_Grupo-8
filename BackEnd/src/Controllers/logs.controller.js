@@ -1,1 +1,0 @@
-// Controlador de logs: maneja la lógica de negocio y las respuestas para las rutas de logs.

@@ -8,12 +8,18 @@ const sequelize = new Sequelize(
     host: process.env.DB_SERVER,
     port: process.env.DB_PORT || 1433,
     dialect: 'mssql',
+    timezone: '-03:00',
     dialectOptions: {
       options: {
         encrypt: true,
-        trustServerCertificate: false
+        trustServerCertificate: false,
+        // Evitar conversiones de fecha con offsets incompatibles en algunos despliegues
+        useUTC: false,
+        connectTimeout: 30000,
+        requestTimeout: 30000
       }
-    },
+    }
+    ,
     logging: false
   }
 );

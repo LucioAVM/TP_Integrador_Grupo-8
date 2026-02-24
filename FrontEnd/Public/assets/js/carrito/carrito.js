@@ -90,24 +90,41 @@ if (btnConfirmar) {
         body: JSON.stringify({ nombre_usuario, productos, total })
       });
 
-      if (response.ok) {
+      // Sólo proceder si el servidor confirma la creación (201) o responde OK
+      if (response.ok && (response.status === 201 || response.status === 200)) {
         // Guarda los datos del ticket ANTES de limpiar el carrito
-        localStorage.setItem('ultimo_ticket', JSON.stringify({
+        const ticketData = {
           carrito: [...carrito],
           total,
           fecha: new Date().toISOString(),
           nombre_usuario
-        }));
-        alert("¡Compra confirmada!");
+        };
+        localStorage.setItem('ultimo_ticket', JSON.stringify(ticketData));
+
+        // Confirmación visual al usuario
+        alert('¡Compra confirmada!');
+
+        // Limpiar el carrito localmente SOLO después de la confirmación
         carrito = [];
-        localStorage.setItem("carrito", JSON.stringify([]));
-        window.location.href = "/ticket.html";
+        localStorage.removeItem('carrito');
+
+        // Redirigir a la pantalla de ticket
+        window.location.href = '/ticket.html';
       } else {
-        const error = await response.json();
-        alert("Error al registrar la venta: " + (error.error || "Intenta de nuevo"));
+        // No borrar el carrito: mostrar mensaje de error con detalle si existe
+        let msg = 'Intenta de nuevo';
+        try {
+          const json = await response.json();
+          msg = json.error || json.msg || msg;
+        } catch (e) {
+          // ignore JSON parse errors
+        }
+        alert('Error al registrar la venta: ' + msg);
       }
     } catch (err) {
-      alert("Error de conexión al registrar la venta.");
+      // Error de red o excepción: NO BORRAR carrito
+      console.error('Error enviando venta:', err);
+      alert('Error de conexión al registrar la venta. Verificá tu conexión y reintentá.');
     }
   });
 }

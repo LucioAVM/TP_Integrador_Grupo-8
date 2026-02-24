@@ -1,61 +1,27 @@
-import Impresora from '../Models/impresora.js';
-import Insumo from '../models/insumo.js';
+// Middleware de validación para creación de producto.
+// Esta versión sólo valida la presencia de campos requeridos
+// y delega la persistencia al controlador.
 
-// Función para validar los datos comunes
-const validarDatosComunes = (body) => {
-  const { tipoProducto, nombre, precio, descripcion, activo } = body;
-  if (!tipoProducto || !nombre || !precio || !descripcion || !activo) {
-    throw new Error('Todos los campos comunes son obligatorios.');
-  }
-};
-
-// Función para manejar la lógica de creación de productos
-const manejarCreacionProducto = async (body) => {
-  const { tipoProducto, nombre, precio, descripcion, activo, tipoImpresora, tipoInsumo } = body;
-
-  validarDatosComunes(body);
-
-  if (tipoProducto === 'impresoras') {
-    if (!tipoImpresora) {
-      throw new Error('El tipo de impresora es obligatorio.');
-    }
-    await Impresora.create({
-      nombre,
-      descripcion,
-      precio,
-      categoria: 'impresoras',
-      tipo: tipoImpresora,
-      activo: activo === 'true',
-    });
-  } else if (tipoProducto === 'insumos') {
-    if (!tipoInsumo) {
-      throw new Error('El tipo de insumo es obligatorio.');
-    }
-    await Insumo.create({
-      nombre,
-      descripcion,
-      precio,
-      categoria: 'insumos',
-      tipo: tipoInsumo,
-      activo: activo === 'true',
-    });
-  } else {
-    throw new Error('Tipo de producto no válido.');
-  }
-};
-
-// Middleware para manejar la lógica de creación de productos
-const crearProductoMiddleware = async (req, res, next) => {
+function validarProducto(req, res, next) {
   try {
-    console.log('Datos recibidos:', req.body);
+    const { tipoProducto, nombre, precio, descripcion, activo } = req.body;
+    if (!tipoProducto || !nombre || !precio || !descripcion || (activo === undefined)) {
+      return res.redirect('/dashboard?error=Todos los campos son obligatorios');
+    }
 
-    await manejarCreacionProducto(req.body);
+    if (tipoProducto === 'impresoras' && !req.body.tipoImpresora) {
+      return res.redirect('/dashboard?error=El tipo de impresora es obligatorio');
+    }
+    if (tipoProducto === 'insumos' && !req.body.tipoInsumo) {
+      return res.redirect('/dashboard?error=El tipo de insumo es obligatorio');
+    }
 
-    res.redirect('/dashboard?mensaje=Producto creado exitosamente');
-  } catch (error) {
-    console.error('Error al crear producto:', error);
-    res.redirect('/dashboard?error=Error al crear producto');
+    // Si llega hasta acá, la validación básica pasó
+    next();
+  } catch (err) {
+    console.error('Error en validación de producto:', err);
+    return res.redirect('/dashboard?error=Error en validación de producto');
   }
-};
+}
 
-export { crearProductoMiddleware };
+export { validarProducto };

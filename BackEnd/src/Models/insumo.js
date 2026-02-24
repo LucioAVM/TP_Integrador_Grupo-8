@@ -5,7 +5,7 @@ const Insumo = sequelize.define('Insumo', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
+    autoIncrement: false,
   },
   nombre: {
     type: DataTypes.STRING,

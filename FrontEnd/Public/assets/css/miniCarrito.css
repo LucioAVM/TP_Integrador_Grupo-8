@@ -1,5 +1,70 @@
 /* ...existing code... */
 
+/* Posicionar el mini carrito fijo a la derecha */
+#mini-carrito-container {
+  position: fixed;
+  right: 1rem;
+  top: 150px;
+  width: 320px;
+  z-index: 1050;
+}
+#mini-carrito-container .card {
+  width: 100%;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* Estética coherente con la paleta del sitio */
+#mini-carrito-container .card-header {
+  background: var(--azul);
+  color: #fff;
+  font-weight: 700;
+  border-bottom: none;
+}
+#mini-carrito-container .card-body {
+  padding: 0.75rem;
+}
+#mini-carrito-container .list-group-item {
+  border: none;
+  padding: 0.5rem 0.75rem;
+}
+#mini-carrito-container .mini-carrito-item img {
+  border-radius: 6px;
+  object-fit: cover;
+}
+#mini-carrito-container .badge.bg-primary {
+  background: var(--azul) !important;
+}
+#mini-carrito-container .btn-eliminar-carrito {
+  background: transparent;
+  border: none;
+  color: var(--dorado);
+}
+#mini-carrito-container .btn-eliminar-carrito:hover {
+  color: #ffb700;
+}
+#mini-carrito-container .btn-success#ver-carrito-btn {
+  background: var(--dorado);
+  border-color: var(--dorado);
+  color: #000;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 992px) {
+  #mini-carrito-container {
+    right: 0.5rem;
+    top: 70px;
+    width: 280px;
+  }
+}
+@media (max-width: 576px) {
+  /* En pantallas muy pequeñas devolver al flujo normal para no tapar contenido */
+  #mini-carrito-container {
+    position: static;
+    width: auto;
+    margin-top: 1rem;
+  }
+}
+
 /* Efecto hover en el producto del mini carrito */
 .mini-carrito-item {
   position: relative;

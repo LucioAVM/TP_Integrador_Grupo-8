@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('partials/head.ejs') %>
+  <body>
+    <%- include('partials/nav.ejs') %>
+    <main class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <h1>Encuesta de Satisfacción</h1>
+          <% if (error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+          <form action="/encuesta" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label class="form-label">Puntuación</label>
+              <div>
+                <% for (let i = 1; i <= 5; i++) { %>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="puntuacion" id="p<%= i %>" value="<%= i %>" <%= i === 5 ? 'checked' : '' %> required>
+                    <label class="form-check-label" for="p<%= i %>"><%= i %></label>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Comentario (opcional)</label>
+              <textarea name="comentario" class="form-control" rows="4"></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Adjuntar imagen (opcional)</label>
+              <input type="file" name="imagen" accept="image/*" class="form-control" />
+            </div>
+
+            <button class="btn btn-primary" type="submit">Enviar encuesta</button>
+          </form>
+        </div>
+      </div>
+    </main>
+    <%- include('partials/footer.ejs') %>
+  </body>
+</html>

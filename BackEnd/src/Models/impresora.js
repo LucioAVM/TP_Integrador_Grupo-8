@@ -5,7 +5,7 @@ const Impresora = sequelize.define('Impresora', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
+    autoIncrement: false,
   },
   nombre: {
     type: DataTypes.STRING,

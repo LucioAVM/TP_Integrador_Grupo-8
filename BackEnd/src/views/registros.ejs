@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('partials/head.ejs') %>
+  <body>
+    <%- include('partials/nav.ejs') %>
+    <main class="container mt-4">
+      <div class="d-flex align-items-center justify-content-between">
+        <h1>Registros de inicio de sesión</h1>
+        <div>
+          <a href="/admin/exportar-logs" class="btn btn-success mb-3 ms-2">Descargar Excel</a>
+        </div>
+      </div>
+      <table class="table table-striped mt-3">
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Admin ID</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (registros && registros.length) { %>
+            <% registros.forEach(r => { %>
+              <tr>
+                <td><%= new Date(r.timestamp).toLocaleString() %></td>
+                <td><%= r.adminId %></td>
+                <td><%= r.email %></td>
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr><td colspan="3">No hay registros</td></tr>
+          <% } %>
+        </tbody>
+      </table>
+    </main>
+    <%- include('partials/footer.ejs') %>
+  </body>
+</html>

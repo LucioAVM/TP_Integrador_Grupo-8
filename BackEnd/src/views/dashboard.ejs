@@ -3,64 +3,52 @@
   <%- include('partials/head.ejs') %>
   <body>
     <%- include('partials/nav.ejs') %>
-    <main class="contenedor">
-      <h2 class="titulo">Listado de productos</h2>
-      <a href="/crearProducto" class="btn btn-primary mb-3">+ Nuevo Producto</a>
+    <main class="container my-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Gestión de Productos</h2>
+        <div>
+          <a href="/crearProducto" class="btn btn-primary me-2">+ Nuevo</a>
+          <a href="/registros" class="btn btn-outline-secondary">Registros</a>
+        </div>
+      </div>
 
-      <table class="table table-striped table-hover">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Precio</th>
-            <th>Categoría</th>
-            <th>Tipo</th>
-            <!-- Agregado para mostrar el tipo de producto -->
-            <th>Activo</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% productos.forEach(producto => { %>
-          <tr
-            class="<%= producto.activo ? 'table-success' : 'table-danger' %>"
-            data-id="<%= producto.id %>"
-          >
-            <td><%= producto.id %></td>
-            <td><%= producto.nombre %></td>
-            <td><%= producto.descripcion %></td>
-            <td>$<%= producto.precio %></td>
-            <td><%= producto.categoria %></td>
-            <td><%= producto.tipo %></td>
-            <td class="activo"><%= producto.activo ? 'Sí' : 'No' %></td>
-            <td>
-              <button
-                class="btn btn-warning btn-sm editar"
-                data-id="<%= producto.id %>"
-              >
-                Editar
-              </button>
-              <% if (producto.activo) { %>
-              <button
-                class="btn btn-danger btn-sm desactivar"
-                data-id="<%= producto.id %>"
-              >
-                Desactivar
-              </button>
-              <% } else { %>
-              <button
-                class="btn btn-success btn-sm reactivar"
-                data-id="<%= producto.id %>"
-              >
-                Reactivar
-              </button>
-              <% } %>
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
+      <div class="table-responsive shadow-sm rounded-3">
+        <table class="table table-sm table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th style="width:64px">Imagen</th>
+              <th>Nombre</th>
+              <th style="width:100px">Stock</th>
+              <th style="width:120px">Precio</th>
+              <th style="width:160px">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% productos.forEach(producto => { %>
+            <tr class="<%= producto.activo ? '' : 'table-secondary' %>">
+              <td>
+                <img src="<%= producto.imagen || '/assets/img/placeholder.png' %>" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
+              </td>
+              <td><strong><%= producto.nombre %></strong><br/><small class="text-muted"><%= producto.categoria %> · <%= producto.tipo %></small></td>
+              <td><%= producto.stock || '-' %></td>
+              <td>$<%= Number(producto.precio).toFixed(2) %></td>
+              <td>
+                <a href="/productos/<%= producto.id %>/editar" class="btn btn-sm btn-warning text-white me-1">Editar</a>
+                <% if (producto.activo) { %>
+                  <form action="/productos/<%= producto.id %>/desactivar" method="POST" style="display:inline-block">
+                    <button class="btn btn-sm btn-danger">Desactivar</button>
+                  </form>
+                <% } else { %>
+                  <form action="/productos/<%= producto.id %>/reactivar" method="POST" style="display:inline-block">
+                    <button class="btn btn-sm btn-success">Reactivar</button>
+                  </form>
+                <% } %>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
     </main>
     <%- include('partials/footer.ejs') %>
     <script src="/assets/js/animations/admin.animations.js"></script>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+  <%- include('../partials/head.ejs') %>
+  <body>
+    <%- include('../partials/nav.ejs') %>
+    <main class="container my-4">
+      <h1 class="h4 mb-4">Detalle de la Venta #<%= venta.id %></h1>
+      <p><strong>Cliente:</strong> <%= venta.nombre_usuario %></p>
+      <p><strong>Total:</strong> $<%= Number(venta.total).toFixed(2) %></p>
+
+      <div class="table-responsive shadow-sm">
+        <table class="table table-striped mb-3">
+          <thead>
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Precio unitario</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (items && items.length) { %>
+              <% items.forEach(it => { %>
+                <tr>
+                  <td><%= it.nombre %></td>
+                  <td><%= it.cantidad %></td>
+                  <td>$<%= Number(it.precio_unitario).toFixed(2) %></td>
+                  <td>$<%= Number(it.subtotal).toFixed(2) %></td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="4" class="text-center">No hay productos en esta venta.</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <a href="/ventas" class="btn btn-outline-primary">Volver</a>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+  </body>
+</html>

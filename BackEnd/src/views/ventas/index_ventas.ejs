@@ -1,48 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <title>Listado de Ventas</title>
-    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <%- include('../partials/head.ejs') %>
   </head>
   <body>
-    <main class="contenedor">
-      <h1>Listado de Ventas</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Usuario</th>
-            <th>Total</th>
-            <th>Productos</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% ventas.forEach(venta => { %>
-          <tr>
-            <td><%= venta.id %></td>
-            <td><%= venta.nombre_usuario %></td>
-            <td>$<%= venta.total %></td>
-            <td>
-              <ul>
-                <% venta.VentaProductos.forEach(producto => { %>
-                <li>
-                  Producto ID: <%= producto.producto_id %>, Cantidad: <%=
-                  producto.cantidad %>, Precio Unitario: $<%=
-                  producto.precio_unitario %>
-                </li>
-                <% }) %>
-              </ul>
-            </td>
-            <td>
-              <a href="/ventas/<%= venta.id %>" class="btn btn-info"
-                >Ver Detalle</a
-              >
-            </td>
-          </tr>
-          <% }) %>
-        </tbody>
-      </table>
+    <%- include('../partials/nav.ejs') %>
+    <main class="container my-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h4 mb-0">Ventas</h1>
+      </div>
+
+      <div class="row g-3">
+        <% ventas.forEach(venta => { %>
+        <div class="col-12">
+          <div class="card shadow-sm">
+            <div class="card-body d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="card-title mb-1">Venta #<%= venta.id %></h5>
+                <p class="mb-0 text-muted">Cliente: <strong><%= venta.nombre_usuario %></strong></p>
+                <p class="mb-0"><span class="badge bg-success">Completada</span> Total: <strong>$<%= Number(venta.total).toFixed(2) %></strong></p>
+              </div>
+              <div>
+                <a href="/ventas/<%= venta.id %>" class="btn btn-outline-primary">Ver detalle</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+      </div>
     </main>
+    <%- include('../partials/footer.ejs') %>
   </body>
 </html>

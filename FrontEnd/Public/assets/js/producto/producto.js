@@ -5,34 +5,53 @@ import { animarMiniCarrito } from '../animations/miniCarrito.animations.js';
 import { animarHeader } from '../animations/header.animations.js';
 import { animarFiltros } from '../animations/filtros.animations.js';
 import { activarParalajeCards } from '../animations/paralaje.animations.js';
-import { getProductos } from '../api/productosApi.js';
+import { getProductos, getFiltros } from '../api/productosApi.js';
 import { agregarAlCarrito, renderMiniCarritoEnDOM } from '../carrito/carrito.js';
 
 let productosGlobal = [];
+let currentPage = 1;
+let currentLimit = 6;
+let totalPages = 1;
 
 export function initProducto() {
-  getProductos().then(productos => {
-    productosGlobal = productos;
-    const categorias = [...new Set(productos.map(p => p.categoria))];
-    const tipos = [...new Set(productos.map(p => p.tipo_producto))];
-    document.getElementById('filtros-container').innerHTML = renderFiltros(categorias, tipos);
+  // Cargar filtros universales y la primera página
+  getFiltros().then(({ categorias, tipos }) => {
+    const filtrosContainer = document.getElementById('filtros-container');
+    if (filtrosContainer) filtrosContainer.innerHTML = renderFiltros(categorias, tipos);
     animarFiltros();
-    renderProductos(productos);
-
+    // listeners que recargan la página 1 con los filtros seleccionados
     document.querySelectorAll('input[name="categoria"], input[name="tipo"]').forEach(input => {
-      input.addEventListener('change', () => {
-        const cat = document.querySelector('input[name="categoria"]:checked').value;
-        const tipo = document.querySelector('input[name="tipo"]:checked').value;
-        let filtrados = productosGlobal;
-        if (cat !== 'todas') filtrados = filtrados.filter(p => p.categoria === cat);
-        if (tipo !== 'todos') filtrados = filtrados.filter(p => p.tipo_producto === tipo);
-        renderProductos(filtrados);
-      });
+      input.addEventListener('change', () => loadPage(1));
     });
+  }).catch(err => {
+    console.error('Error al cargar filtros:', err);
+  }).finally(() => loadPage(1));
+}
+
+async function loadPage(page = 1) {
+  try {
+    // leer filtros seleccionados en la UI
+    const catEl = document.querySelector('input[name="categoria"]:checked');
+    const tipoEl = document.querySelector('input[name="tipo"]:checked');
+    const categoria = catEl && catEl.value !== 'todas' ? catEl.value : null;
+    const tipo = tipoEl && tipoEl.value !== 'todos' ? tipoEl.value : null;
+
+    const data = await getProductos({ page, limit: currentLimit, categoria, tipo });
+    const productos = data && Array.isArray(data.products) ? data.products : [];
+    if (!Array.isArray(data.products)) console.warn('API /api/productos devolvió products no-array:', data);
+    productosGlobal = productos;
+    currentPage = data.page || page;
+    totalPages = data.totalPages || 1;
+
+    renderProductos(productos);
+    renderPagination();
+
     renderMiniCarritoEnDOM();
     animarMiniCarrito();
     animarHeader();
-  });
+  } catch (err) {
+    console.error('Error al cargar productos:', err);
+  }
 }
 
 function renderProductos(productos) {
@@ -53,4 +72,29 @@ function renderProductos(productos) {
   });
   animarProductos();
   activarParalajeCards();
+}
+
+function renderPagination() {
+  const container = document.getElementById('productos-container');
+  if (!container) return;
+  // asegurarse de que exista el contenedor de paginación
+  let pagDiv = document.getElementById('productos-pagination');
+  if (!pagDiv) {
+    pagDiv = document.createElement('div');
+    pagDiv.id = 'productos-pagination';
+    pagDiv.className = 'd-flex justify-content-center align-items-center mt-3 gap-2';
+    container.insertAdjacentElement('afterend', pagDiv);
+  }
+  pagDiv.innerHTML = `
+    <button class="btn btn-sm btn-outline-primary" id="pag-prev" ${currentPage <= 1 ? 'disabled' : ''}>Anterior</button>
+    <span class="mx-2">Página ${currentPage} de ${totalPages}</span>
+    <button class="btn btn-sm btn-outline-primary" id="pag-next" ${currentPage >= totalPages ? 'disabled' : ''}>Siguiente</button>
+  `;
+
+  document.getElementById('pag-prev').addEventListener('click', () => {
+    if (currentPage > 1) loadPage(currentPage - 1);
+  });
+  document.getElementById('pag-next').addEventListener('click', () => {
+    if (currentPage < totalPages) loadPage(currentPage + 1);
+  });
 }

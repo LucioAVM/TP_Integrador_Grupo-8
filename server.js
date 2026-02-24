@@ -7,11 +7,14 @@ import Impresora from './BackEnd/src/Models/impresora.js';
 import Venta from './BackEnd/src/Models/venta.js';
 import VentaProducto from './BackEnd/src/Models/venta_productos.js';
 import path from 'path';
+import fs from 'fs';
+import sequelize from './BackEnd/src/config/db.js';
 import { fileURLToPath } from 'url';
 import VistaProductos from './BackEnd/src/Models/vista_productos.js';
-import { crearProductoMiddleware } from './BackEnd/src/middlewares/crearProductoMiddleware.js';
+import { Op } from 'sequelize';
 import adminRouter from './BackEnd/src/Routes/admin/admin.routes.js';
 import ventasRouter from './BackEnd/src/Routes/ventas.routes.js';
+import encuestaRouter from './BackEnd/src/Routes/encuesta.routes.js';
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -36,7 +39,13 @@ app.use(session({
 }));
 
 // Archivos estáticos del frontend
-app.use(express.static(path.join(__dirname, 'FrontEnd', 'Public')));
+const staticPath = path.join(__dirname, 'FrontEnd', 'Public');
+// Verificar existencia de la carpeta de uploads/productos
+const productosUploadsDir = path.join(staticPath, 'uploads', 'productos');
+console.log('Static dir:', staticPath);
+console.log('Exists FrontEnd/Public/uploads/productos?', fs.existsSync(productosUploadsDir));
+// Servir todos los assets desde la carpeta Public (incluye /uploads)
+app.use(express.static(staticPath));
 
 // Relacionar modelos de ventas
 Venta.hasMany(VentaProducto, { foreignKey: 'venta_id' });
@@ -48,14 +57,57 @@ app.use('/', adminRouter);
 // Montar router ventas (MVC)
 app.use('/', ventasRouter);
 
+// Montar router encuesta (clientes)
+app.use('/', encuestaRouter);
+
 // Endpoint para obtener productos desde la base de datos (API REST)
 app.get('/api/productos', async (req, res) => {
   try {
-    const productos = await VistaProductos.findAll();
-    res.json(productos);
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit) || 6, 1);
+    const offset = (page - 1) * limit;
+    const q = req.query.q || null;
+    const categoria = req.query.categoria || null;
+    const tipo = req.query.tipo || null; // Keep this line for context
+
+    const where = {};
+    if (q) {
+      if (!isNaN(Number(q))) {
+        where.id = Number(q);
+        } else {
+          where.nombre = { [Op.like]: `%${q}%` };
+        }
+    }
+    if (categoria) where.categoria = categoria;
+      if (tipo) {
+        where[Op.or] = [{ tipo_producto: tipo }, { tipo: tipo }];
+      }
+
+    const { count, rows } = await VistaProductos.findAndCountAll({ where, limit, offset, order: [['id', 'ASC']] });
+    const totalPages = Math.max(Math.ceil(count / limit), 1);
+
+    res.json({ products: rows, totalPages, page });
   } catch (err) {
     console.error('Error al consultar productos:', err);
     res.status(500).json({ error: 'Error al consultar productos' });
+  }
+});
+
+// Endpoint para obtener filtros universales (categorías y tipos)
+app.get('/api/productos/filters', async (req, res) => {
+  try {
+    const categoriasRows = await VistaProductos.findAll({ attributes: ['categoria'], group: ['categoria'] });
+    const tiposRowsA = await VistaProductos.findAll({ attributes: ['tipo_producto'], group: ['tipo_producto'] });
+    const tiposRowsB = await VistaProductos.findAll({ attributes: ['tipo'], group: ['tipo'] });
+    // Normalizar a minúsculas y eliminar nulos/vacíos
+    const categorias = Array.from(new Set(categoriasRows.map(r => (r.categoria || '').toString().toLowerCase()).filter(Boolean)));
+    const tiposA = tiposRowsA.map(r => (r.tipo_producto || '').toString().toLowerCase()).filter(Boolean);
+    const tiposB = tiposRowsB.map(r => (r.tipo || '').toString().toLowerCase()).filter(Boolean);
+    const tipos = Array.from(new Set([...tiposA, ...tiposB]));
+    res.json({ categorias, tipos });
+  } catch (err) {
+    console.error('Error al obtener filtros:', err);
+    res.status(500).json({ error: 'Error al obtener filtros' });
   }
 });
 
@@ -90,7 +142,40 @@ app.post('/api/ventas', async (req, res) => {
   }
 });
 
+// Middleware para capturar errores de multer y otros errores de subida
+app.use((err, req, res, next) => {
+  if (!err) return next();
+  // Errores de multer suelen tener code 'LIMIT_FILE_SIZE' o message descriptivo
+  if (err.code === 'LIMIT_FILE_SIZE' || (err.message && err.message.includes('Tipo de archivo'))) {
+    console.error('Error de subida de archivo:', err);
+    return res.redirect('/dashboard?error=' + encodeURIComponent(err.message || 'Error al subir archivo'));
+  }
+  next(err);
+});
+
+// Middleware global de manejo de errores
+app.use((err, req, res, next) => {
+  console.error('Error inesperado:', err);
+  try {
+    res.status(500).render('error', { mensaje: 'Error interno del servidor', activePage: null });
+  } catch (renderErr) {
+    res.status(500).json({ error: 'Error interno' });
+  }
+});
+
 // Iniciar el servidor
+// Sincronizar modelos con la base de datos (crea las tablas que falten) y luego iniciar
+try {
+  // Evitar que Sequelize intente crear/alterar la vista `vista_productos` que ya existe en la base
+  if (VistaProductos && typeof VistaProductos.sync === 'function') {
+    VistaProductos.sync = async () => Promise.resolve();
+  }
+
+  await sequelize.sync();
+} catch (syncErr) {
+  console.error('Error al sincronizar la base de datos:', syncErr);
+}
+
 app.listen(PORT, () => {
   console.log(`El servidor está corriendo en el puerto: ${PORT}`);
 });
