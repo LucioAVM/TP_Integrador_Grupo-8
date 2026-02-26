@@ -274,10 +274,29 @@ const getRegistros = async (req, res) => {
       limit: 5
     });
 
+    // 10 Ventas más caras
+    const topVentas = await Venta.findAll({
+      order: [['total', 'DESC']],
+      limit: 10
+    });
+
+    // 10 Productos más vendidos
+    const topProductos = await VentaProducto.findAll({
+      attributes: [
+        'producto_id',
+        [Venta.sequelize.fn('SUM', Venta.sequelize.col('cantidad')), 'total_vendido']
+      ],
+      group: ['producto_id'],
+      order: [[Venta.sequelize.literal('total_vendido'), 'DESC']],
+      limit: 10
+    });
+
     res.render('registros', { 
       registros, 
       ultimasEncuestas, 
-      encuestasBajas, 
+      encuestasBajas,
+      topVentas,
+      topProductos,
       filtros: { fechaInicio, fechaFin },
       activePage: 'registros' 
     });

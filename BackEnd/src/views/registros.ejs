@@ -115,6 +115,77 @@
         </div>
       </div>
 
+      <!-- Top 10 Ventas y Top 10 Productos -->
+      <div class="row">
+        <!-- 10 Ventas más caras -->
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header bg-success text-white">
+              <h5 class="mb-0">10 Ventas más caras</h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>ID Venta</th>
+                      <th>Cliente</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (typeof topVentas !== 'undefined' && topVentas.length > 0) { %>
+                      <% topVentas.forEach(v => { %>
+                        <tr>
+                          <td>#<%= v.id %></td>
+                          <td><%= v.nombre_usuario %></td>
+                          <td>$<%= Number(v.total).toFixed(2) %></td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr><td colspan="3" class="text-center">No hay ventas registradas</td></tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10 Productos más vendidos -->
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-header bg-info text-white">
+              <h5 class="mb-0">10 Productos más vendidos</h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>ID Producto</th>
+                      <th>Cantidad Total Vendida</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (typeof topProductos !== 'undefined' && topProductos.length > 0) { %>
+                      <% topProductos.forEach(p => { %>
+                        <tr>
+                          <td>#<%= p.producto_id %></td>
+                          <td><%= p.dataValues.total_vendido %></td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr><td colspan="2" class="text-center">No hay productos vendidos</td></tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Registros de inicio de sesión -->
       <div class="card shadow-sm mb-4">
         <div class="card-header bg-secondary text-white">

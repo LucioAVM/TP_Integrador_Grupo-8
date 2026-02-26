@@ -87,5 +87,5 @@ function generarPDF(carrito, total, fecha, nombre_usuario) {
     doc.text(`TOTAL: $${total.toFixed(2)}`, 145, y);
 
     // Guardar el archivo en la compu del usuario
-    doc.save("Ticket Fenrir 3D.pdf");
+    doc.save("Ticket_Fenrir3D.pdf");
 }

@@ -12,6 +12,9 @@ export function renderNavbar() {
             <li class="nav-item"><a class="nav-link" href="carrito.html">Carrito</a></li>
             <li class="nav-item"><a class="nav-link" href="ticket.html">Ticket</a></li>
           </ul>
+          <span class="navbar-text ms-3 fw-bold text-primary">
+            Alumnos: Lucio y Rodrigo Vega
+          </span>
         </div>
       </div>
     </nav>

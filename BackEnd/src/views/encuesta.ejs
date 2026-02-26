@@ -32,37 +32,37 @@
               <form action="/encuesta" method="POST" enctype="multipart/form-data" onsubmit="event.preventDefault(); Swal.fire({title: '¡Gracias!', text: 'Tu feedback fue recibido. ¡Gracias por ayudarnos a mejorar!', icon: 'success', timer: 2500, showConfirmButton: false, background: '#343a40', color: '#fff'}).then(() => { this.submit(); });">
                 
                 <div class="mb-4">
-                  <label class="form-label fs-5">¿Cómo calificarías tu experiencia general?</label>
-                  <div class="d-flex justify-content-between px-3 mt-2">
-                    <% for (let i = 1; i <= 5; i++) { %>
-                      <div class="form-check form-check-inline text-center">
-                        <input class="form-check-input" type="radio" name="puntuacion" id="p<%= i %>" value="<%= i %>" <%= i === 5 ? 'checked' : '' %> required style="transform: scale(1.5); margin-bottom: 10px;">
-                        <br>
-                        <label class="form-check-label mt-2" for="p<%= i %>">
-                          <% if(i===1) { %>⭐<% } %>
-                          <% if(i===2) { %>⭐⭐<% } %>
-                          <% if(i===3) { %>⭐⭐⭐<% } %>
-                          <% if(i===4) { %>⭐⭐⭐⭐<% } %>
-                          <% if(i===5) { %>⭐⭐⭐⭐⭐<% } %>
-                        </label>
-                      </div>
-                    <% } %>
+                  <label class="form-label fs-5" for="puntuacion">¿Cómo calificarías tu experiencia general? (1 al 5)</label>
+                  <input type="range" class="form-range" min="1" max="5" step="1" id="puntuacion" name="puntuacion" required>
+                  <div class="d-flex justify-content-between">
+                    <span>1 (Mala)</span>
+                    <span>5 (Excelente)</span>
                   </div>
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-label fs-5">¿Tienes algún comentario o sugerencia? (opcional)</label>
-                  <textarea name="comentario" class="form-control bg-dark text-light border-secondary" rows="4" placeholder="Escribe aquí tus comentarios..."></textarea>
+                  <label class="form-label fs-5" for="email">Correo electrónico</label>
+                  <input type="email" name="email" id="email" class="form-control bg-dark text-light border-secondary" placeholder="tu@email.com" required>
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-label fs-5">¿Quieres adjuntar una imagen de tu producto? (opcional)</label>
-                  <input type="file" name="imagen" accept="image/*" class="form-control bg-dark text-light border-secondary" />
+                  <label class="form-label fs-5" for="comentario">¿Tienes algún comentario o sugerencia? (opcional)</label>
+                  <textarea name="comentario" id="comentario" class="form-control bg-dark text-light border-secondary" rows="4" placeholder="Escribe aquí tus comentarios..."></textarea>
+                </div>
+
+                <div class="mb-4">
+                  <label class="form-label fs-5" for="imagen">¿Quieres adjuntar una imagen de tu producto? (opcional)</label>
+                  <input type="file" name="imagen" id="imagen" accept="image/*" class="form-control bg-dark text-light border-secondary" />
+                </div>
+
+                <div class="mb-4 form-check">
+                  <input type="checkbox" class="form-check-input" name="terminos" id="terminos" required>
+                  <label class="form-check-label" for="terminos">Acepto los términos y condiciones</label>
                 </div>
 
                 <div class="d-grid gap-2 mt-5">
                   <button class="btn btn-primary btn-lg" type="submit">Enviar encuesta</button>
-                  <a href="/" class="btn btn-outline-light mt-2">Omitir y volver al inicio</a>
+                  <a href="/" class="text-muted text-center mt-3 text-decoration-none">Omitir</a>
                 </div>
               </form>
             </div>

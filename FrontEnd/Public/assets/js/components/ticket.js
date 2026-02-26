@@ -43,9 +43,10 @@ export function renderTicket(cart, total, fecha, nombre_usuario) {
           </div>
         </div>
         <div class="text-center mt-3">
-            <button id="btn-descargar-pdf" class="btn btn-success me-3">📄 Descargar PDF</button>
-            <a href="/encuesta" class="btn btn-primary me-3">Dejar feedback (encuesta)</a>
-            <a href="index.html" class="btn btn-outline-light">Salir (Nueva Compra)</a>
+            <div class="d-flex justify-content-center mt-4">
+                <button id="btn-descargar-pdf" class="btn btn-success me-3">📄 Descargar PDF</button>
+                <a href="/encuesta" class="btn btn-outline-light">Salir</a>
+            </div>
         </div>
     </div>
   `;
