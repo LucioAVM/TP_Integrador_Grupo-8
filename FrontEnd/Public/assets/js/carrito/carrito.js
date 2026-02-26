@@ -75,6 +75,19 @@ export function initCarrito() {
 const btnConfirmar = document.getElementById("confirmar-btn");
 if (btnConfirmar) {
   btnConfirmar.addEventListener("click", async function () {
+    const confirmacion = await Swal.fire({
+      title: '¿Finalizar compra?',
+      text: '¿Estás seguro de que deseas confirmar tu pedido?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, comprar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmacion.isConfirmed) return;
+
     const nombre_usuario = localStorage.getItem('nombre_usuario') || 'Invitado';
     const productos = carrito.map(item => ({
       producto_id: item.id,
@@ -102,7 +115,12 @@ if (btnConfirmar) {
         localStorage.setItem('ultimo_ticket', JSON.stringify(ticketData));
 
         // Confirmación visual al usuario
-        alert('¡Compra confirmada!');
+        await Swal.fire({
+          title: '¡Éxito!',
+          text: '¡Compra confirmada!',
+          icon: 'success',
+          confirmButtonText: 'Aceptar'
+        });
 
         // Limpiar el carrito localmente SOLO después de la confirmación
         carrito = [];
@@ -119,12 +137,22 @@ if (btnConfirmar) {
         } catch (e) {
           // ignore JSON parse errors
         }
-        alert('Error al registrar la venta: ' + msg);
+        Swal.fire({
+          title: 'Error',
+          text: 'Error al registrar la venta: ' + msg,
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        });
       }
     } catch (err) {
       // Error de red o excepción: NO BORRAR carrito
       console.error('Error enviando venta:', err);
-      alert('Error de conexión al registrar la venta. Verificá tu conexión y reintentá.');
+      Swal.fire({
+        title: 'Error de conexión',
+        text: 'Error de conexión al registrar la venta. Verificá tu conexión y reintentá.',
+        icon: 'error',
+        confirmButtonText: 'Aceptar'
+      });
     }
   });
 }
@@ -145,10 +173,21 @@ if (btnConfirmar) {
           guardarYActualizar();
         } else {
           const nombre = carrito[idx].nombre || carrito[idx].name || "este producto";
-          if (confirm(`¿Seguro que deseas eliminar ${nombre} del carrito?`)) {
-            carrito.splice(idx, 1);
-            guardarYActualizar();
-          }
+          Swal.fire({
+            title: '¿Eliminar producto?',
+            text: `¿Seguro que deseas eliminar ${nombre} del carrito?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              carrito.splice(idx, 1);
+              guardarYActualizar();
+            }
+          });
         }
       });
     });
@@ -158,10 +197,21 @@ if (btnConfirmar) {
       btn.addEventListener("click", function () {
         const idx = parseInt(this.getAttribute("data-idx"));
         const nombre = carrito[idx].nombre || carrito[idx].name || "este producto";
-        if (confirm(`¿Seguro que deseas eliminar ${nombre} del carrito?`)) {
-          carrito.splice(idx, 1);
-          guardarYActualizar();
-        }
+        Swal.fire({
+          title: '¿Eliminar producto?',
+          text: `¿Seguro que deseas eliminar ${nombre} del carrito?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Sí, eliminar',
+          cancelButtonText: 'Cancelar'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            carrito.splice(idx, 1);
+            guardarYActualizar();
+          }
+        });
       });
     });
   }

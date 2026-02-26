@@ -7,6 +7,7 @@ import Insumo from '../Models/insumo.js';
 import Venta from '../Models/venta.js';
 import VentaProducto from '../Models/venta_productos.js';
 import Log from '../Models/log.js';
+import Encuesta from '../Models/Encuesta.js';
 import ExcelJS from 'exceljs';
 // La validación se aplica en la ruta mediante `validarProducto` y multer
 
@@ -232,6 +233,22 @@ const getDetalleVenta = async (req, res) => {
 
 const getRegistros = async (req, res) => {
   try {
+    const { fechaInicio, fechaFin } = req.query;
+    
+    // Filtro de fechas para encuestas
+    let whereEncuestas = {};
+    if (fechaInicio || fechaFin) {
+      whereEncuestas.fecha = {};
+      if (fechaInicio) {
+        // Usamos Op.gte de Sequelize (no $gte de Mongoose)
+        whereEncuestas.fecha[Op.gte] = new Date(`${fechaInicio}T00:00:00.000Z`);
+      }
+      if (fechaFin) {
+        // Usamos Op.lte de Sequelize (no $lte de Mongoose)
+        whereEncuestas.fecha[Op.lte] = new Date(`${fechaFin}T23:59:59.999Z`);
+      }
+    }
+
     // Obtener los últimos 10 logs desde la tabla SQL
     const logs = await Log.findAll({ order: [['createdAt', 'DESC']], limit: 10 });
     const registros = logs.map(l => ({
@@ -239,10 +256,46 @@ const getRegistros = async (req, res) => {
       adminId: l.adminId || null,
       email: l.email || null,
     }));
-    res.render('registros', { registros, activePage: 'registros' });
+
+    // Obtener las últimas 5 encuestas
+    const ultimasEncuestas = await Encuesta.findAll({
+      where: whereEncuestas,
+      order: [['fecha', 'DESC']],
+      limit: 5
+    });
+
+    // Obtener las encuestas con puntuación más baja (ej. puntuación <= 3)
+    const encuestasBajas = await Encuesta.findAll({
+      where: {
+        ...whereEncuestas,
+        puntuacion: { [Op.lte]: 3 }
+      },
+      order: [['puntuacion', 'ASC'], ['fecha', 'DESC']],
+      limit: 5
+    });
+
+    res.render('registros', { 
+      registros, 
+      ultimasEncuestas, 
+      encuestasBajas, 
+      filtros: { fechaInicio, fechaFin },
+      activePage: 'registros' 
+    });
   } catch (error) {
     console.error('Error al obtener registros:', error);
     res.render('error', { mensaje: 'Error al obtener registros', activePage: 'registros' });
+  }
+};
+
+const getAsistencia = async (req, res) => {
+  try {
+    const encuestas = await Encuesta.findAll({
+      order: [['fecha', 'DESC']]
+    });
+    res.render('asistencia', { encuestas, activePage: 'asistencia' });
+  } catch (error) {
+    console.error('Error al obtener asistencia:', error);
+    res.render('error', { mensaje: 'Error al cargar la pantalla de asistencia', activePage: 'asistencia' });
   }
 };
 
@@ -331,6 +384,7 @@ export default {
   postEditarProducto,
   getDetalleVenta,
   getRegistros,
+  getAsistencia,
   exportarLogsExcel,
   postDesactivar,
   postReactivar,

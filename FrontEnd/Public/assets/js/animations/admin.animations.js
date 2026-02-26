@@ -50,6 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target.classList.contains('desactivar') || target.classList.contains('reactivar')) {
         const productoId = target.getAttribute('data-id');
         const accion = target.classList.contains('desactivar') ? 'desactivar' : 'reactivar';
+        const accionTexto = accion === 'desactivar' ? 'desactivar' : 'reactivar';
+
+        const result = await Swal.fire({
+          title: `¿${accionTexto.charAt(0).toUpperCase() + accionTexto.slice(1)} producto?`,
+          text: `¿Estás seguro de que deseas ${accionTexto} este producto?`,
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: accion === 'desactivar' ? '#dc3545' : '#28a745',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: `Sí, ${accionTexto}`,
+          cancelButtonText: 'Cancelar'
+        });
+
+        if (!result.isConfirmed) return;
 
         try {
           const response = await fetch(`/productos/${productoId}/${accion}`, {
@@ -61,33 +75,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Actualizar la fila del producto
             const fila = document.querySelector(`tr[data-id="${producto.id}"]`);
-            fila.className = producto.activo ? 'table-success' : 'table-danger';
-            fila.querySelector('.activo').textContent = producto.activo ? 'Sí' : 'No';
+            fila.className = producto.activo ? '' : 'table-secondary';
 
             // Actualizar botones
-            const botonDesactivar = fila.querySelector('.desactivar');
-            const botonReactivar = fila.querySelector('.reactivar');
-
             if (producto.activo) {
               // Cambiar a botón "Desactivar"
-              if (botonReactivar) {
-                botonReactivar.classList.replace('reactivar', 'desactivar');
-                botonReactivar.textContent = 'Desactivar';
-                botonReactivar.classList.replace('btn-success', 'btn-danger');
-              }
+              target.classList.replace('reactivar', 'desactivar');
+              target.textContent = 'Desactivar';
+              target.classList.replace('btn-success', 'btn-danger');
             } else {
               // Cambiar a botón "Reactivar"
-              if (botonDesactivar) {
-                botonDesactivar.classList.replace('desactivar', 'reactivar');
-                botonDesactivar.textContent = 'Reactivar';
-                botonDesactivar.classList.replace('btn-danger', 'btn-success');
-              }
+              target.classList.replace('desactivar', 'reactivar');
+              target.textContent = 'Reactivar';
+              target.classList.replace('btn-danger', 'btn-success');
             }
+
+            Swal.fire({
+              title: '¡Éxito!',
+              text: `El producto ha sido ${producto.activo ? 'reactivado' : 'desactivado'} correctamente.`,
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+            });
           } else {
-            console.error('Error al realizar la acción:', response.statusText);
+            Swal.fire('Error', 'Hubo un problema al realizar la acción.', 'error');
           }
         } catch (error) {
           console.error('Error al realizar la acción:', error);
+          Swal.fire('Error', 'Hubo un problema de conexión.', 'error');
         }
       }
 

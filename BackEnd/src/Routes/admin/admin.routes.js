@@ -29,6 +29,8 @@ router.get('/ventas/:id', requireAdmin, adminController.getDetalleVenta);
 
 // Registros de inicio de sesión (últimos 10)
 router.get('/registros', requireAdmin, adminController.getRegistros);
+// Asistencia (Encuestas)
+router.get('/asistencia', requireAdmin, adminController.getAsistencia);
 // Exportar logs a Excel
 router.get('/admin/exportar-logs', requireAdmin, adminController.exportarLogsExcel);
 

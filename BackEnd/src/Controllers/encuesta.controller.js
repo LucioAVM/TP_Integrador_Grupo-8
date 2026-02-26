@@ -12,7 +12,7 @@ const postEncuesta = async (req, res) => {
     await Encuesta.create({
       puntuacion: Number(puntuacion),
       comentario: comentario || '',
-      imagen: imagenPath,
+      imagen: imagenPath
     });
 
     // Redirigir a página de gracias

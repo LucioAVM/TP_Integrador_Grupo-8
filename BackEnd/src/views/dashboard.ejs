@@ -25,7 +25,7 @@
           </thead>
           <tbody>
             <% productos.forEach(producto => { %>
-            <tr class="<%= producto.activo ? '' : 'table-secondary' %>">
+            <tr data-id="<%= producto.id %>" class="<%= producto.activo ? '' : 'table-secondary' %>">
               <td>
                 <img src="<%= producto.imagen || '/assets/img/placeholder.png' %>" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
               </td>
@@ -35,13 +35,9 @@
               <td>
                 <a href="/productos/<%= producto.id %>/editar" class="btn btn-sm btn-warning text-white me-1">Editar</a>
                 <% if (producto.activo) { %>
-                  <form action="/productos/<%= producto.id %>/desactivar" method="POST" style="display:inline-block">
-                    <button class="btn btn-sm btn-danger">Desactivar</button>
-                  </form>
+                  <button class="btn btn-sm btn-danger desactivar" data-id="<%= producto.id %>">Desactivar</button>
                 <% } else { %>
-                  <form action="/productos/<%= producto.id %>/reactivar" method="POST" style="display:inline-block">
-                    <button class="btn btn-sm btn-success">Reactivar</button>
-                  </form>
+                  <button class="btn btn-sm btn-success reactivar" data-id="<%= producto.id %>">Reactivar</button>
                 <% } %>
               </td>
             </tr>

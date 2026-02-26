@@ -74,9 +74,9 @@
                   style="display:inline"
                 >
                   <button
-                    type="submit"
+                    type="button"
                     class="boton-acciones"
-                    onclick="return confirm('¿Seguro que querés eliminar este producto?');"
+                    onclick="Swal.fire({title: '¿Eliminar producto?', text: '¿Seguro que querés eliminar este producto?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Sí, eliminar', cancelButtonText: 'Cancelar'}).then((result) => { if (result.isConfirmed) { this.closest('form').submit(); } });"
                     title="Eliminar"
                   >
                     <img src="/img/boton-borrar.png" alt="Eliminar" class="imagen-acciones">

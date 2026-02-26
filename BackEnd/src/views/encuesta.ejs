@@ -1,43 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
-  <%- include('partials/head.ejs') %>
-  <body>
-    <%- include('partials/nav.ejs') %>
-    <main class="container mt-5">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Encuesta de Satisfacción - Fenrir 3D</title>
+    <link rel="stylesheet" href="/assets/css/styles.css" />
+    <link rel="stylesheet" href="/assets/css/tema.css" />
+    <link rel="stylesheet" href="/assets/css/header.css" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="/assets/img/favicon.png" />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body class="bg-dark text-light">
+    <header class="bg-light border-bottom mb-4" id="header-container"></header>
+    <main class="container mt-5 mb-5">
       <div class="row justify-content-center">
         <div class="col-md-8">
-          <h1>Encuesta de Satisfacción</h1>
-          <% if (error) { %>
-            <div class="alert alert-danger"><%= error %></div>
-          <% } %>
-          <form action="/encuesta" method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-              <label class="form-label">Puntuación</label>
-              <div>
-                <% for (let i = 1; i <= 5; i++) { %>
-                  <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="puntuacion" id="p<%= i %>" value="<%= i %>" <%= i === 5 ? 'checked' : '' %> required>
-                    <label class="form-check-label" for="p<%= i %>"><%= i %></label>
+          <div class="card bg-secondary text-light border-0 shadow-lg">
+            <div class="card-body p-5">
+              <h1 class="text-center mb-4">Encuesta de Satisfacción</h1>
+              <p class="text-center mb-4">Tu opinión es muy importante para nosotros. Por favor, tómate un momento para evaluar tu experiencia.</p>
+              
+              <% if (error) { %>
+                <div class="alert alert-danger"><%= error %></div>
+              <% } %>
+              
+              <form action="/encuesta" method="POST" enctype="multipart/form-data" onsubmit="event.preventDefault(); Swal.fire({title: '¡Gracias!', text: 'Tu feedback fue recibido. ¡Gracias por ayudarnos a mejorar!', icon: 'success', timer: 2500, showConfirmButton: false, background: '#343a40', color: '#fff'}).then(() => { this.submit(); });">
+                
+                <div class="mb-4">
+                  <label class="form-label fs-5">¿Cómo calificarías tu experiencia general?</label>
+                  <div class="d-flex justify-content-between px-3 mt-2">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                      <div class="form-check form-check-inline text-center">
+                        <input class="form-check-input" type="radio" name="puntuacion" id="p<%= i %>" value="<%= i %>" <%= i === 5 ? 'checked' : '' %> required style="transform: scale(1.5); margin-bottom: 10px;">
+                        <br>
+                        <label class="form-check-label mt-2" for="p<%= i %>">
+                          <% if(i===1) { %>⭐<% } %>
+                          <% if(i===2) { %>⭐⭐<% } %>
+                          <% if(i===3) { %>⭐⭐⭐<% } %>
+                          <% if(i===4) { %>⭐⭐⭐⭐<% } %>
+                          <% if(i===5) { %>⭐⭐⭐⭐⭐<% } %>
+                        </label>
+                      </div>
+                    <% } %>
                   </div>
-                <% } %>
-              </div>
-            </div>
+                </div>
 
-            <div class="mb-3">
-              <label class="form-label">Comentario (opcional)</label>
-              <textarea name="comentario" class="form-control" rows="4"></textarea>
-            </div>
+                <div class="mb-4">
+                  <label class="form-label fs-5">¿Tienes algún comentario o sugerencia? (opcional)</label>
+                  <textarea name="comentario" class="form-control bg-dark text-light border-secondary" rows="4" placeholder="Escribe aquí tus comentarios..."></textarea>
+                </div>
 
-            <div class="mb-3">
-              <label class="form-label">Adjuntar imagen (opcional)</label>
-              <input type="file" name="imagen" accept="image/*" class="form-control" />
-            </div>
+                <div class="mb-4">
+                  <label class="form-label fs-5">¿Quieres adjuntar una imagen de tu producto? (opcional)</label>
+                  <input type="file" name="imagen" accept="image/*" class="form-control bg-dark text-light border-secondary" />
+                </div>
 
-            <button class="btn btn-primary" type="submit">Enviar encuesta</button>
-          </form>
+                <div class="d-grid gap-2 mt-5">
+                  <button class="btn btn-primary btn-lg" type="submit">Enviar encuesta</button>
+                  <a href="/" class="btn btn-outline-light mt-2">Omitir y volver al inicio</a>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </main>
-    <%- include('partials/footer.ejs') %>
+    <script type="module" src="/assets/js/main.js"></script>
   </body>
 </html>

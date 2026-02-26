@@ -6,11 +6,13 @@ const Encuesta = sequelize.define('Encuesta', {
   puntuacion: { type: DataTypes.INTEGER, allowNull: false },
   comentario: { type: DataTypes.TEXT, allowNull: true },
   imagen: { type: DataTypes.STRING, allowNull: true },
+  fecha: { 
+    type: DataTypes.DATE, 
+    defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+  }
 }, {
   tableName: 'encuestas',
-  timestamps: true,
-  createdAt: 'createdAt',
-  updatedAt: false,
+  timestamps: false,
 });
 
 export default Encuesta;
