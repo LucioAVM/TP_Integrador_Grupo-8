@@ -38,7 +38,17 @@ export function renderCarrito(carrito) {
                     <p class="cart-item-meta">Precio unitario: $${Number(precio).toFixed(2)}</p>
                     <div class="cart-item-controls">
                       <button class="cart-qty-btn btn-restar" type="button" data-idx="${idx}">-</button>
-                      <input type="text" class="cart-qty-input" value="${cantidad}" readonly>
+                      <input
+                        type="number"
+                        min="1"
+                        max="99"
+                        step="1"
+                        inputmode="numeric"
+                        class="cart-qty-input"
+                        value="${cantidad}"
+                        data-idx="${idx}"
+                        aria-label="Cantidad de ${item.nombre || item.name || 'producto'}"
+                      >
                       <button class="cart-qty-btn btn-sumar" type="button" data-idx="${idx}">+</button>
                     </div>
                   </div>

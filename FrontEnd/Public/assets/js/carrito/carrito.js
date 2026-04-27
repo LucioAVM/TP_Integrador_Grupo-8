@@ -2,12 +2,29 @@ import { renderCarrito } from '../components/carrito.js';
 import { renderMiniCarrito } from '../components/miniCarrito.js';
 import { animarMiniCarrito, animarAccionMiniCarrito, mostrarFeedbackMiniCarrito } from '../animations/miniCarrito.animations.js';
 
+const MAX_CANTIDAD_POR_PRODUCTO = 99;
+
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+function normalizarCantidad(valor) {
+  const cantidad = Number.parseInt(valor, 10);
+  if (!Number.isFinite(cantidad) || cantidad < 1) {
+    return 1;
+  }
+
+  return Math.min(cantidad, MAX_CANTIDAD_POR_PRODUCTO);
+}
 
 // --- Funciones globales para el mini carrito ---
 export function agregarAlCarrito(producto) {
   const existe = carrito.find(item => item.id === producto.id);
   if (existe) {
+    if (existe.cantidad >= MAX_CANTIDAD_POR_PRODUCTO) {
+      mostrarFeedbackMiniCarrito(`Máximo ${MAX_CANTIDAD_POR_PRODUCTO} unidades por producto`);
+      renderMiniCarritoEnDOM({ action: 'limit', productId: producto.id });
+      return;
+    }
+
     existe.cantidad += 1;
     renderMiniCarritoEnDOM({ action: 'increase', productId: producto.id });
     guardarCarritoEnLocalStorage();
@@ -41,6 +58,13 @@ export function eliminarDelCarrito(id) {
 function aumentarCantidadEnCarrito(id) {
   const item = carrito.find(producto => producto.id === id);
   if (!item) return;
+
+  if ((item.cantidad || 1) >= MAX_CANTIDAD_POR_PRODUCTO) {
+    mostrarFeedbackMiniCarrito(`Máximo ${MAX_CANTIDAD_POR_PRODUCTO} unidades por producto`);
+    renderMiniCarritoEnDOM({ action: 'limit', productId: id });
+    return;
+  }
+
   item.cantidad = (item.cantidad || 1) + 1;
   guardarCarritoEnLocalStorage();
   renderMiniCarritoEnDOM({ action: 'increase', productId: id });
@@ -55,6 +79,23 @@ function quitarProductoDelCarrito(id) {
   guardarCarritoEnLocalStorage();
   renderMiniCarritoEnDOM();
   mostrarFeedbackMiniCarrito(`${nombre} eliminado`);
+}
+
+function actualizarCantidadManual(idx, valor) {
+  const item = carrito[idx];
+  if (!item) return;
+
+  const nuevaCantidad = normalizarCantidad(valor);
+
+  if (item.cantidad === nuevaCantidad) return;
+
+  if (Number.parseInt(valor, 10) > MAX_CANTIDAD_POR_PRODUCTO) {
+    mostrarFeedbackMiniCarrito(`Máximo ${MAX_CANTIDAD_POR_PRODUCTO} unidades por producto`);
+  }
+
+  item.cantidad = nuevaCantidad;
+  guardarCarritoEnLocalStorage();
+  renderMiniCarritoEnDOM({ action: 'manual', productId: item.id });
 }
 
 function vaciarCarrito() {
@@ -277,6 +318,24 @@ if (btnConfirmar) {
               guardarYActualizar();
             }
           });
+        }
+      });
+    });
+
+    container.querySelectorAll(".cart-qty-input").forEach(input => {
+      const aplicarCantidad = () => {
+        const idx = parseInt(input.getAttribute("data-idx"), 10);
+        actualizarCantidadManual(idx, input.value);
+        input.value = carrito[idx]?.cantidad || 1;
+        renderizar();
+      };
+
+      input.addEventListener("change", aplicarCantidad);
+      input.addEventListener("blur", aplicarCantidad);
+      input.addEventListener("keydown", (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          aplicarCantidad();
         }
       });
     });
