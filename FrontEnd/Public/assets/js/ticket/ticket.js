@@ -33,59 +33,123 @@ export function initTicket() {
 }
 
 function generarPDF(carrito, total, fecha, nombre_usuario) {
-    // Inicializamos jsPDF (usando window para evitar errores de importación local)
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
-    // Encabezado
-    doc.setFontSize(22);
-    doc.setFont("helvetica", "bold");
-    doc.text("Fenrir 3D", 105, 20, null, null, "center");
-    
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "normal");
-    doc.text("Ticket de Compra", 105, 28, null, null, "center");
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const marginX = 14;
+    const tableX = marginX;
+    const tableWidth = pageWidth - marginX * 2;
 
-    // Datos de la compra
-    doc.setFontSize(12);
-    doc.text(`Fecha: ${fecha}`, 20, 45);
-    doc.text(`Cliente: ${nombre_usuario || 'Consumidor Final'}`, 20, 52);
+    const cols = {
+      producto: 92,
+      cantidad: 20,
+      precio: 34,
+      subtotal: 34
+    };
 
-    // Cabecera de la tabla
-    let y = 65;
-    doc.setFont("helvetica", "bold");
-    doc.text("Producto", 20, y);
-    doc.text("Cant.", 120, y);
-    doc.text("Precio", 145, y);
-    doc.text("Subtotal", 170, y);
+    const money = (v) => `$${Number(v || 0).toFixed(2)}`;
+    const cliente = nombre_usuario || 'Consumidor Final';
+    const fechaEmision = fecha || new Date().toLocaleString('es-AR');
 
-    // Línea separadora
-    doc.line(20, y + 2, 190, y + 2);
-    y += 10;
+    let y = 14;
 
-    // Listado de productos
-    doc.setFont("helvetica", "normal");
-    carrito.forEach(item => {
-        const nombre = item.name ?? item.nombre ?? 'Producto';
-        const cantidad = item.quantity ?? item.cantidad ?? 1;
-        const precio = item.price ?? item.precio ?? 0;
-        const subtotal = cantidad * precio;
+    // Encabezado principal
+    doc.setFillColor(20, 43, 78);
+    doc.roundedRect(tableX, y, tableWidth, 20, 2, 2, 'F');
 
-        // Si el nombre del filamento o máquina es muy largo, lo cortamos
-        doc.text(nombre.substring(0, 35), 20, y); 
-        doc.text(cantidad.toString(), 122, y);
-        doc.text(`$${precio.toFixed(2)}`, 145, y);
-        doc.text(`$${subtotal.toFixed(2)}`, 170, y);
-        y += 8;
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(18);
+    doc.text('FENRIR 3D', tableX + 6, y + 8);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('Ticket de compra', tableX + 6, y + 14);
+    doc.text(`Emitido: ${fechaEmision}`, tableX + tableWidth - 6, y + 8, { align: 'right' });
+    doc.text(`Cliente: ${cliente}`, tableX + tableWidth - 6, y + 14, { align: 'right' });
+
+    y += 28;
+
+    // Cabecera de tabla
+    const drawTableHeader = () => {
+      doc.setFillColor(234, 241, 252);
+      doc.rect(tableX, y, tableWidth, 9, 'F');
+
+      doc.setTextColor(22, 33, 52);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10);
+
+      doc.text('Producto', tableX + 3, y + 6);
+      doc.text('Cant.', tableX + cols.producto + cols.cantidad - 3, y + 6, { align: 'right' });
+      doc.text('Precio Unit.', tableX + cols.producto + cols.cantidad + cols.precio - 3, y + 6, { align: 'right' });
+      doc.text('Subtotal', tableX + tableWidth - 3, y + 6, { align: 'right' });
+
+      y += 9;
+    };
+
+    const ensureSpace = (heightNeeded) => {
+      if (y + heightNeeded > pageHeight - 28) {
+        doc.addPage();
+        y = 14;
+        drawTableHeader();
+      }
+    };
+
+    drawTableHeader();
+
+    // Filas
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(23, 33, 48);
+
+    let rowIndex = 0;
+    carrito.forEach((item) => {
+      const nombre = item.name ?? item.nombre ?? 'Producto';
+      const cantidad = Number(item.quantity ?? item.cantidad ?? 1);
+      const precio = Number(item.price ?? item.precio ?? 0);
+      const subtotal = cantidad * precio;
+
+      const lines = doc.splitTextToSize(String(nombre), cols.producto - 6);
+      const rowHeight = Math.max(8, lines.length * 4.4 + 3.2);
+
+      ensureSpace(rowHeight);
+
+      if (rowIndex % 2 === 0) {
+        doc.setFillColor(248, 250, 254);
+        doc.rect(tableX, y, tableWidth, rowHeight, 'F');
+      }
+
+      doc.text(lines, tableX + 3, y + 5.2);
+      doc.text(String(cantidad), tableX + cols.producto + cols.cantidad - 3, y + 5.2, { align: 'right' });
+      doc.text(money(precio), tableX + cols.producto + cols.cantidad + cols.precio - 3, y + 5.2, { align: 'right' });
+      doc.text(money(subtotal), tableX + tableWidth - 3, y + 5.2, { align: 'right' });
+
+      doc.setDrawColor(222, 228, 238);
+      doc.line(tableX, y + rowHeight, tableX + tableWidth, y + rowHeight);
+
+      y += rowHeight;
+      rowIndex += 1;
     });
 
-    // Total final
-    doc.line(20, y + 2, 190, y + 2);
-    y += 10;
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text(`TOTAL: $${total.toFixed(2)}`, 145, y);
+    // Bloque total
+    y += 6;
+    ensureSpace(18);
 
-    // Guardar el archivo en la compu del usuario
-    doc.save("Ticket_Fenrir3D.pdf");
+    doc.setFillColor(20, 43, 78);
+    doc.roundedRect(tableX + tableWidth - 72, y, 72, 14, 1.5, 1.5, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text('TOTAL', tableX + tableWidth - 68, y + 9);
+    doc.text(money(total), tableX + tableWidth - 4, y + 9, { align: 'right' });
+
+    // Pie de página
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(78, 90, 112);
+    doc.text('Gracias por tu compra en Fenrir 3D', pageWidth / 2, pageHeight - 10, { align: 'center' });
+
+    doc.save('Ticket_Fenrir3D.pdf');
 }

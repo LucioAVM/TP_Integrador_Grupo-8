@@ -27,7 +27,7 @@
             <% productos.forEach(producto => { %>
             <tr data-id="<%= producto.id %>" class="<%= producto.activo ? '' : 'table-secondary' %>">
               <td>
-                <img src="<%= producto.imagen || '/assets/img/placeholder.png' %>" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
+                <img src="<%= producto.imagen || '/assets/img/favicon.png' %>" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
               </td>
               <td><strong><%= producto.nombre %></strong><br/><small class="text-muted"><%= producto.categoria %> · <%= producto.tipo %></small></td>
               <td><%= producto.stock || '-' %></td>

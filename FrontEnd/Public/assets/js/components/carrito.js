@@ -1,48 +1,78 @@
 export function renderCarrito(carrito) {
+  const totalItems = carrito.reduce((acc, item) => acc + (item.cantidad || 1), 0);
+  const total = carrito.reduce((acc, item) => acc + (item.cantidad || 1) * (item.precio || 0), 0);
+
   if (carrito.length === 0) {
-    return `<p class='text-light'>El carrito está vacío.</p>`;
+    return `
+      <section class="cart-screen container py-3">
+        <div class="cart-empty-panel">
+          <h2 class="cart-empty-title">Tu carrito esta vacio</h2>
+          <p class="cart-empty-text">Agrega productos para continuar con la compra.</p>
+          <button class="cart-primary-btn" id="ir-productos-btn">Ir a productos</button>
+        </div>
+      </section>
+    `;
   }
+
   return `
-    <div class="row" id="productos-carrito">
-      ${carrito.map((item, idx) => {
-        const cantidad = item.cantidad || 1;
-        const precio = item.precio || 0;
-        const subtotal = cantidad * precio;
-        return `
-          <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-            <div class="card h-100 producto-card position-relative">
-              <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 btn-eliminar" data-idx="${idx}" title="Eliminar">
-                &times;
-              </button>
-              <div class="ratio ratio-1x1" style="overflow:hidden;">
-                ${item.imagen ? `<img src="${item.imagen}" class="card-img-top" alt="${item.nombre || item.name || "Producto"}" style="object-fit:cover;width:100%;height:100%;">` : ""}
-              </div>
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title">${item.nombre || item.name || "Producto"}</h5>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="badge bg-success">Precio: $${precio}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                  <span class="badge bg-info">Subtotal: $${subtotal}</span>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                  <div class="input-group input-group-sm" style="width: 110px;">
-                    <button class="btn btn-outline-secondary btn-restar" type="button" data-idx="${idx}">-</button>
-                    <input type="text" class="form-control text-center" value="${cantidad}" readonly style="max-width:40px;">
-                    <button class="btn btn-outline-secondary btn-sumar" type="button" data-idx="${idx}">+</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+    <section class="cart-screen container py-3">
+      <div class="cart-layout" id="productos-carrito">
+        <section class="cart-items-panel">
+          <div class="cart-panel-header">
+            <h2 class="cart-panel-title">Detalle del carrito</h2>
+            <span class="cart-items-count">${totalItems} items</span>
           </div>
-        `;
-      }).join("")}
-    </div>
-    <div class="d-flex justify-content-end align-items-center mt-4 gap-3 flex-wrap">
-      <div class="fs-5 text-light me-auto">
-        <strong>Total a pagar: $${carrito.reduce((acc, item) => acc + (item.cantidad || 1) * (item.precio || 0), 0)}</strong>
+          <div class="cart-items-list">
+            ${carrito.map((item, idx) => {
+              const cantidad = item.cantidad || 1;
+              const precio = item.precio || 0;
+              const subtotal = cantidad * precio;
+              return `
+                <article class="cart-item" data-idx="${idx}">
+                  ${item.imagen
+                    ? `<img src="${item.imagen}" class="cart-item-image" alt="${item.nombre || item.name || "Producto"}">`
+                    : `<div class="cart-item-image"></div>`
+                  }
+                  <div>
+                    <h3 class="cart-item-title">${item.nombre || item.name || "Producto"}</h3>
+                    <p class="cart-item-meta">Precio unitario: $${Number(precio).toFixed(2)}</p>
+                    <div class="cart-item-controls">
+                      <button class="cart-qty-btn btn-restar" type="button" data-idx="${idx}">-</button>
+                      <input type="text" class="cart-qty-input" value="${cantidad}" readonly>
+                      <button class="cart-qty-btn btn-sumar" type="button" data-idx="${idx}">+</button>
+                    </div>
+                  </div>
+                  <div class="cart-item-side">
+                    <p class="cart-item-subtotal">$${Number(subtotal).toFixed(2)}</p>
+                    <button type="button" class="cart-remove-btn btn-eliminar" data-idx="${idx}">Quitar</button>
+                  </div>
+                </article>
+              `;
+            }).join("")}
+          </div>
+        </section>
+
+        <aside class="cart-summary-panel">
+          <h3 class="cart-summary-title">Resumen</h3>
+          <div class="cart-summary-row">
+            <span>Productos</span>
+            <span>${totalItems}</span>
+          </div>
+          <div class="cart-summary-row">
+            <span>Subtotal</span>
+            <span>$${Number(total).toFixed(2)}</span>
+          </div>
+          <div class="cart-summary-row cart-summary-total">
+            <span>Total</span>
+            <span>$${Number(total).toFixed(2)}</span>
+          </div>
+
+          <div class="cart-actions">
+            <button class="cart-secondary-btn" id="seguir-comprando-btn">Seguir comprando</button>
+            <button id="confirmar-btn" class="cart-primary-btn">Confirmar compra</button>
+          </div>
+        </aside>
       </div>
-      <button id="confirmar-btn" class="btn btn-success btn-lg">Confirmar</button>
-    </div>
+    </section>
   `;
 }

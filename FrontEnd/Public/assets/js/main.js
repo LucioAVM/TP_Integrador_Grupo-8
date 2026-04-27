@@ -1,14 +1,15 @@
 import { renderHeader } from './components/header.js';
-import { renderNavbar } from './components/navbar.js';
 import { initBienvenida } from './/bienvenida/bienvenida.js';
 import { initProducto } from './producto/producto.js';
 import { initCarrito } from './carrito/carrito.js';
 import { animarHeader } from './animations/header.animations.js';
 import { initTicket } from './ticket/ticket.js';
+import { inicializarTema } from './tema/tema.js';
 
-document.getElementById('header-container').innerHTML = renderHeader() + renderNavbar();
+document.getElementById('header-container').innerHTML = renderHeader();
 
 animarHeader();
+inicializarTema();
 
 const path = window.location.pathname;
 

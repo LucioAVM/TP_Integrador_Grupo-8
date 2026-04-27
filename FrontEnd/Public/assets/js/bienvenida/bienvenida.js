@@ -8,6 +8,7 @@ export function initBienvenida() {
     e.preventDefault();
     const nombre = document.getElementById('nombre').value.trim();
     if (nombre) {
+      localStorage.setItem('nombre_usuario', nombre);
       localStorage.setItem('nombreCliente', nombre);
       window.location.href = 'producto.html';
     }
