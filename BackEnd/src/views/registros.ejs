@@ -7,64 +7,38 @@
       <div class="d-flex align-items-center justify-content-between mb-4">
         <h1>Registros y Estadísticas</h1>
         <div>
-          <a href="/admin/exportar-logs" class="btn btn-success">Descargar Excel (Logs)</a>
+          <a href="/admin/exportar-logs" class="btn btn-success">Descargar Excel</a>
         </div>
       </div>
 
-      <!-- Filtro de Fechas -->
-      <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Filtrar Encuestas por Fecha</h5>
-          <form action="/registros" method="GET" class="row g-3 align-items-end">
-            <div class="col-md-4">
-              <label for="fechaInicio" class="form-label">Desde:</label>
-              <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" value="<%= filtros?.fechaInicio || '' %>">
-            </div>
-            <div class="col-md-4">
-              <label for="fechaFin" class="form-label">Hasta:</label>
-              <input type="date" class="form-control" id="fechaFin" name="fechaFin" value="<%= filtros?.fechaFin || '' %>">
-            </div>
-            <div class="col-md-4">
-              <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div class="row">
-        <!-- Últimas 5 encuestas -->
+      <div class="row align-items-start">
+        <!-- Total recaudado por mes -->
         <div class="col-md-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-header bg-dark text-white">
-              <h5 class="mb-0">Últimas 5 encuestas</h5>
+          <div class="card shadow-sm admin-card border-top-primary">
+            <div class="card-header admin-card-header border-top-primary">
+              <h5 class="mb-0">Total recaudado por mes</h5>
             </div>
             <div class="card-body p-0">
               <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                  <thead class="table-light">
+                <table class="table table-hover mb-0 table-accent-primary">
+                  <thead class="table-light table-head-neutral">
                     <tr>
-                      <th>Fecha</th>
-                      <th>Puntuación</th>
-                      <th>Comentario</th>
+                      <th>Mes</th>
+                      <th>Total recaudado</th>
+                      <th>Ventas</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <% if (ultimasEncuestas && ultimasEncuestas.length > 0) { %>
-                      <% ultimasEncuestas.forEach(e => { %>
+                    <% if (totalRecaudadoPorMes && totalRecaudadoPorMes.length > 0) { %>
+                      <% totalRecaudadoPorMes.forEach(r => { %>
                         <tr>
-                          <td><%= new Date(e.fecha).toLocaleDateString('es-AR') %></td>
-                          <td>
-                            <% for(let i = 1; i <= 5; i++) { %>
-                              <i class="bi bi-star-fill <%= i <= e.puntuacion ? 'text-warning' : 'text-secondary' %>" style="font-size: 0.8rem;"></i>
-                            <% } %>
-                          </td>
-                          <td class="text-truncate" style="max-width: 150px;" title="<%= e.comentario %>">
-                            <%= e.comentario || '-' %>
-                          </td>
+                          <td><%= new Date(`${r.mes}-01T00:00:00`).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' }) %></td>
+                          <td>$<%= Number(r.total_recaudado).toFixed(2) %></td>
+                          <td><%= r.total_ventas %></td>
                         </tr>
                       <% }) %>
                     <% } else { %>
-                      <tr><td colspan="3" class="text-center">No hay encuestas</td></tr>
+                      <tr><td colspan="3" class="text-center">No hay ventas registradas</td></tr>
                     <% } %>
                   </tbody>
                 </table>
@@ -73,39 +47,33 @@
           </div>
         </div>
 
-        <!-- Encuestas con puntuación más baja -->
+        <!-- Top 5 Clientes -->
         <div class="col-md-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-header bg-danger text-white">
-              <h5 class="mb-0">Encuestas con puntuación más baja (≤ 3)</h5>
+          <div class="card shadow-sm admin-card border-top-warning">
+            <div class="card-header admin-card-header border-top-warning">
+              <h5 class="mb-0">Top 5 Clientes</h5>
             </div>
             <div class="card-body p-0">
               <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                  <thead class="table-light">
+                <table class="table table-hover mb-0 table-accent-warning">
+                  <thead class="table-light table-head-neutral">
                     <tr>
-                      <th>Fecha</th>
-                      <th>Puntuación</th>
-                      <th>Comentario</th>
+                      <th>Cliente</th>
+                      <th>Compras</th>
+                      <th>Gastado</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <% if (encuestasBajas && encuestasBajas.length > 0) { %>
-                      <% encuestasBajas.forEach(e => { %>
+                    <% if (topClientes && topClientes.length > 0) { %>
+                      <% topClientes.forEach(c => { %>
                         <tr>
-                          <td><%= new Date(e.fecha).toLocaleDateString('es-AR') %></td>
-                          <td>
-                            <% for(let i = 1; i <= 5; i++) { %>
-                              <i class="bi bi-star-fill <%= i <= e.puntuacion ? 'text-warning' : 'text-secondary' %>" style="font-size: 0.8rem;"></i>
-                            <% } %>
-                          </td>
-                          <td class="text-truncate" style="max-width: 150px;" title="<%= e.comentario %>">
-                            <%= e.comentario || '-' %>
-                          </td>
+                          <td><%= c.nombre_usuario %></td>
+                          <td><%= c.total_compras %></td>
+                          <td>$<%= Number(c.total_gastado).toFixed(2) %></td>
                         </tr>
                       <% }) %>
                     <% } else { %>
-                      <tr><td colspan="3" class="text-center">No hay encuestas bajas</td></tr>
+                      <tr><td colspan="3" class="text-center">No hay compras registradas</td></tr>
                     <% } %>
                   </tbody>
                 </table>
@@ -119,14 +87,14 @@
       <div class="row">
         <!-- 10 Ventas más caras -->
         <div class="col-md-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-header bg-success text-white">
+          <div class="card shadow-sm admin-card border-top-success">
+            <div class="card-header admin-card-header border-top-success">
               <h5 class="mb-0">10 Ventas más caras</h5>
             </div>
             <div class="card-body p-0">
               <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                  <thead class="table-light">
+                <table class="table table-hover mb-0 table-accent-success">
+                  <thead class="table-light table-head-neutral">
                     <tr>
                       <th>ID Venta</th>
                       <th>Cliente</th>
@@ -154,14 +122,14 @@
 
         <!-- 10 Productos más vendidos -->
         <div class="col-md-6 mb-4">
-          <div class="card shadow-sm h-100">
-            <div class="card-header bg-info text-white">
+          <div class="card shadow-sm admin-card border-top-info">
+            <div class="card-header admin-card-header border-top-info">
               <h5 class="mb-0">10 Productos más vendidos</h5>
             </div>
             <div class="card-body p-0">
-              <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                  <thead class="table-light">
+              <div class="table-responsive table-scrollable">
+                <table class="table table-hover mb-0 table-accent-info">
+                  <thead class="table-light table-head-neutral">
                     <tr>
                       <th>ID Producto</th>
                       <th>Cantidad Total Vendida</th>
@@ -171,8 +139,11 @@
                     <% if (typeof topProductos !== 'undefined' && topProductos.length > 0) { %>
                       <% topProductos.forEach(p => { %>
                         <tr>
-                          <td>#<%= p.producto_id %></td>
-                          <td><%= p.dataValues.total_vendido %></td>
+                          <td>
+                            <strong><%= p.nombre %></strong><br>
+                            <small class="text-muted">#<%= p.producto_id %></small>
+                          </td>
+                          <td><%= p.total_vendido %></td>
                         </tr>
                       <% }) %>
                     <% } else { %>
@@ -187,14 +158,14 @@
       </div>
 
       <!-- Registros de inicio de sesión -->
-      <div class="card shadow-sm mb-4">
-        <div class="card-header bg-secondary text-white">
+      <div class="card shadow-sm admin-card border-top-secondary mb-4">
+        <div class="card-header admin-card-header border-top-secondary">
           <h5 class="mb-0">Últimos 10 Registros de inicio de sesión</h5>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-striped mb-0">
-              <thead class="table-light">
+            <table class="table table-striped mb-0 table-accent-secondary">
+              <thead class="table-light table-head-neutral">
                 <tr>
                   <th>Timestamp</th>
                   <th>Admin ID</th>

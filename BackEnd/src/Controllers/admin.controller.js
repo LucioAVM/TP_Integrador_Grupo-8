@@ -1,15 +1,88 @@
 import bcrypt from 'bcryptjs';
 import Admin from '../Models/admin.js';
-import VistaProductos from '../Models/vista_productos.js';
-import { Op } from 'sequelize';
-import Impresora from '../Models/impresora.js';
-import Insumo from '../Models/insumo.js';
+import Producto from '../Models/producto.js';
+import { Op, QueryTypes } from 'sequelize';
 import Venta from '../Models/venta.js';
 import VentaProducto from '../Models/venta_productos.js';
 import Log from '../Models/log.js';
 import Encuesta from '../Models/Encuesta.js';
 import ExcelJS from 'exceljs';
 // La validación se aplica en la ruta mediante `validarProducto` y multer
+
+const DATE_FILTER_FIELDS = ['fecha', 'createdAt', 'created_at', 'fecha_venta'];
+
+const construirFiltroFechas = (fechaInicio, fechaFin, campoFecha = 'fecha') => {
+  const where = {};
+
+  if (fechaInicio || fechaFin) {
+    where[campoFecha] = {};
+
+    if (fechaInicio) {
+      where[campoFecha][Op.gte] = new Date(`${fechaInicio}T00:00:00.000Z`);
+    }
+
+    if (fechaFin) {
+      where[campoFecha][Op.lte] = new Date(`${fechaFin}T23:59:59.999Z`);
+    }
+  }
+
+  return where;
+};
+
+const obtenerColumnaFechaVentas = async () => {
+  const columnas = await Venta.sequelize.getQueryInterface().describeTable('ventas');
+  return DATE_FILTER_FIELDS.find(campo => columnas[campo]) || null;
+};
+
+const obtenerTopProductosVendidos = async (limit = 10) => {
+  const topProductosRaw = await VentaProducto.findAll({
+    attributes: [
+      'producto_id',
+      [Venta.sequelize.fn('SUM', Venta.sequelize.col('cantidad')), 'total_vendido']
+    ],
+    group: ['producto_id'],
+    order: [[Venta.sequelize.literal('total_vendido'), 'DESC']],
+    limit
+  });
+
+  return Promise.all(topProductosRaw.map(async item => {
+    const producto = await Producto.findByPk(item.producto_id);
+    return {
+      producto_id: item.producto_id,
+      nombre: producto?.nombre || 'Producto eliminado',
+      total_vendido: Number(item.dataValues.total_vendido || 0),
+    };
+  }));
+};
+
+const obtenerTotalRecaudadoPorMes = async () => {
+  const columnaFecha = await obtenerColumnaFechaVentas();
+  if (!columnaFecha) return [];
+
+  return Venta.sequelize.query(
+    `SELECT
+      CONVERT(VARCHAR(7), [${columnaFecha}], 120) AS mes,
+      SUM(CAST(total AS DECIMAL(18,2))) AS total_recaudado,
+      COUNT(*) AS total_ventas
+    FROM ventas
+    GROUP BY CONVERT(VARCHAR(7), [${columnaFecha}], 120)
+    ORDER BY mes DESC`,
+    { type: QueryTypes.SELECT }
+  );
+};
+
+const obtenerTopClientes = async (limit = 5) => {
+  return Venta.sequelize.query(
+    `SELECT TOP ${Number(limit)}
+      nombre_usuario,
+      COUNT(*) AS total_compras,
+      SUM(CAST(total AS DECIMAL(18,2))) AS total_gastado
+    FROM ventas
+    GROUP BY nombre_usuario
+    ORDER BY total_gastado DESC, total_compras DESC, nombre_usuario ASC`,
+    { type: QueryTypes.SELECT }
+  );
+};
 
 const getLogin = (req, res) => {
   res.render('login', { error: null, activePage: 'login' });
@@ -43,10 +116,27 @@ const logout = (req, res) => {
 const getDashboard = async (req, res) => {
   try {
     const admin = await Admin.findByPk(req.session.adminId);
-    const productos = await VistaProductos.findAll();
+    const productos = await Producto.findAll();
+    const totalVentas = await Venta.count();
+    const totalIngresosRaw = await Venta.sum('total');
+
+    const totalProductos = productos.length;
+    const productosActivos = productos.filter(producto => producto.activo).length;
+    const totalIngresos = Number(totalIngresosRaw || 0);
+
     const mensaje = req.query.mensaje || null;
     const error = req.query.error || null;
-    res.render('dashboard', { admin, productos, mensaje, error, activePage: 'dashboard' });
+    res.render('dashboard', {
+      admin,
+      productos,
+      totalProductos,
+      productosActivos,
+      totalVentas,
+      totalIngresos,
+      mensaje,
+      error,
+      activePage: 'dashboard'
+    });
   } catch (error) {
     console.error('Error al cargar el dashboard:', error);
     res.render('error', { mensaje: 'Error al cargar el dashboard', activePage: 'dashboard' });
@@ -73,7 +163,7 @@ const getProductos = async (req, res) => {
       where.categoria = categoria;
     }
 
-    const { count, rows } = await VistaProductos.findAndCountAll({ where, limit, offset, order: [['id', 'ASC']] });
+    const { count, rows } = await Producto.findAndCountAll({ where, limit, offset, order: [['id', 'ASC']] });
 
     const totalPages = Math.max(Math.ceil(count / limit), 1);
 
@@ -93,7 +183,7 @@ const getProductos = async (req, res) => {
 
 const getProductoDetalle = async (req, res) => {
   try {
-    const producto = await VistaProductos.findByPk(req.params.id);
+    const producto = await Producto.findByPk(req.params.id);
     if (!producto) return res.render('error', { mensaje: 'Producto no encontrado', activePage: 'productos' });
     res.render('productos/detalle', { producto, activePage: 'productos' });
   } catch (error) {
@@ -103,45 +193,23 @@ const getProductoDetalle = async (req, res) => {
 };
 
 const getCrearProducto = (req, res) => {
-  res.render('crearProducto');
+  res.render('crearProducto', { activePage: 'productos' });
 };
 
 const postCrearProducto = async (req, res) => {
   try {
-    const { tipoProducto, nombre, precio, descripcion, activo, tipoImpresora, tipoInsumo } = req.body;
-    const imagenPath = req.file ? `/uploads/productos/${req.file.filename}` : null;
+    const { nombre, descripcion, precio, categoria, tipo, activo } = req.body;
+    const imagen = req.file ? `/uploads/productos/${req.file.filename}` : null;
 
-    if (tipoProducto === 'impresoras') {
-      // Regla: Impresoras -> IDs comienzan en 1 y son incrementales
-      const maxId = await Impresora.max('id');
-      const newId = (maxId === null || maxId === undefined) ? 1 : Number(maxId) + 1;
-      await Impresora.create({
-        id: newId,
-        nombre,
-        descripcion,
-        precio,
-        categoria: 'impresoras',
-        tipo: tipoImpresora || null,
-        activo: activo === 'true',
-        imagen: imagenPath,
-      });
-    } else if (tipoProducto === 'insumos') {
-      // Regla: Insumos -> IDs comienzan en 1000 y son incrementales
-      const maxId = await Insumo.max('id');
-      const newId = (maxId === null || maxId === undefined) ? 1000 : Number(maxId) + 1;
-      await Insumo.create({
-        id: newId,
-        nombre,
-        descripcion,
-        precio,
-        categoria: 'insumos',
-        tipo: tipoInsumo || null,
-        activo: activo === 'true',
-        imagen: imagenPath,
-      });
-    } else {
-      return res.redirect('/dashboard?error=Tipo de producto no válido');
-    }
+    await Producto.create({
+      nombre,
+      descripcion,
+      precio,
+      categoria,
+      tipo,
+      activo: activo === 'true',
+      imagen,
+    });
 
     res.redirect('/dashboard?mensaje=Producto creado exitosamente');
   } catch (err) {
@@ -154,7 +222,7 @@ const postCrearProducto = async (req, res) => {
 const getEditarProducto = async (req, res) => {
   try {
     const productoId = req.params.id;
-    const producto = await VistaProductos.findByPk(productoId);
+    const producto = await Producto.findByPk(productoId);
     if (!producto) return res.render('error', { mensaje: 'Producto no encontrado', activePage: 'productos' });
     res.render('productos/editar_producto', { producto, activePage: 'productos' });
   } catch (error) {
@@ -166,32 +234,19 @@ const getEditarProducto = async (req, res) => {
 const postEditarProducto = async (req, res) => {
   try {
     const productoId = req.params.id;
-    const { nombre, descripcion, precio, categoria, tipo, activo } = req.body;
-    const producto = await VistaProductos.findByPk(productoId);
+    const producto = await Producto.findByPk(productoId);
     if (!producto) return res.redirect('/dashboard?error=Producto no encontrado');
-    // Determinar si es impresora o insumo, aceptando variantes singular/plural
-    const tipoProductoActual = String(producto.tipo_producto || producto.categoria || producto.tipo || '').toLowerCase();
-    const esImpresora = tipoProductoActual.includes('impresora');
-
     const updateData = {
-      nombre,
-      descripcion,
-      precio,
-      categoria,
-      tipo,
-      activo: activo === 'true',
+      nombre: req.body.nombre,
+      descripcion: req.body.descripcion,
+      precio: req.body.precio,
+      categoria: req.body.categoria,
+      tipo: req.body.tipo,
+      activo: req.body.activo === 'true',
+      imagen: req.file ? `/uploads/productos/${req.file.filename}` : producto.imagen,
     };
 
-    // Si subieron nueva imagen, actualizar la ruta
-    if (req.file) {
-      updateData.imagen = `/uploads/productos/${req.file.filename}`;
-    }
-
-    if (esImpresora) {
-      await Impresora.update(updateData, { where: { id: productoId } });
-    } else {
-      await Insumo.update(updateData, { where: { id: productoId } });
-    }
+    await producto.update(updateData);
 
     res.redirect('/dashboard?mensaje=Producto actualizado exitosamente');
   } catch (error) {
@@ -211,7 +266,7 @@ const getDetalleVenta = async (req, res) => {
 
     // Enriquecer con nombre y precio desde la vista de productos
     const items = await Promise.all(itemsRaw.map(async it => {
-      const producto = await VistaProductos.findByPk(it.producto_id);
+      const producto = await Producto.findByPk(it.producto_id);
       const nombre = producto ? producto.nombre : 'Producto eliminado';
       const precioUnitario = it.precio_unitario;
       const cantidad = it.cantidad;
@@ -233,22 +288,6 @@ const getDetalleVenta = async (req, res) => {
 
 const getRegistros = async (req, res) => {
   try {
-    const { fechaInicio, fechaFin } = req.query;
-    
-    // Filtro de fechas para encuestas
-    let whereEncuestas = {};
-    if (fechaInicio || fechaFin) {
-      whereEncuestas.fecha = {};
-      if (fechaInicio) {
-        // Usamos Op.gte de Sequelize (no $gte de Mongoose)
-        whereEncuestas.fecha[Op.gte] = new Date(`${fechaInicio}T00:00:00.000Z`);
-      }
-      if (fechaFin) {
-        // Usamos Op.lte de Sequelize (no $lte de Mongoose)
-        whereEncuestas.fecha[Op.lte] = new Date(`${fechaFin}T23:59:59.999Z`);
-      }
-    }
-
     // Obtener los últimos 10 logs desde la tabla SQL
     const logs = await Log.findAll({ order: [['createdAt', 'DESC']], limit: 10 });
     const registros = logs.map(l => ({
@@ -257,23 +296,6 @@ const getRegistros = async (req, res) => {
       email: l.email || null,
     }));
 
-    // Obtener las últimas 5 encuestas
-    const ultimasEncuestas = await Encuesta.findAll({
-      where: whereEncuestas,
-      order: [['fecha', 'DESC']],
-      limit: 5
-    });
-
-    // Obtener las encuestas con puntuación más baja (ej. puntuación <= 3)
-    const encuestasBajas = await Encuesta.findAll({
-      where: {
-        ...whereEncuestas,
-        puntuacion: { [Op.lte]: 3 }
-      },
-      order: [['puntuacion', 'ASC'], ['fecha', 'DESC']],
-      limit: 5
-    });
-
     // 10 Ventas más caras
     const topVentas = await Venta.findAll({
       order: [['total', 'DESC']],
@@ -281,23 +303,17 @@ const getRegistros = async (req, res) => {
     });
 
     // 10 Productos más vendidos
-    const topProductos = await VentaProducto.findAll({
-      attributes: [
-        'producto_id',
-        [Venta.sequelize.fn('SUM', Venta.sequelize.col('cantidad')), 'total_vendido']
-      ],
-      group: ['producto_id'],
-      order: [[Venta.sequelize.literal('total_vendido'), 'DESC']],
-      limit: 10
-    });
+    const topProductos = await obtenerTopProductosVendidos(10);
+
+    const totalRecaudadoPorMes = await obtenerTotalRecaudadoPorMes();
+    const topClientes = await obtenerTopClientes(5);
 
     res.render('registros', { 
       registros, 
-      ultimasEncuestas, 
-      encuestasBajas,
       topVentas,
       topProductos,
-      filtros: { fechaInicio, fechaFin },
+      totalRecaudadoPorMes,
+      topClientes,
       activePage: 'registros' 
     });
   } catch (error) {
@@ -308,10 +324,31 @@ const getRegistros = async (req, res) => {
 
 const getAsistencia = async (req, res) => {
   try {
-    const encuestas = await Encuesta.findAll({
-      order: [['fecha', 'DESC']]
+    const fechaInicio = req.query.fechaInicio || req.query.fechaDesde || null;
+    const fechaFin = req.query.fechaFin || req.query.fechaHasta || null;
+    const whereEncuestas = construirFiltroFechas(fechaInicio, fechaFin, 'fecha');
+
+    const ultimasEncuestas = await Encuesta.findAll({
+      where: whereEncuestas,
+      order: [['fecha', 'DESC']],
+      limit: 5
     });
-    res.render('asistencia', { encuestas, activePage: 'asistencia' });
+
+    const encuestasBajas = await Encuesta.findAll({
+      where: {
+        ...whereEncuestas,
+        puntuacion: { [Op.lte]: 3 }
+      },
+      order: [['puntuacion', 'ASC'], ['fecha', 'DESC']],
+      limit: 5
+    });
+
+    res.render('asistencia', { 
+      ultimasEncuestas,
+      encuestasBajas,
+      filtros: { fechaInicio, fechaFin },
+      activePage: 'asistencia' 
+    });
   } catch (error) {
     console.error('Error al obtener asistencia:', error);
     res.render('error', { mensaje: 'Error al cargar la pantalla de asistencia', activePage: 'asistencia' });
@@ -321,19 +358,71 @@ const getAsistencia = async (req, res) => {
 const exportarLogsExcel = async (req, res) => {
   try {
     const logs = await Log.findAll({ order: [['createdAt', 'DESC']] });
+    const topVentas = await Venta.findAll({ order: [['total', 'DESC']], limit: 10 });
+    const topProductos = await obtenerTopProductosVendidos(10);
+    const totalRecaudadoPorMes = await obtenerTotalRecaudadoPorMes();
+    const topClientes = await obtenerTopClientes(5);
 
     const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet('Logs');
+    const sheetVentas = workbook.addWorksheet('Ventas');
+    sheetVentas.columns = [
+      { header: 'ID Venta', key: 'id', width: 12 },
+      { header: 'Cliente', key: 'cliente', width: 30 },
+      { header: 'Total', key: 'total', width: 15 },
+    ];
+    topVentas.forEach(v => {
+      sheetVentas.addRow({
+        id: v.id,
+        cliente: v.nombre_usuario,
+        total: Number(v.total).toFixed(2),
+      });
+    });
 
-    sheet.columns = [
+    const sheetProductos = workbook.addWorksheet('Productos');
+    sheetProductos.columns = [
+      { header: 'ID Producto', key: 'producto_id', width: 15 },
+      { header: 'Nombre', key: 'nombre', width: 35 },
+      { header: 'Cantidad vendida', key: 'total_vendido', width: 18 },
+    ];
+    topProductos.forEach(p => {
+      sheetProductos.addRow({
+        producto_id: p.producto_id,
+        nombre: p.nombre,
+        total_vendido: p.total_vendido,
+      });
+    });
+
+    const sheetEstadisticas = workbook.addWorksheet('Estadisticas');
+    sheetEstadisticas.columns = [
+      { header: 'Mes', key: 'mes', width: 15 },
+      { header: 'Total recaudado', key: 'total_recaudado', width: 18 },
+      { header: 'Total ventas', key: 'total_ventas', width: 15 },
+      { header: 'Cliente', key: 'cliente', width: 30 },
+      { header: 'Compras', key: 'compras', width: 12 },
+      { header: 'Gastado', key: 'gastado', width: 15 },
+    ];
+    const maxRows = Math.max(totalRecaudadoPorMes.length, topClientes.length);
+    for (let i = 0; i < maxRows; i += 1) {
+      const mes = totalRecaudadoPorMes[i];
+      const cliente = topClientes[i];
+      sheetEstadisticas.addRow({
+        mes: mes?.mes || '',
+        total_recaudado: mes ? Number(mes.total_recaudado).toFixed(2) : '',
+        total_ventas: mes?.total_ventas || '',
+        cliente: cliente?.nombre_usuario || '',
+        compras: cliente?.total_compras || '',
+        gastado: cliente ? Number(cliente.total_gastado).toFixed(2) : '',
+      });
+    }
+
+    const sheetLogs = workbook.addWorksheet('Logs');
+    sheetLogs.columns = [
       { header: 'Fecha', key: 'fecha', width: 25 },
       { header: 'Admin ID', key: 'adminId', width: 15 },
       { header: 'Email', key: 'email', width: 30 },
     ];
-
     logs.forEach(l => {
-      let parsed = {};
-      sheet.addRow({
+      sheetLogs.addRow({
         fecha: l.createdAt ? new Date(l.createdAt).toLocaleString() : '',
         adminId: l.adminId || '',
         email: l.email || '',
@@ -342,27 +431,21 @@ const exportarLogsExcel = async (req, res) => {
 
     const buffer = await workbook.xlsx.writeBuffer();
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="logs.xlsx"');
+    res.setHeader('Content-Disposition', 'attachment; filename="registros.xlsx"');
     return res.send(buffer);
   } catch (error) {
     console.error('Error al exportar logs a Excel:', error);
-    return res.redirect('/registros?error=' + encodeURIComponent('Error al exportar logs'));
+    return res.redirect('/registros?error=' + encodeURIComponent('Error al exportar registros'));
   }
 };
 
 const postDesactivar = async (req, res) => {
   try {
     const productoId = req.params.id;
-    const producto = await VistaProductos.findByPk(productoId);
+    const producto = await Producto.findByPk(productoId);
     if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
 
-    if (producto.tipo_producto === 'impresora') {
-      await Impresora.update({ activo: false }, { where: { id: productoId } });
-    } else if (producto.tipo_producto === 'insumo') {
-      await Insumo.update({ activo: false }, { where: { id: productoId } });
-    }
-
-    producto.activo = false;
+    await producto.update({ activo: false });
     res.json(producto);
   } catch (error) {
     console.error('Error al desactivar producto:', error);
@@ -373,16 +456,10 @@ const postDesactivar = async (req, res) => {
 const postReactivar = async (req, res) => {
   try {
     const productoId = req.params.id;
-    const producto = await VistaProductos.findByPk(productoId);
+    const producto = await Producto.findByPk(productoId);
     if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
 
-    if (producto.tipo_producto === 'impresora') {
-      await Impresora.update({ activo: true }, { where: { id: productoId } });
-    } else if (producto.tipo_producto === 'insumo') {
-      await Insumo.update({ activo: true }, { where: { id: productoId } });
-    }
-
-    producto.activo = true;
+    await producto.update({ activo: true });
     res.json(producto);
   } catch (error) {
     console.error('Error al reactivar producto:', error);

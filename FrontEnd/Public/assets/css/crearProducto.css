@@ -1,120 +1,33 @@
-/* Estilo general del cuerpo */
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f9;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+.crear-producto-page .crear-producto-panel {
+  background: linear-gradient(180deg, rgba(13, 110, 253, 0.10), rgba(13, 110, 253, 0.03));
+  border: 1px solid rgba(13, 110, 253, 0.12);
 }
 
-/* Contenedor principal */
-main.contenedor {
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 30px;
-  width: 100%;
-  max-width: 600px;
+.crear-producto-page .form-label {
+  font-weight: 600;
+  margin-bottom: .45rem;
 }
 
-/* Título */
-h1 {
-  text-align: center;
-  color: #333333;
-  margin-bottom: 20px;
-  font-size: 24px;
+.crear-producto-page .form-control,
+.crear-producto-page .form-select,
+.crear-producto-page .input-group-text {
+  border-color: var(--admin-border, #dbe4ee);
 }
 
-/* Estilo de los grupos de formulario */
-.form-group {
-  margin-bottom: 20px;
+.crear-producto-page .form-control:focus,
+.crear-producto-page .form-select:focus {
+  box-shadow: 0 0 0 .2rem rgba(13, 110, 253, .12);
 }
 
-/* Etiquetas */
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 8px;
-  color: #555555;
+.crear-producto-page textarea.form-control {
+  min-height: 140px;
+  resize: vertical;
 }
 
-/* Campos de entrada */
-input[type="text"],
-input[type="number"],
-textarea,
-select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #cccccc;
-  border-radius: 5px;
-  font-size: 14px;
-  box-sizing: border-box;
-  background-color: #f9f9f9;
+.crear-producto-page .form-text {
+  color: var(--admin-muted, #546a7b);
 }
 
-input[type="file"] {
-  padding: 5px;
-}
-
-/* Área de texto */
-textarea {
-  resize: none;
-}
-
-/* Botones */
-button {
-  background-color: #007bff;
-  color: #ffffff;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-  width: 100%;
-  margin-top: 10px;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-.btn-secondary {
-  display: inline-block;
-  text-align: center;
-  background-color: #6c757d;
-  color: #ffffff;
-  padding: 12px 20px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 16px;
-  margin-top: 10px;
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-}
-
-/* Ocultar campos dinámicos inicialmente */
-#camposImpresoras,
-#camposInsumos {
-  display: none;
-}
-
-/* Responsividad */
-@media (max-width: 768px) {
-  main.contenedor {
-    width: 90%;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
-
-  button,
-  .btn-secondary {
-    font-size: 14px;
-  }
+.crear-producto-page .btn {
+  min-height: 44px;
 }

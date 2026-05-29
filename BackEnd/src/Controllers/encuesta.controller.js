@@ -6,12 +6,14 @@ const getEncuesta = (req, res) => {
 
 const postEncuesta = async (req, res) => {
   try {
-    const { puntuacion, comentario } = req.body;
+    const { puntuacion, comentario, email, terminos } = req.body;
     const imagenPath = req.file ? `/uploads/encuestas/${req.file.filename}` : null;
 
     await Encuesta.create({
       puntuacion: Number(puntuacion),
+      email: email || null,
       comentario: comentario || '',
+      terminos: terminos === 'on' || terminos === 'true' || terminos === true,
       imagen: imagenPath
     });
 

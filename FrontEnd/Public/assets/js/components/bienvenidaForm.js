@@ -1,6 +1,14 @@
 export function renderBienvenidaForm() {
   return `
-    <div class="card p-4 shadow" style="min-width: 320px">
+    <div class="card p-4 shadow bienvenida-card" style="min-width: 320px">
+      <a
+        href="/login"
+        class="admin-access-link"
+        title="Acceso administrador"
+        aria-label="Acceso administrador"
+      >
+        admin
+      </a>
       <h2 class="mb-3 text-center">¡Bienvenido!</h2>
       <form id="form-bienvenida">
         <div class="mb-3">

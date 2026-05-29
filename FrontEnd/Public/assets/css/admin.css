@@ -101,7 +101,7 @@ body {
 
 .table th,
 .table td {
-  padding: 12px;
+  padding: 14px;
   text-align: left;
   border-bottom: 1px solid #dee2e6;
 }
@@ -123,3 +123,270 @@ body {
 .table-hover tbody tr {
   transition: background-color 0.3s ease;
 }
+
+/* Theme tokens and admin-specific utilities (dark/light aware) */
+:root{
+  --admin-bg: #f5f7fb;
+  --admin-panel: #ffffff;
+  --admin-text: #1b2430;
+  --admin-muted: #546a7b;
+  --admin-accent: #0d6efd;
+  --admin-title: #0f172a;
+  --admin-eyebrow: #2563eb;
+  --admin-copy: #4b5563;
+  --admin-panel-soft: #f8fafc;
+  --admin-border: #e6eef8;
+  --admin-shadow: 0 8px 20px rgba(9,30,66,0.08);
+}
+
+body.bg-dark {
+  --admin-bg: #0f1720;
+  --admin-panel: #0d1320;
+  --admin-text: #e6eef8;
+  --admin-muted: #9fb4d2;
+  --admin-accent: #66b2ff;
+  --admin-title: #f8fafc;
+  --admin-eyebrow: #8ec5ff;
+  --admin-copy: #c2d0e3;
+  --admin-panel-soft: #111a2b;
+  --admin-border: #1e2a3b;
+  --admin-shadow: 0 12px 30px rgba(2,6,23,0.6);
+}
+
+.admin-page-title,
+.admin-section-title{
+  color: var(--admin-title);
+  font-weight: 800;
+}
+
+.admin-eyebrow{
+  color: var(--admin-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+.admin-panel-copy{
+  color: var(--admin-copy);
+}
+
+.admin-root{background:var(--admin-bg);color:var(--admin-text);min-height:100vh}
+.admin-header{background:var(--admin-panel);border-bottom:1px solid var(--admin-border);padding:.6rem 0}
+.admin-card{background:var(--admin-panel);border:1px solid var(--admin-border);box-shadow:var(--admin-shadow);border-radius:10px}
+.admin-actions .btn{margin-left:.35rem}
+.kv-muted{color:var(--admin-muted)}
+
+/* small helpers */
+.text-accent{color:var(--admin-accent)}
+.border-accent{border-color:var(--admin-border)!important}
+
+@media (max-width:576px){
+  .admin-actions{display:flex;flex-direction:column;gap:.5rem}
+}
+
+/* Backwards-compat overrides: sustituir fondos blancos por tokens de tema */
+/* Afecta a clases existentes en las vistas antiguas (.contenedor, .contenedor-login, .card) */
+.contenedor,
+.contenedor-login,
+.contenedor .card,
+.card {
+  background: var(--admin-panel) !important;
+  color: var(--admin-text) !important;
+  border: 1px solid var(--admin-border) !important;
+  box-shadow: 0 6px 16px rgba(2,6,23,0.06) !important;
+}
+
+body.bg-dark .contenedor,
+body.bg-dark .contenedor-login,
+body.bg-dark .contenedor .card,
+body.bg-dark .card {
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6) !important;
+}
+
+/* Tablas: adaptar cabeceras y hover al tema */
+.table th { background-color: var(--admin-border) !important; color: var(--admin-text) !important; }
+.table-striped tbody tr:nth-of-type(odd) { background-color: transparent !important; }
+.table-hover tbody tr:hover { background-color: rgba(0,0,0,0.04) !important; }
+body.bg-dark .table-hover tbody tr:hover { background-color: rgba(255,255,255,0.03) !important; }
+
+/* Formularios */
+.form-admin .form-control{background:var(--admin-panel);border:1px solid var(--admin-border);color:var(--admin-text)}
+
+.form-admin .form-label,
+.form-admin .form-text,
+.form-admin .input-group-text,
+.form-admin .form-select,
+.form-admin .form-control{
+  color: var(--admin-text);
+}
+
+.form-admin .input-group-text,
+.form-admin .form-select,
+.form-admin .form-control,
+.form-admin .form-control:focus,
+.form-admin .form-select:focus{
+  background: var(--admin-panel);
+  border-color: var(--admin-border);
+}
+
+.crear-producto-panel{
+  background: var(--admin-panel-soft);
+  border: 1px solid var(--admin-border);
+}
+
+.text-accent{color: var(--admin-accent) !important;}
+
+body.bg-dark .crear-producto-page .text-primary,
+body.bg-dark .crear-producto-page .text-accent{
+  color: var(--admin-accent) !important;
+}
+
+body.bg-light .crear-producto-page .text-primary,
+body.bg-light .crear-producto-page .text-accent{
+  color: #0d6efd !important;
+}
+
+/* Small accent helpers */
+.btn-admin-primary{background:linear-gradient(180deg,var(--admin-accent),color-mix(in srgb,var(--admin-accent) 85%, black));color:white;border:none}
+
+/* Records view helpers */
+.admin-card-header{
+  background: var(--admin-card-header-bg) !important;
+  color: var(--admin-card-header-text) !important;
+  border-bottom: 1px solid var(--admin-card-header-border) !important;
+}
+
+:root{
+  --admin-card-header-bg: #f1f5f9;
+  --admin-card-header-text: #0f172a;
+  --admin-card-header-border: #dbe4ee;
+}
+
+body.bg-dark{
+  --admin-card-header-bg: #171717;
+  --admin-card-header-text: #f5f5f5;
+  --admin-card-header-border: #2f2f2f;
+}
+
+.admin-navbar{
+  background: linear-gradient(180deg, #111827, #0b1220);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 24px rgba(2,6,23,0.24);
+}
+
+.admin-navbar .navbar-brand,
+.admin-navbar .navbar-text,
+.admin-navbar .nav-link{
+  color: #f8fafc !important;
+}
+
+.admin-navbar .nav-link{
+  border-radius: 999px;
+  padding: .5rem .9rem;
+  opacity: .85;
+}
+
+.admin-navbar .nav-link:hover,
+.admin-navbar .nav-link.active{
+  background: rgba(255,255,255,0.08);
+  opacity: 1;
+}
+
+.admin-navbar-center{min-width: 220px;}
+
+.admin-theme-btn{
+  border-color: rgba(255,255,255,0.35) !important;
+  color: #f8fafc !important;
+}
+
+.admin-theme-btn:hover{background: rgba(255,255,255,0.08) !important;}
+
+body.bg-light .admin-navbar{
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 8px 20px rgba(15,23,42,0.08);
+}
+
+body.bg-light .admin-navbar .navbar-brand,
+body.bg-light .admin-navbar .navbar-text,
+body.bg-light .admin-navbar .nav-link{
+  color: #1f2937 !important;
+}
+
+body.bg-light .admin-navbar .nav-link:hover,
+body.bg-light .admin-navbar .nav-link.active{
+  background: rgba(13,110,253,0.08);
+}
+
+body.bg-light .admin-theme-btn{
+  border-color: #6c757d !important;
+  color: #1f2937 !important;
+}
+
+body.bg-light .admin-theme-btn:hover{background: rgba(13,110,253,0.08) !important;}
+
+.table-scrollable{
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.table-head-neutral th{
+  background: var(--admin-table-head-bg) !important;
+  color: var(--admin-table-head-text) !important;
+}
+
+.table-accent-primary thead tr:first-child th{border-top: 3px solid #0d6efd !important;}
+.table-accent-warning thead tr:first-child th{border-top: 3px solid #ffc107 !important;}
+.table-accent-success thead tr:first-child th{border-top: 3px solid #198754 !important;}
+.table-accent-info thead tr:first-child th{border-top: 3px solid #17a2b8 !important;}
+.table-accent-danger thead tr:first-child th{border-top: 3px solid #dc3545 !important;}
+.table-accent-secondary thead tr:first-child th{border-top: 3px solid #6c757d !important;}
+
+.kpi-card .card-body{padding: 1rem 1.1rem;}
+.kpi-label{
+  color: var(--admin-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-size: .78rem;
+  font-weight: 700;
+}
+.kpi-value{
+  color: var(--admin-text);
+  font-weight: 800;
+  font-size: 1.65rem;
+  line-height: 1.1;
+}
+
+.admin-card .table thead.table-light th,
+.admin-card .table thead th{
+  background: var(--admin-table-head-bg) !important;
+  color: var(--admin-table-head-text) !important;
+  border-bottom: 1px solid var(--admin-card-header-border) !important;
+}
+
+:root{
+  --admin-table-head-bg: #f8fafc;
+  --admin-table-head-text: #1f2937;
+}
+
+body.bg-dark{
+  --admin-table-head-bg: #1b1b1b;
+  --admin-table-head-text: #f3f4f6;
+}
+
+body.bg-dark .admin-card-header{
+  background: #0b1220 !important;
+  color: #e5eefb !important;
+}
+
+body.bg-dark .admin-card-header-dark{
+  background: linear-gradient(180deg, #0f172a, #0b1220) !important;
+}
+
+/* Top border color helpers */
+.border-top-primary{border-top:4px solid #0d6efd !important;}
+.border-top-warning{border-top:4px solid #ffc107 !important;}
+.border-top-success{border-top:4px solid #198754 !important;}
+.border-top-info{border-top:4px solid #17a2b8 !important;}
+.border-top-secondary{border-top:4px solid #6c757d !important;}

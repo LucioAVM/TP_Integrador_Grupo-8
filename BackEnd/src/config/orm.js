@@ -4,6 +4,11 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const useEncrypt = process.env.DB_ENCRYPT ? process.env.DB_ENCRYPT === 'true' : true;
+const trustServerCertificate = process.env.DB_TRUST_SERVER_CERTIFICATE
+  ? process.env.DB_TRUST_SERVER_CERTIFICATE === 'true'
+  : true;
+
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -14,8 +19,8 @@ const sequelize = new Sequelize(
     port: parseInt(process.env.DB_PORT, 10) || 1433,
     dialectOptions: {
       options: {
-        encrypt: true,
-        trustServerCertificate: false
+        encrypt: useEncrypt,
+        trustServerCertificate
       }
     },
     logging: false

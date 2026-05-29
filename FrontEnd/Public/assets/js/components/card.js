@@ -7,7 +7,10 @@ export function renderProductCard(producto) {
         <h5 class="card-title text-truncate" title="${producto.nombre}">${producto.nombre}</h5>
         <p class="card-text flex-grow-1" style="min-height: 60px;">${producto.descripcion}</p>
         <p class="card-text fw-bold mb-2">$${producto.precio}</p>
-        <button class="btn btn-primary w-100 mt-auto" data-id="${producto.id}">Agregar al carrito</button>
+        <div class="d-grid gap-2 mt-auto">
+          <a class="btn btn-outline-secondary" href="/producto_detalle.html?id=${producto.id}">Ver detalle</a>
+          <button class="btn btn-primary" data-id="${producto.id}">Agregar al carrito</button>
+        </div>
       </div>
     </div>
   `;

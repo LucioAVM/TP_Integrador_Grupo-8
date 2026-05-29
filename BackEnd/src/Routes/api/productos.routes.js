@@ -1,59 +1,56 @@
 import express from 'express';
 const router = express.Router();
-import Producto from '../../Models/impresora.js';
+import productService from '../../services/productService.js';
+import Producto from '../../Models/producto.js';
 
-// Obtener todos los productos activos
+// Public API: listado paginado, búsqueda y filtros (compatible con frontend)
 router.get('/', async (req, res) => {
   try {
-    const productos = await Producto.findAll({ where: { activo: true } });
-    res.json(productos);
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.max(parseInt(req.query.limit) || 6, 1);
+    const q = req.query.q || null;
+    const categoria = req.query.categoria || null;
+    const tipo = req.query.tipo || null;
+
+    const data = await productService.list({ page, limit, q, categoria, tipo });
+    res.json(data);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Error API /api/productos:', err);
+    res.status(500).json({ error: 'Error al consultar productos' });
   }
 });
 
-// Obtener un producto por ID
+// Filtros para la UI
+router.get('/filters', async (req, res) => {
+  try {
+    const categoriasRows = await Producto.findAll({
+      attributes: ['categoria'],
+      where: { activo: true },
+      group: ['categoria']
+    });
+    const tiposRows = await Producto.findAll({
+      attributes: ['tipo'],
+      where: { activo: true },
+      group: ['tipo']
+    });
+    const categorias = Array.from(new Set(categoriasRows.map(r => (r.categoria || '').toString().toLowerCase()).filter(Boolean)));
+    const tipos = Array.from(new Set(tiposRows.map(r => (r.tipo || '').toString().toLowerCase()).filter(Boolean)));
+    res.json({ categorias, tipos });
+  } catch (err) {
+    console.error('Error API /api/productos/filters:', err);
+    res.status(500).json({ error: 'Error al obtener filtros' });
+  }
+});
+
+// Obtener un producto por ID (unificado vía vista)
 router.get('/:id', async (req, res) => {
   try {
-    const producto = await Producto.findByPk(req.params.id);
+    const producto = await productService.getById(req.params.id);
     if (!producto) return res.status(404).json({ error: 'Producto no encontrado' });
     res.json(producto);
   } catch (err) {
+    console.error('Error API /api/productos/:id', err);
     res.status(500).json({ error: err.message });
   }
 });
-
-// Crear un producto
-router.post('/', async (req, res) => {
-  try {
-    const producto = await Producto.create(req.body);
-    res.status(201).json(producto);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// Actualizar un producto
-router.put('/:id', async (req, res) => {
-  try {
-    const [updated] = await Producto.update(req.body, { where: { id: req.params.id } });
-    if (!updated) return res.status(404).json({ error: 'Producto no encontrado' });
-    const producto = await Producto.findByPk(req.params.id);
-    res.json(producto);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// Baja lógica de un producto
-router.delete('/:id', async (req, res) => {//refactorizar
-  try {
-    const [updated] = await Producto.update({ activo: false }, { where: { id: req.params.id } });
-    if (!updated) return res.status(404).json({ error: 'Producto no encontrado' });
-    res.json({ mensaje: 'Producto dado de baja' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 export default router;

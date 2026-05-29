@@ -4,16 +4,11 @@
 
 function validarProducto(req, res, next) {
   try {
-    const { tipoProducto, nombre, precio, descripcion, activo } = req.body;
-    if (!tipoProducto || !nombre || !precio || !descripcion || (activo === undefined)) {
-      return res.redirect('/dashboard?error=Todos los campos son obligatorios');
-    }
+    const categoria = req.body.categoria || req.body.tipoProducto || req.body.tipo_producto;
+    const { nombre, precio, descripcion, activo } = req.body;
 
-    if (tipoProducto === 'impresoras' && !req.body.tipoImpresora) {
-      return res.redirect('/dashboard?error=El tipo de impresora es obligatorio');
-    }
-    if (tipoProducto === 'insumos' && !req.body.tipoInsumo) {
-      return res.redirect('/dashboard?error=El tipo de insumo es obligatorio');
+    if (!categoria || !nombre || !precio || !descripcion || activo === undefined) {
+      return res.redirect('/dashboard?error=Todos los campos son obligatorios');
     }
 
     // Si llega hasta acá, la validación básica pasó

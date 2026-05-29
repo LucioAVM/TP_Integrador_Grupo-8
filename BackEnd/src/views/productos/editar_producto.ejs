@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
   <%- include('../partials/head.ejs') %>
-  <link rel="stylesheet" href="/assets/css/editar_producto.css" />
+  <link rel="stylesheet" href="/assets/css/editar_Producto.css" />
   <body>
     <%- include('../partials/nav.ejs') %>
     <main class="contenedor-editar">
@@ -22,8 +22,8 @@
         <div class="form-group">
           <label for="categoria">Categoría:</label>
           <select id="categoria" name="categoria" required>
-            <option value="impresoras" <%= producto.categoria === 'impresoras' ? 'selected' : '' %>>Impresoras</option>
-            <option value="insumos" <%= producto.categoria === 'insumos' ? 'selected' : '' %>>Insumos</option>
+            <option value="impresora" <%= producto.categoria === 'impresora' ? 'selected' : '' %>>Impresora</option>
+            <option value="insumo" <%= producto.categoria === 'insumo' ? 'selected' : '' %>>Insumo</option>
           </select>
         </div>
         <div class="form-group">
@@ -31,6 +31,7 @@
           <select id="tipo" name="tipo" required>
             <option value="filamento" <%= producto.tipo === 'filamento' ? 'selected' : '' %>>Filamento</option>
             <option value="resina" <%= producto.tipo === 'resina' ? 'selected' : '' %>>Resina</option>
+            <option value="otro" <%= producto.tipo === 'otro' ? 'selected' : '' %>>Otro</option>
           </select>
         </div>
         <div class="form-group">
@@ -42,9 +43,11 @@
         </div>
         <div class="form-group">
           <label>Imagen actual:</label><br />
-          <img src="<%= producto.imagen %>" alt="Imagen del producto" class="imagen-producto" /><br />
+          <% if (producto.imagen) { %>
+            <img src="<%= producto.imagen %>" alt="Imagen del producto" class="imagen-producto" /><br />
+          <% } %>
           <label for="imagenNueva">Cambiar imagen:</label>
-          <input type="file" id="imagenNueva" name="imagen" accept="image/*" />
+          <input type="file" id="imagenNueva" name="imagen" accept=".jpg,.jpeg,.png,.webp" />
         </div>
         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
       </form>

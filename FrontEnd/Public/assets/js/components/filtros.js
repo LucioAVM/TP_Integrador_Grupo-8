@@ -1,6 +1,6 @@
 export function renderFiltros(categorias, tipos) {
-  // Mostrar categorías preferidas si existen (impresoras / insumos)
-  const preferredCats = ['impresoras', 'insumos'];
+  // Mostrar categorías preferidas si existen (impresora / insumo)
+  const preferredCats = ['impresora', 'insumo'];
   const availableCats = preferredCats.filter(c => categorias.includes(c));
   const catsToRender = availableCats.length ? availableCats : categorias;
 

@@ -12,9 +12,36 @@
         </div>
       </div>
 
-      <div class="table-responsive shadow-sm rounded-3">
-        <table class="table table-sm table-hover align-middle mb-0">
-          <thead class="table-light">
+      <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+          <div class="card admin-card kpi-card border-top-primary h-100">
+            <div class="card-body">
+              <p class="kpi-label mb-1">Total Productos</p>
+              <p class="kpi-value mb-0"><%= totalProductos %></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card admin-card kpi-card border-top-success h-100">
+            <div class="card-body">
+              <p class="kpi-label mb-1">Total Ventas</p>
+              <p class="kpi-value mb-0"><%= totalVentas %></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="card admin-card kpi-card border-top-info h-100">
+            <div class="card-body">
+              <p class="kpi-label mb-1">Ingresos Totales</p>
+              <p class="kpi-value mb-0">$<%= totalIngresos.toFixed(2) %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-responsive shadow-sm rounded-3 admin-card">
+        <table class="table table-sm table-hover align-middle mb-0 table-accent-primary">
+          <thead class="table-light table-head-neutral">
             <tr>
               <th style="width:64px">Imagen</th>
               <th>Nombre</th>
