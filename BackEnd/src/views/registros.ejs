@@ -10,7 +10,15 @@
           <h1 class="admin-page-title h3 mb-0">Registros y estadísticas</h1>
         </div>
         <div>
-          <a href="/admin/exportar-logs" class="btn btn-fenrir-success">
+          <%
+            const exportQuery = [];
+            if (filtros?.fechaInicio) exportQuery.push(`fechaInicio=${encodeURIComponent(filtros.fechaInicio)}`);
+            if (filtros?.fechaFin) exportQuery.push(`fechaFin=${encodeURIComponent(filtros.fechaFin)}`);
+            const exportUrl = exportQuery.length
+              ? `/admin/exportar-logs?${exportQuery.join('&')}`
+              : '/admin/exportar-logs';
+          %>
+          <a href="<%= exportUrl %>" class="btn btn-fenrir-success">
             <i class="bi bi-file-earmark-excel me-1"></i> Descargar Excel
           </a>
         </div>
@@ -28,10 +36,22 @@
               <input type="date" class="form-control" id="fechaFin" name="fechaFin" value="<%= filtros?.fechaFin || '' %>">
             </div>
             <div class="col-md-4 d-flex gap-2">
-              <button type="submit" class="btn btn-primary">Filtrar encuestas</button>
+              <button type="submit" class="btn btn-primary">Filtrar por fecha</button>
               <a href="/registros" class="btn btn-outline-secondary">Limpiar</a>
             </div>
           </form>
+          <% if (filtroActivo) { %>
+            <p class="small text-muted mb-0 mt-3">
+              Mostrando ventas, estadísticas, logs y encuestas
+              <% if (filtros?.fechaInicio && filtros?.fechaFin) { %>
+                entre <strong><%= filtros.fechaInicio %></strong> y <strong><%= filtros.fechaFin %></strong>.
+              <% } else if (filtros?.fechaInicio) { %>
+                desde <strong><%= filtros.fechaInicio %></strong>.
+              <% } else { %>
+                hasta <strong><%= filtros.fechaFin %></strong>.
+              <% } %>
+            </p>
+          <% } %>
         </div>
       </div>
 
@@ -121,6 +141,7 @@
                   <thead class="table-light table-head-neutral">
                     <tr>
                       <th>ID Venta</th>
+                      <% if (filtroActivo) { %><th>Fecha</th><% } %>
                       <th>Cliente</th>
                       <th>Total</th>
                     </tr>
@@ -130,12 +151,15 @@
                       <% topVentas.forEach(v => { %>
                         <tr>
                           <td>#<%= v.id %></td>
+                          <% if (filtroActivo) { %>
+                            <td><%= v.fecha ? new Date(v.fecha).toLocaleDateString('es-AR') : '-' %></td>
+                          <% } %>
                           <td><%= v.nombre_usuario %></td>
                           <td>$<%= Number(v.total).toFixed(2) %></td>
                         </tr>
                       <% }) %>
                     <% } else { %>
-                      <tr><td colspan="3" class="text-center">No hay ventas registradas</td></tr>
+                      <tr><td colspan="<%= filtroActivo ? 4 : 3 %>" class="text-center">No hay ventas en el rango seleccionado</td></tr>
                     <% } %>
                   </tbody>
                 </table>

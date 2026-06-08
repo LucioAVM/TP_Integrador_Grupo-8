@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import Admin from '../Models/admin.js';
 import Producto from '../Models/producto.js';
-import { Op, QueryTypes } from 'sequelize';
+import { Op, QueryTypes, Sequelize } from 'sequelize';
 import Venta from '../Models/venta.js';
 import VentaProducto from '../Models/venta_productos.js';
 import Log from '../Models/log.js';
@@ -12,21 +12,60 @@ import ExcelJS from 'exceljs';
 const DATE_FILTER_FIELDS = ['fecha', 'createdAt', 'created_at', 'fecha_venta'];
 
 const construirFiltroFechas = (fechaInicio, fechaFin, campoFecha = 'fecha') => {
-  const where = {};
+  const condiciones = [];
 
-  if (fechaInicio || fechaFin) {
-    where[campoFecha] = {};
-
-    if (fechaInicio) {
-      where[campoFecha][Op.gte] = new Date(`${fechaInicio}T00:00:00.000Z`);
-    }
-
-    if (fechaFin) {
-      where[campoFecha][Op.lte] = new Date(`${fechaFin}T23:59:59.999Z`);
-    }
+  // SQL Server no acepta offsets tipo "-03:00" en datetime; comparar por DATE evita el error.
+  if (fechaInicio) {
+    condiciones.push(
+      Sequelize.where(
+        Sequelize.fn('CONVERT', Sequelize.literal('DATE'), Sequelize.col(campoFecha)),
+        Op.gte,
+        fechaInicio
+      )
+    );
   }
 
-  return where;
+  if (fechaFin) {
+    condiciones.push(
+      Sequelize.where(
+        Sequelize.fn('CONVERT', Sequelize.literal('DATE'), Sequelize.col(campoFecha)),
+        Op.lte,
+        fechaFin
+      )
+    );
+  }
+
+  if (!condiciones.length) return {};
+
+  return { [Op.and]: condiciones };
+};
+
+const combinarFiltroEncuestas = (filtroFechas, condicionesExtra = []) => {
+  const base = filtroFechas[Op.and] || [];
+  const extras = condicionesExtra.filter(Boolean);
+
+  if (!base.length && !extras.length) return {};
+  return { [Op.and]: [...base, ...extras] };
+};
+
+const esFechaFiltroValida = (fecha) =>
+  typeof fecha === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(fecha);
+
+const normalizarFiltroFechas = (fechaInicio, fechaFin) => ({
+  fechaInicio: esFechaFiltroValida(fechaInicio) ? fechaInicio : null,
+  fechaFin: esFechaFiltroValida(fechaFin) ? fechaFin : null,
+});
+
+const hayFiltroActivo = (fechaInicio, fechaFin) => Boolean(fechaInicio || fechaFin);
+
+const construirCondicionSqlFecha = (fechaInicio, fechaFin, columnaFecha, alias = '') => {
+  const col = alias ? `${alias}.[${columnaFecha}]` : `[${columnaFecha}]`;
+  const partes = [];
+
+  if (fechaInicio) partes.push(`CONVERT(DATE, ${col}) >= '${fechaInicio}'`);
+  if (fechaFin) partes.push(`CONVERT(DATE, ${col}) <= '${fechaFin}'`);
+
+  return partes.join(' AND ');
 };
 
 const obtenerColumnaFechaVentas = async () => {
@@ -34,18 +73,44 @@ const obtenerColumnaFechaVentas = async () => {
   return DATE_FILTER_FIELDS.find(campo => columnas[campo]) || null;
 };
 
-const obtenerTopProductosVendidos = async (limit = 10) => {
+const obtenerTopProductosVendidos = async (limit = 10, fechaInicio = null, fechaFin = null) => {
+  const columnaFecha = await obtenerColumnaFechaVentas();
+
+  if (hayFiltroActivo(fechaInicio, fechaFin) && columnaFecha) {
+    const condicion = construirCondicionSqlFecha(fechaInicio, fechaFin, columnaFecha, 'v');
+    const topProductosRaw = await Venta.sequelize.query(
+      `SELECT TOP ${Number(limit)}
+        vp.producto_id,
+        SUM(vp.cantidad) AS total_vendido
+      FROM venta_productos vp
+      INNER JOIN ventas v ON v.id = vp.venta_id
+      WHERE ${condicion}
+      GROUP BY vp.producto_id
+      ORDER BY total_vendido DESC`,
+      { type: QueryTypes.SELECT }
+    );
+
+    return Promise.all(topProductosRaw.map(async (item) => {
+      const producto = await Producto.findByPk(item.producto_id);
+      return {
+        producto_id: item.producto_id,
+        nombre: producto?.nombre || 'Producto eliminado',
+        total_vendido: Number(item.total_vendido || 0),
+      };
+    }));
+  }
+
   const topProductosRaw = await VentaProducto.findAll({
     attributes: [
       'producto_id',
-      [Venta.sequelize.fn('SUM', Venta.sequelize.col('cantidad')), 'total_vendido']
+      [Venta.sequelize.fn('SUM', Venta.sequelize.col('cantidad')), 'total_vendido'],
     ],
     group: ['producto_id'],
     order: [[Venta.sequelize.literal('total_vendido'), 'DESC']],
-    limit
+    limit,
   });
 
-  return Promise.all(topProductosRaw.map(async item => {
+  return Promise.all(topProductosRaw.map(async (item) => {
     const producto = await Producto.findByPk(item.producto_id);
     return {
       producto_id: item.producto_id,
@@ -55,9 +120,12 @@ const obtenerTopProductosVendidos = async (limit = 10) => {
   }));
 };
 
-const obtenerTotalRecaudadoPorMes = async () => {
+const obtenerTotalRecaudadoPorMes = async (fechaInicio = null, fechaFin = null) => {
   const columnaFecha = await obtenerColumnaFechaVentas();
   if (!columnaFecha) return [];
+
+  const condicion = construirCondicionSqlFecha(fechaInicio, fechaFin, columnaFecha);
+  const where = condicion ? `WHERE ${condicion}` : '';
 
   return Venta.sequelize.query(
     `SELECT
@@ -65,23 +133,143 @@ const obtenerTotalRecaudadoPorMes = async () => {
       SUM(CAST(total AS DECIMAL(18,2))) AS total_recaudado,
       COUNT(*) AS total_ventas
     FROM ventas
+    ${where}
     GROUP BY CONVERT(VARCHAR(7), [${columnaFecha}], 120)
     ORDER BY mes DESC`,
     { type: QueryTypes.SELECT }
   );
 };
 
-const obtenerTopClientes = async (limit = 5) => {
+const obtenerTopClientes = async (limit = 5, fechaInicio = null, fechaFin = null) => {
+  const columnaFecha = await obtenerColumnaFechaVentas();
+  const condicion = columnaFecha
+    ? construirCondicionSqlFecha(fechaInicio, fechaFin, columnaFecha)
+    : '';
+  const where = condicion ? `WHERE ${condicion}` : '';
+
   return Venta.sequelize.query(
     `SELECT TOP ${Number(limit)}
       nombre_usuario,
       COUNT(*) AS total_compras,
       SUM(CAST(total AS DECIMAL(18,2))) AS total_gastado
     FROM ventas
+    ${where}
     GROUP BY nombre_usuario
     ORDER BY total_gastado DESC, total_compras DESC, nombre_usuario ASC`,
     { type: QueryTypes.SELECT }
   );
+};
+
+const obtenerTopVentasCaras = async (limit = 10, fechaInicio = null, fechaFin = null) => {
+  const columnaFecha = await obtenerColumnaFechaVentas();
+  const fechaExpr = columnaFecha ? `[${columnaFecha}] AS fecha` : 'NULL AS fecha';
+  const condicion = columnaFecha
+    ? construirCondicionSqlFecha(fechaInicio, fechaFin, columnaFecha)
+    : '';
+  const where = condicion ? `WHERE ${condicion}` : '';
+
+  return Venta.sequelize.query(
+    `SELECT TOP ${Number(limit)}
+      id,
+      nombre_usuario,
+      total,
+      ${fechaExpr}
+    FROM ventas
+    ${where}
+    ORDER BY total DESC`,
+    { type: QueryTypes.SELECT }
+  );
+};
+
+const EXCEL_HEADER_FILL = {
+  type: 'pattern',
+  pattern: 'solid',
+  fgColor: { argb: 'FF1E3A5F' },
+};
+
+const EXCEL_HEADER_FONT = {
+  bold: true,
+  color: { argb: 'FFFFFFFF' },
+  size: 11,
+};
+
+const aplicarEstiloTabla = (sheet, opciones = {}) => {
+  const { monedaCols = [], fechaCols = [] } = opciones;
+  if (!sheet.rowCount) return;
+
+  const header = sheet.getRow(1);
+  header.font = EXCEL_HEADER_FONT;
+  header.fill = EXCEL_HEADER_FILL;
+  header.alignment = { vertical: 'middle', horizontal: 'center' };
+  header.height = 24;
+
+  const colCount = sheet.columnCount || sheet.columns?.length || 0;
+  if (colCount > 0 && sheet.rowCount > 1) {
+    sheet.autoFilter = {
+      from: { row: 1, column: 1 },
+      to: { row: 1, column: colCount },
+    };
+    sheet.views = [{ state: 'frozen', ySplit: 1 }];
+  }
+
+  monedaCols.forEach((colIdx) => {
+    const letter = sheet.getColumn(colIdx).letter;
+    for (let row = 2; row <= sheet.rowCount; row += 1) {
+      const cell = sheet.getCell(`${letter}${row}`);
+      if (typeof cell.value === 'number') {
+        cell.numFmt = '"$"#,##0.00';
+      }
+    }
+  });
+
+  fechaCols.forEach((colIdx) => {
+    const letter = sheet.getColumn(colIdx).letter;
+    for (let row = 2; row <= sheet.rowCount; row += 1) {
+      const cell = sheet.getCell(`${letter}${row}`);
+      if (cell.value instanceof Date) {
+        cell.numFmt = 'dd/mm/yyyy hh:mm';
+      }
+    }
+  });
+};
+
+const crearHojaResumen = (workbook, datos) => {
+  const sheet = workbook.addWorksheet('Resumen');
+  sheet.columns = [{ width: 30 }, { width: 42 }];
+
+  sheet.mergeCells('A1:B1');
+  const titulo = sheet.getCell('A1');
+  titulo.value = 'Fenrir 3D — Reporte de registros';
+  titulo.font = { bold: true, size: 14, color: { argb: 'FF1E3A5F' } };
+  titulo.alignment = { horizontal: 'center' };
+
+  const filas = [
+    ['Generado', new Date()],
+    ['Filtro encuestas desde', datos.fechaInicio || 'Sin filtro'],
+    ['Filtro encuestas hasta', datos.fechaFin || 'Sin filtro'],
+    ['Total de ventas', datos.totalVentas],
+    ['Total recaudado', Number(datos.totalRecaudado || 0)],
+    ['Total encuestas', datos.totalEncuestas],
+    ['Promedio puntuación encuestas', datos.promedioEncuestas ?? '—'],
+    ['Total logs de acceso', datos.totalLogs],
+  ];
+
+  filas.forEach(([label, value], index) => {
+    const rowNumber = index + 3;
+    sheet.getCell(`A${rowNumber}`).value = label;
+    sheet.getCell(`A${rowNumber}`).font = { bold: true };
+    const valueCell = sheet.getCell(`B${rowNumber}`);
+    valueCell.value = value;
+    if (label === 'Generado' && value instanceof Date) {
+      valueCell.numFmt = 'dd/mm/yyyy hh:mm';
+    }
+    if (label === 'Total recaudado' && typeof value === 'number') {
+      valueCell.numFmt = '"$"#,##0.00';
+    }
+    if (label === 'Promedio puntuación encuestas' && typeof value === 'number') {
+      valueCell.numFmt = '0.00';
+    }
+  });
 };
 
 const getLogin = (req, res) => {
@@ -292,47 +480,55 @@ const getDetalleVenta = async (req, res) => {
 
 const getRegistros = async (req, res) => {
   try {
-    const fechaInicio = req.query.fechaInicio || req.query.fechaDesde || null;
-    const fechaFin = req.query.fechaFin || req.query.fechaHasta || null;
-    const whereEncuestas = construirFiltroFechas(fechaInicio, fechaFin, 'fecha');
+    const { fechaInicio, fechaFin } = normalizarFiltroFechas(
+      req.query.fechaInicio || req.query.fechaDesde || null,
+      req.query.fechaFin || req.query.fechaHasta || null
+    );
+    const filtroActivo = hayFiltroActivo(fechaInicio, fechaFin);
+    const limiteTablas = filtroActivo ? 100 : 10;
 
-    // Obtener los últimos 10 logs desde la tabla SQL
-    const logs = await Log.findAll({ order: [['createdAt', 'DESC']], limit: 10 });
-    const registros = logs.map(l => ({
+    const whereEncuestas = construirFiltroFechas(fechaInicio, fechaFin, 'fecha');
+    const whereLogs = filtroActivo
+      ? construirFiltroFechas(fechaInicio, fechaFin, 'createdAt')
+      : {};
+
+    const logs = await Log.findAll({
+      where: whereLogs,
+      order: [['createdAt', 'DESC']],
+      limit: limiteTablas,
+    });
+    const registros = logs.map((l) => ({
       timestamp: l.createdAt,
       adminId: l.adminId || null,
       email: l.email || null,
     }));
 
-    // 10 Ventas más caras
-    const topVentas = await Venta.findAll({
-      order: [['total', 'DESC']],
-      limit: 10
-    });
+    const [
+      topVentas,
+      topProductos,
+      totalRecaudadoPorMes,
+      topClientes,
+      ultimasEncuestas,
+      encuestasAsistencia,
+    ] = await Promise.all([
+      obtenerTopVentasCaras(10, fechaInicio, fechaFin),
+      obtenerTopProductosVendidos(10, fechaInicio, fechaFin),
+      obtenerTotalRecaudadoPorMes(fechaInicio, fechaFin),
+      obtenerTopClientes(5, fechaInicio, fechaFin),
+      Encuesta.findAll({
+        where: whereEncuestas,
+        order: [['fecha', 'DESC']],
+        limit: limiteTablas,
+      }),
+      Encuesta.findAll({
+        where: combinarFiltroEncuestas(whereEncuestas, [{ puntuacion: { [Op.lte]: 3 } }]),
+        order: [['puntuacion', 'ASC'], ['fecha', 'DESC']],
+        limit: limiteTablas,
+      }),
+    ]);
 
-    // 10 Productos más vendidos
-    const topProductos = await obtenerTopProductosVendidos(10);
-
-    const totalRecaudadoPorMes = await obtenerTotalRecaudadoPorMes();
-    const topClientes = await obtenerTopClientes(5);
-
-    const ultimasEncuestas = await Encuesta.findAll({
-      where: whereEncuestas,
-      order: [['fecha', 'DESC']],
-      limit: 10,
-    });
-
-    const encuestasAsistencia = await Encuesta.findAll({
-      where: {
-        ...whereEncuestas,
-        puntuacion: { [Op.lte]: 3 },
-      },
-      order: [['puntuacion', 'ASC'], ['fecha', 'DESC']],
-      limit: 10,
-    });
-
-    res.render('registros', { 
-      registros, 
+    res.render('registros', {
+      registros,
       topVentas,
       topProductos,
       totalRecaudadoPorMes,
@@ -340,7 +536,8 @@ const getRegistros = async (req, res) => {
       ultimasEncuestas,
       encuestasAsistencia,
       filtros: { fechaInicio, fechaFin },
-      activePage: 'registros' 
+      filtroActivo,
+      activePage: 'registros',
     });
   } catch (error) {
     console.error('Error al obtener registros:', error);
@@ -361,10 +558,7 @@ const getAsistencia = async (req, res) => {
     });
 
     const encuestasBajas = await Encuesta.findAll({
-      where: {
-        ...whereEncuestas,
-        puntuacion: { [Op.lte]: 3 }
-      },
+      where: combinarFiltroEncuestas(whereEncuestas, [{ puntuacion: { [Op.lte]: 3 } }]),
       order: [['puntuacion', 'ASC'], ['fecha', 'DESC']],
       limit: 5
     });
@@ -383,81 +577,180 @@ const getAsistencia = async (req, res) => {
 
 const exportarLogsExcel = async (req, res) => {
   try {
-    const logs = await Log.findAll({ order: [['createdAt', 'DESC']] });
-    const topVentas = await Venta.findAll({ order: [['total', 'DESC']], limit: 10 });
-    const topProductos = await obtenerTopProductosVendidos(10);
-    const totalRecaudadoPorMes = await obtenerTotalRecaudadoPorMes();
-    const topClientes = await obtenerTopClientes(5);
+    const fechaInicio = req.query.fechaInicio || req.query.fechaDesde || null;
+    const fechaFin = req.query.fechaFin || req.query.fechaHasta || null;
+    const whereEncuestas = construirFiltroFechas(fechaInicio, fechaFin, 'fecha');
+
+    const [
+      logs,
+      topVentas,
+      topProductos,
+      totalRecaudadoPorMes,
+      topClientes,
+      encuestas,
+      encuestasAsistencia,
+      totalVentas,
+      totalRecaudadoRaw,
+      promedioEncuestasRaw,
+    ] = await Promise.all([
+      Log.findAll({ order: [['createdAt', 'DESC']] }),
+      obtenerTopVentasCaras(10),
+      obtenerTopProductosVendidos(10),
+      obtenerTotalRecaudadoPorMes(),
+      obtenerTopClientes(10),
+      Encuesta.findAll({ where: whereEncuestas, order: [['fecha', 'DESC']] }),
+      Encuesta.findAll({
+        where: combinarFiltroEncuestas(whereEncuestas, [{ puntuacion: { [Op.lte]: 3 } }]),
+        order: [['puntuacion', 'ASC'], ['fecha', 'DESC']],
+      }),
+      Venta.count(),
+      Venta.sum('total'),
+      Encuesta.aggregate('puntuacion', 'avg', { where: whereEncuestas }),
+    ]);
 
     const workbook = new ExcelJS.Workbook();
-    const sheetVentas = workbook.addWorksheet('Ventas');
-    sheetVentas.columns = [
-      { header: 'ID Venta', key: 'id', width: 12 },
-      { header: 'Cliente', key: 'cliente', width: 30 },
-      { header: 'Total', key: 'total', width: 15 },
-    ];
-    topVentas.forEach(v => {
-      sheetVentas.addRow({
-        id: v.id,
-        cliente: v.nombre_usuario,
-        total: Number(v.total).toFixed(2),
-      });
+    workbook.creator = 'Fenrir 3D Admin';
+    workbook.created = new Date();
+
+    crearHojaResumen(workbook, {
+      fechaInicio,
+      fechaFin,
+      totalVentas,
+      totalRecaudado: totalRecaudadoRaw,
+      totalEncuestas: encuestas.length,
+      promedioEncuestas: promedioEncuestasRaw != null
+        ? Number(promedioEncuestasRaw)
+        : null,
+      totalLogs: logs.length,
     });
 
-    const sheetProductos = workbook.addWorksheet('Productos');
-    sheetProductos.columns = [
-      { header: 'ID Producto', key: 'producto_id', width: 15 },
-      { header: 'Nombre', key: 'nombre', width: 35 },
-      { header: 'Cantidad vendida', key: 'total_vendido', width: 18 },
-    ];
-    topProductos.forEach(p => {
-      sheetProductos.addRow({
-        producto_id: p.producto_id,
-        nombre: p.nombre,
-        total_vendido: p.total_vendido,
-      });
-    });
-
-    const sheetEstadisticas = workbook.addWorksheet('Estadisticas');
-    sheetEstadisticas.columns = [
-      { header: 'Mes', key: 'mes', width: 15 },
+    const sheetMeses = workbook.addWorksheet('Recaudado por mes');
+    sheetMeses.columns = [
+      { header: 'Mes', key: 'mes', width: 14 },
       { header: 'Total recaudado', key: 'total_recaudado', width: 18 },
-      { header: 'Total ventas', key: 'total_ventas', width: 15 },
+      { header: 'Cantidad de ventas', key: 'total_ventas', width: 18 },
+    ];
+    totalRecaudadoPorMes.forEach((mes) => {
+      sheetMeses.addRow({
+        mes: mes.mes,
+        total_recaudado: Number(mes.total_recaudado || 0),
+        total_ventas: Number(mes.total_ventas || 0),
+      });
+    });
+    aplicarEstiloTabla(sheetMeses, { monedaCols: [2] });
+
+    const sheetClientes = workbook.addWorksheet('Top clientes');
+    sheetClientes.columns = [
       { header: 'Cliente', key: 'cliente', width: 30 },
       { header: 'Compras', key: 'compras', width: 12 },
-      { header: 'Gastado', key: 'gastado', width: 15 },
+      { header: 'Total gastado', key: 'gastado', width: 18 },
     ];
-    const maxRows = Math.max(totalRecaudadoPorMes.length, topClientes.length);
-    for (let i = 0; i < maxRows; i += 1) {
-      const mes = totalRecaudadoPorMes[i];
-      const cliente = topClientes[i];
-      sheetEstadisticas.addRow({
-        mes: mes?.mes || '',
-        total_recaudado: mes ? Number(mes.total_recaudado).toFixed(2) : '',
-        total_ventas: mes?.total_ventas || '',
-        cliente: cliente?.nombre_usuario || '',
-        compras: cliente?.total_compras || '',
-        gastado: cliente ? Number(cliente.total_gastado).toFixed(2) : '',
-      });
-    }
-
-    const sheetLogs = workbook.addWorksheet('Logs');
-    sheetLogs.columns = [
-      { header: 'Fecha', key: 'fecha', width: 25 },
-      { header: 'Admin ID', key: 'adminId', width: 15 },
-      { header: 'Email', key: 'email', width: 30 },
-    ];
-    logs.forEach(l => {
-      sheetLogs.addRow({
-        fecha: l.createdAt ? new Date(l.createdAt).toLocaleString() : '',
-        adminId: l.adminId || '',
-        email: l.email || '',
+    topClientes.forEach((cliente) => {
+      sheetClientes.addRow({
+        cliente: cliente.nombre_usuario,
+        compras: Number(cliente.total_compras || 0),
+        gastado: Number(cliente.total_gastado || 0),
       });
     });
+    aplicarEstiloTabla(sheetClientes, { monedaCols: [3] });
+
+    const sheetVentas = workbook.addWorksheet('Top ventas');
+    sheetVentas.columns = [
+      { header: 'ID Venta', key: 'id', width: 12 },
+      { header: 'Fecha', key: 'fecha', width: 20 },
+      { header: 'Cliente', key: 'cliente', width: 28 },
+      { header: 'Total', key: 'total', width: 16 },
+    ];
+    topVentas.forEach((venta) => {
+      sheetVentas.addRow({
+        id: venta.id,
+        fecha: venta.fecha ? new Date(venta.fecha) : null,
+        cliente: venta.nombre_usuario,
+        total: Number(venta.total || 0),
+      });
+    });
+    aplicarEstiloTabla(sheetVentas, { monedaCols: [4], fechaCols: [2] });
+
+    const sheetProductos = workbook.addWorksheet('Top productos');
+    sheetProductos.columns = [
+      { header: 'ID Producto', key: 'producto_id', width: 14 },
+      { header: 'Nombre', key: 'nombre', width: 38 },
+      { header: 'Cantidad vendida', key: 'total_vendido', width: 18 },
+    ];
+    topProductos.forEach((producto) => {
+      sheetProductos.addRow({
+        producto_id: producto.producto_id,
+        nombre: producto.nombre,
+        total_vendido: producto.total_vendido,
+      });
+    });
+    aplicarEstiloTabla(sheetProductos);
+
+    const sheetLogs = workbook.addWorksheet('Logs acceso');
+    sheetLogs.columns = [
+      { header: 'Fecha', key: 'fecha', width: 22 },
+      { header: 'Admin ID', key: 'adminId', width: 12 },
+      { header: 'Email', key: 'email', width: 32 },
+      { header: 'Mensaje', key: 'mensaje', width: 50 },
+    ];
+    logs.forEach((log) => {
+      sheetLogs.addRow({
+        fecha: log.createdAt ? new Date(log.createdAt) : null,
+        adminId: log.adminId || '',
+        email: log.email || '',
+        mensaje: log.mensaje || '',
+      });
+    });
+    aplicarEstiloTabla(sheetLogs, { fechaCols: [1] });
+
+    const sheetEncuestas = workbook.addWorksheet('Encuestas');
+    sheetEncuestas.columns = [
+      { header: 'ID', key: 'id', width: 8 },
+      { header: 'Fecha', key: 'fecha', width: 20 },
+      { header: 'Email', key: 'email', width: 28 },
+      { header: 'Puntuación', key: 'puntuacion', width: 12 },
+      { header: 'Términos', key: 'terminos', width: 12 },
+      { header: 'Comentario', key: 'comentario', width: 45 },
+      { header: 'Imagen', key: 'imagen', width: 40 },
+    ];
+    encuestas.forEach((encuesta) => {
+      sheetEncuestas.addRow({
+        id: encuesta.id,
+        fecha: encuesta.fecha ? new Date(encuesta.fecha) : null,
+        email: encuesta.email || '',
+        puntuacion: encuesta.puntuacion,
+        terminos: encuesta.terminos ? 'Sí' : 'No',
+        comentario: encuesta.comentario || '',
+        imagen: encuesta.imagen || '',
+      });
+    });
+    aplicarEstiloTabla(sheetEncuestas, { fechaCols: [2] });
+
+    const sheetAsistencia = workbook.addWorksheet('Asistencia');
+    sheetAsistencia.columns = [
+      { header: 'ID', key: 'id', width: 8 },
+      { header: 'Fecha', key: 'fecha', width: 20 },
+      { header: 'Email', key: 'email', width: 28 },
+      { header: 'Puntuación', key: 'puntuacion', width: 12 },
+      { header: 'Comentario', key: 'comentario', width: 50 },
+      { header: 'Imagen', key: 'imagen', width: 40 },
+    ];
+    encuestasAsistencia.forEach((encuesta) => {
+      sheetAsistencia.addRow({
+        id: encuesta.id,
+        fecha: encuesta.fecha ? new Date(encuesta.fecha) : null,
+        email: encuesta.email || '',
+        puntuacion: encuesta.puntuacion,
+        comentario: encuesta.comentario || '',
+        imagen: encuesta.imagen || '',
+      });
+    });
+    aplicarEstiloTabla(sheetAsistencia, { fechaCols: [2] });
 
     const buffer = await workbook.xlsx.writeBuffer();
+    const fechaArchivo = new Date().toISOString().slice(0, 10);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="registros.xlsx"');
+    res.setHeader('Content-Disposition', `attachment; filename="fenrir-registros-${fechaArchivo}.xlsx"`);
     return res.send(buffer);
   } catch (error) {
     console.error('Error al exportar logs a Excel:', error);

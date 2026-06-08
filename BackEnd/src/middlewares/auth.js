@@ -1,1 +1,0 @@
-// Middleware de autenticación: verifica si el usuario tiene permisos para acceder a ciertas rutas.
