@@ -15,6 +15,7 @@ import ventasRouter from './BackEnd/src/Routes/ventas.routes.js';
 import encuestaRouter from './BackEnd/src/Routes/encuesta.routes.js';
 import productosApiRouter from './BackEnd/src/Routes/api/productos.routes.js';
 import ventasApiRouter from './BackEnd/src/Routes/api/ventas.routes.js';
+import usuariosApiRouter from './BackEnd/src/Routes/api/usuarios.routes.js';
 import adminProductosApi from './BackEnd/src/Routes/admin/productos.api.js';
 
 const app = express();
@@ -80,8 +81,11 @@ app.use('/api/productos', adminProductosApi);
 // Montar API público para productos (mantiene /api/productos y /api/productos/filters)
 app.use('/api/productos', productosApiRouter);
 
-// Montar API público para ventas (ruta POST /api/ventas)
+// Montar API público para ventas (GET y POST /api/ventas)
 app.use('/api/ventas', ventasApiRouter);
+
+// Montar API para creación de administradores
+app.use('/api/usuarios', usuariosApiRouter);
 
 // Middleware para capturar errores de multer y otros errores de subida
 app.use((err, req, res, next) => {

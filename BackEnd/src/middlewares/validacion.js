@@ -1,16 +1,20 @@
-import { body, validationResult } from 'express-validator';
+export function validarUsuario(req, res, next) {
+  const { nombre, email, password } = req.body;
+  const errores = [];
 
-const validarUsuario = [
-    body('email').isEmail().withMessage('Email inválido'),
-    body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
-    body('nombre').notEmpty().withMessage('El nombre es obligatorio'),
-    (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errores: errors.array() });
-        }
-        next();
-    }
-];
+  if (!nombre?.trim()) {
+    errores.push({ campo: 'nombre', mensaje: 'El nombre es obligatorio' });
+  }
+  if (!email?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errores.push({ campo: 'email', mensaje: 'Email inválido' });
+  }
+  if (!password || String(password).length < 6) {
+    errores.push({ campo: 'password', mensaje: 'La contraseña debe tener al menos 6 caracteres' });
+  }
 
-export { validarUsuario };
+  if (errores.length) {
+    return res.status(400).json({ errores });
+  }
+
+  next();
+}

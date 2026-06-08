@@ -1,4 +1,5 @@
 import { renderTicket } from '../components/ticket.js';
+import { limpiarSesionCliente } from '../utils/session.js';
 
 export function initTicket() {
   const container = document.getElementById('ticket-container');
@@ -23,11 +24,18 @@ export function initTicket() {
   // Renderizamos el HTML del ticket
   container.innerHTML = renderTicket(carrito, total, fechaFormateada, nombre_usuario);
 
-  // Escuchamos el clic del botón PDF
   const btnPdf = document.getElementById('btn-descargar-pdf');
   if (btnPdf) {
     btnPdf.addEventListener('click', () => {
       generarPDF(carrito, total, fechaFormateada, nombre_usuario);
+    });
+  }
+
+  const btnReiniciar = document.getElementById('btn-reiniciar');
+  if (btnReiniciar) {
+    btnReiniciar.addEventListener('click', () => {
+      limpiarSesionCliente();
+      window.location.href = '/';
     });
   }
 }

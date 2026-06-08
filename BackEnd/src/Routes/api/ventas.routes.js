@@ -2,17 +2,34 @@ import express from 'express';
 import Venta from '../../Models/venta.js';
 import VentaProducto from '../../Models/venta_productos.js';
 import Producto from '../../Models/producto.js';
+import { validarVenta } from '../../middlewares/validarVenta.js';
 
 const router = express.Router();
 
+router.get('/', async (req, res) => {
+  try {
+    const ventas = await Venta.findAll({
+      include: {
+        model: Producto,
+        as: 'productos',
+        attributes: ['id', 'nombre', 'categoria', 'tipo', 'imagen'],
+        through: {
+          attributes: ['cantidad', 'precio_unitario'],
+        },
+      },
+      order: [['id', 'DESC']],
+    });
+    res.json(ventas);
+  } catch (err) {
+    console.error('Error API GET /api/ventas:', err);
+    res.status(500).json({ error: 'Error al consultar ventas' });
+  }
+});
+
 // Registrar una venta (API público)
-router.post('/', async (req, res) => {
+router.post('/', validarVenta, async (req, res) => {
   try {
     const { nombre_usuario, productos, total } = req.body;
-
-    if (!Array.isArray(productos) || productos.length === 0) {
-      return res.status(400).json({ error: 'Productos inválidos' });
-    }
 
     const venta = await Venta.sequelize.transaction(async (transaction) => {
       const normalizedItems = [];

@@ -123,12 +123,16 @@ const getDashboard = async (req, res) => {
     const totalProductos = productos.length;
     const productosActivos = productos.filter(producto => producto.activo).length;
     const totalIngresos = Number(totalIngresosRaw || 0);
+    const insumos = productos.filter(producto => producto.categoria === 'insumo');
+    const impresoras = productos.filter(producto => producto.categoria === 'impresora');
 
     const mensaje = req.query.mensaje || null;
     const error = req.query.error || null;
     res.render('dashboard', {
       admin,
       productos,
+      insumos,
+      impresoras,
       totalProductos,
       productosActivos,
       totalVentas,
@@ -288,6 +292,10 @@ const getDetalleVenta = async (req, res) => {
 
 const getRegistros = async (req, res) => {
   try {
+    const fechaInicio = req.query.fechaInicio || req.query.fechaDesde || null;
+    const fechaFin = req.query.fechaFin || req.query.fechaHasta || null;
+    const whereEncuestas = construirFiltroFechas(fechaInicio, fechaFin, 'fecha');
+
     // Obtener los últimos 10 logs desde la tabla SQL
     const logs = await Log.findAll({ order: [['createdAt', 'DESC']], limit: 10 });
     const registros = logs.map(l => ({
@@ -308,12 +316,30 @@ const getRegistros = async (req, res) => {
     const totalRecaudadoPorMes = await obtenerTotalRecaudadoPorMes();
     const topClientes = await obtenerTopClientes(5);
 
+    const ultimasEncuestas = await Encuesta.findAll({
+      where: whereEncuestas,
+      order: [['fecha', 'DESC']],
+      limit: 10,
+    });
+
+    const encuestasAsistencia = await Encuesta.findAll({
+      where: {
+        ...whereEncuestas,
+        puntuacion: { [Op.lte]: 3 },
+      },
+      order: [['puntuacion', 'ASC'], ['fecha', 'DESC']],
+      limit: 10,
+    });
+
     res.render('registros', { 
       registros, 
       topVentas,
       topProductos,
       totalRecaudadoPorMes,
       topClientes,
+      ultimasEncuestas,
+      encuestasAsistencia,
+      filtros: { fechaInicio, fechaFin },
       activePage: 'registros' 
     });
   } catch (error) {
