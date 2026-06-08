@@ -34,3 +34,12 @@ desktop.ini
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Uploads de usuario (runtime, no versionar)
+FrontEnd/Public/uploads/productos/*
+!FrontEnd/Public/uploads/productos/.gitkeep
+FrontEnd/Public/uploads/encuestas/*
+!FrontEnd/Public/uploads/encuestas/.gitkeep
+
+# Carpeta duplicada obsoleta (multer viejo)
+BackEnd/FrontEnd/
