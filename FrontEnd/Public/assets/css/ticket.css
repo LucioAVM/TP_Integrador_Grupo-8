@@ -1,0 +1,123 @@
+.ticket-wrapper {
+  --ticket-bg: var(--surface-panel);
+  --ticket-border: var(--surface-border);
+  --ticket-text: var(--text-primary);
+  --ticket-muted: var(--text-muted);
+}
+
+.ticket-wrapper.fenrir-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.ticket-header {
+  padding: 1.25rem 1.35rem 1rem;
+  border-bottom: 1px solid var(--ticket-border);
+}
+
+.ticket-brand {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ticket-text);
+  margin: 0;
+}
+
+.ticket-date {
+  font-size: 0.9rem;
+  color: var(--ticket-muted);
+}
+
+.ticket-meta {
+  padding: 0.85rem 1.35rem;
+  border-bottom: 1px solid var(--ticket-border);
+  color: var(--ticket-muted);
+  font-size: 0.95rem;
+}
+
+.ticket-table-wrap {
+  padding: 0 1.35rem;
+}
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.92rem;
+}
+
+.ticket-table th {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-accent);
+  border-bottom: 2px solid var(--fenrir-cyan-dim);
+  padding: 0.55rem 0.4rem;
+  text-align: left;
+}
+
+.ticket-table td {
+  padding: 0.65rem 0.4rem;
+  border-bottom: 1px solid var(--ticket-border);
+  color: var(--ticket-text);
+}
+
+.ticket-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ticket-total-panel {
+  margin: 0 1.35rem 1.25rem;
+  padding: 1rem 1.1rem;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: var(--radius-sharp);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ticket-text);
+}
+
+.ticket-total-panel span:last-child {
+  color: var(--fenrir-gold);
+  font-size: 1.35rem;
+}
+
+body.bg-light .ticket-total-panel span:last-child {
+  color: #b89600;
+}
+
+.ticket-actions {
+  padding: 0 1.35rem 1.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.ticket-actions .btn {
+  min-width: 9rem;
+}
+
+@media (max-width: 576px) {
+  .ticket-header,
+  .ticket-meta,
+  .ticket-table-wrap,
+  .ticket-total-panel,
+  .ticket-actions {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .ticket-actions .btn {
+    width: 100%;
+    min-width: 0;
+  }
+}

@@ -1,13 +1,37 @@
 <!DOCTYPE html>
 <html lang="es">
   <%- include('partials/head.ejs') %>
-  <body>
-    <%- include('partials/nav.ejs') %>
+  <body class="bg-dark admin-root">
+    <%- include('partials/nav.ejs', { activePage: 'registros' }) %>
     <main class="container mt-4">
-      <div class="d-flex align-items-center justify-content-between mb-4">
-        <h1>Registros y Estadísticas</h1>
+      <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-4">
         <div>
-          <a href="/admin/exportar-logs" class="btn btn-success">Descargar Excel</a>
+          <p class="fenrir-eyebrow mb-1">Estadísticas</p>
+          <h1 class="admin-page-title h3 mb-0">Registros y estadísticas</h1>
+        </div>
+        <div>
+          <a href="/admin/exportar-logs" class="btn btn-fenrir-success">
+            <i class="bi bi-file-earmark-excel me-1"></i> Descargar Excel
+          </a>
+        </div>
+      </div>
+
+      <div class="card shadow-sm admin-card mb-4">
+        <div class="card-body">
+          <form method="GET" action="/registros" class="row g-3 align-items-end">
+            <div class="col-md-4">
+              <label for="fechaInicio" class="form-label">Desde</label>
+              <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" value="<%= filtros?.fechaInicio || '' %>">
+            </div>
+            <div class="col-md-4">
+              <label for="fechaFin" class="form-label">Hasta</label>
+              <input type="date" class="form-control" id="fechaFin" name="fechaFin" value="<%= filtros?.fechaFin || '' %>">
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+              <button type="submit" class="btn btn-primary">Filtrar encuestas</button>
+              <a href="/registros" class="btn btn-outline-secondary">Limpiar</a>
+            </div>
+          </form>
         </div>
       </div>
 
@@ -186,6 +210,80 @@
                 <% } %>
               </tbody>
             </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-sm admin-card border-top-primary h-100">
+            <div class="card-header admin-card-header border-top-primary">
+              <h5 class="mb-0">Últimas encuestas recibidas</h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0 table-accent-primary">
+                  <thead class="table-light table-head-neutral">
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Email</th>
+                      <th>Puntuación</th>
+                      <th>Términos</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (ultimasEncuestas && ultimasEncuestas.length) { %>
+                      <% ultimasEncuestas.forEach(e => { %>
+                        <tr>
+                          <td><%= new Date(e.fecha).toLocaleString('es-AR') %></td>
+                          <td><%= e.email || '-' %></td>
+                          <td><%= e.puntuacion %></td>
+                          <td><%= e.terminos ? 'Sí' : 'No' %></td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr><td colspan="4" class="text-center">No hay encuestas en el rango seleccionado</td></tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+          <div class="card shadow-sm admin-card border-top-danger h-100">
+            <div class="card-header admin-card-header border-top-danger">
+              <h5 class="mb-0">Encuestas que requieren asistencia (puntuación ≤ 3)</h5>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0 table-accent-danger">
+                  <thead class="table-light table-head-neutral">
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Email</th>
+                      <th>Puntuación</th>
+                      <th>Comentario</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (encuestasAsistencia && encuestasAsistencia.length) { %>
+                      <% encuestasAsistencia.forEach(e => { %>
+                        <tr>
+                          <td><%= new Date(e.fecha).toLocaleString('es-AR') %></td>
+                          <td><%= e.email || '-' %></td>
+                          <td><%= e.puntuacion %></td>
+                          <td><%= e.comentario ? e.comentario.substring(0, 60) : '-' %></td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr><td colspan="4" class="text-center">No hay encuestas de baja puntuación en el rango</td></tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>

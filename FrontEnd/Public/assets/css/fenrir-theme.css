@@ -1,0 +1,433 @@
+/* Fenrir 3D — design system (favicon-aligned) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap');
+
+:root {
+  /* Brand palette — wolf logo */
+  --fenrir-black: #000000;
+  --fenrir-navy: #0a1628;
+  --fenrir-navy-mid: #0f1f35;
+  --fenrir-navy-soft: #152a45;
+  --fenrir-royal: #1e5bb8;
+  --fenrir-cyan: #5ecfff;
+  --fenrir-cyan-dim: #2a8fc4;
+  --fenrir-cyan-light: #90caf9;
+  --fenrir-gold: #ffd700;
+  --fenrir-gold-hover: #ffe566;
+  --fenrir-gold-text: #1a1400;
+  --fenrir-white: #f6f9ff;
+  --fenrir-ice: #b8d8e2;
+
+  /* Legacy aliases */
+  --azul-oscuro: var(--fenrir-navy);
+  --azul: var(--fenrir-royal);
+  --celeste: var(--fenrir-cyan-light);
+  --dorado: var(--fenrir-gold);
+  --blanco: var(--fenrir-white);
+  --gris: #1b2430;
+  --azul-hielo: var(--fenrir-ice);
+
+  /* Surfaces — dark default */
+  --surface-bg: var(--fenrir-navy);
+  --surface-panel: var(--fenrir-navy-mid);
+  --surface-panel-soft: var(--fenrir-navy-soft);
+  --surface-border: rgba(94, 207, 255, 0.35);
+  --surface-border-strong: var(--fenrir-cyan-dim);
+  --text-primary: var(--fenrir-white);
+  --text-muted: #9eb8d8;
+  --text-accent: var(--fenrir-cyan);
+  --shadow-panel: 0 12px 32px rgba(0, 0, 0, 0.35);
+  --radius-sharp: 4px;
+  --radius-panel: 6px;
+  --font-display: 'Rajdhani', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+}
+
+body.bg-light {
+  --surface-bg: #eef4fb;
+  --surface-panel: #ffffff;
+  --surface-panel-soft: #f5f9ff;
+  --surface-border: rgba(30, 91, 184, 0.22);
+  --surface-border-strong: var(--fenrir-royal);
+  --text-primary: #0a1628;
+  --text-muted: #3d5678;
+  --text-accent: #1a4f9f;
+  --shadow-panel: 0 10px 24px rgba(10, 22, 40, 0.1);
+}
+
+/* Contraste legible en ambos temas */
+body.bg-dark .text-muted,
+body.bg-dark .form-text,
+body.bg-dark small {
+  color: #b8cce4 !important;
+}
+
+body.bg-light .text-muted,
+body.bg-light .form-text,
+body.bg-light small {
+  color: #3d5678 !important;
+}
+
+body.bg-dark .form-label,
+body.bg-dark .form-check-label {
+  color: #d4e4f8;
+  font-weight: 500;
+}
+
+body.bg-light .form-label,
+body.bg-light .form-check-label {
+  color: #2a4060;
+  font-weight: 500;
+}
+
+body.bg-light .form-control,
+body.bg-light .form-select {
+  background: #ffffff;
+  border-color: rgba(30, 91, 184, 0.28);
+  color: var(--text-primary);
+}
+
+body.bg-light .form-control:focus,
+body.bg-light .form-select:focus {
+  border-color: var(--fenrir-royal);
+  box-shadow: 0 0 0 0.2rem rgba(30, 91, 184, 0.15);
+  color: var(--text-primary);
+}
+
+/* Typography */
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6,
+.fenrir-display,
+.client-header .fs-4,
+.admin-page-title,
+.admin-section-title,
+.titulo {
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+
+.fenrir-eyebrow {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-accent);
+}
+
+/* Panels */
+.fenrir-panel {
+  background: linear-gradient(155deg, var(--surface-panel), var(--surface-panel-soft));
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+  color: var(--text-primary);
+}
+
+.fenrir-panel-header {
+  padding: 1rem 1.15rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.fenrir-panel-body {
+  padding: 1.15rem;
+}
+
+/* Buttons — angular, gold CTA */
+.fenrir-btn,
+.btn-fenrir-primary,
+.btn-fenrir-secondary,
+.btn-fenrir-ghost {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.88rem;
+  border-radius: var(--radius-sharp);
+  transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-fenrir-primary,
+body.bg-dark .btn-primary:not(.btn-outline-primary):not(.btn-outline-secondary):not(.btn-outline-light):not(.btn-outline-danger),
+body.bg-light .btn-primary:not(.btn-outline-primary):not(.btn-outline-secondary):not(.btn-outline-light):not(.btn-outline-danger) {
+  background: var(--fenrir-gold) !important;
+  border: 1px solid rgba(255, 215, 0, 0.6) !important;
+  color: var(--fenrir-gold-text) !important;
+  box-shadow: 0 0 0 0 transparent;
+}
+
+.btn-fenrir-primary:hover,
+body.bg-dark .btn-primary:not(.btn-outline-primary):not(.btn-outline-secondary):not(.btn-outline-light):not(.btn-outline-danger):hover,
+body.bg-light .btn-primary:not(.btn-outline-primary):not(.btn-outline-secondary):not(.btn-outline-light):not(.btn-outline-danger):hover {
+  background: var(--fenrir-gold-hover) !important;
+  color: var(--fenrir-gold-text) !important;
+  box-shadow: 0 0 14px rgba(255, 215, 0, 0.35);
+}
+
+body.bg-dark .btn-fenrir-secondary,
+body.bg-dark .btn-outline-secondary,
+body.bg-dark .btn-outline-light {
+  background: transparent !important;
+  border: 1px solid var(--fenrir-cyan) !important;
+  color: var(--fenrir-cyan-light) !important;
+}
+
+body.bg-dark .btn-fenrir-secondary:hover,
+body.bg-dark .btn-outline-secondary:hover,
+body.bg-dark .btn-outline-light:hover {
+  background: rgba(94, 207, 255, 0.12) !important;
+  border-color: var(--fenrir-cyan) !important;
+  color: var(--fenrir-white) !important;
+  box-shadow: 0 0 12px rgba(94, 207, 255, 0.2);
+}
+
+body.bg-light .btn-fenrir-secondary,
+body.bg-light .btn-outline-secondary,
+body.bg-light .btn-outline-light {
+  background: rgba(30, 91, 184, 0.08) !important;
+  border: 1.5px solid #1a4f9f !important;
+  color: #0a1628 !important;
+}
+
+body.bg-light .btn-fenrir-secondary:hover,
+body.bg-light .btn-outline-secondary:hover,
+body.bg-light .btn-outline-light:hover {
+  background: rgba(30, 91, 184, 0.16) !important;
+  border-color: #0d3d7a !important;
+  color: #061528 !important;
+  box-shadow: 0 2px 8px rgba(10, 22, 40, 0.12);
+}
+
+.btn-fenrir-success {
+  background: var(--fenrir-cyan-dim) !important;
+  border: 1px solid var(--fenrir-cyan) !important;
+  color: var(--fenrir-white) !important;
+  border-radius: var(--radius-sharp);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.88rem;
+}
+
+.btn-fenrir-success:hover {
+  background: var(--fenrir-cyan) !important;
+  box-shadow: 0 0 12px rgba(94, 207, 255, 0.3);
+}
+
+/* Form controls */
+.fenrir-input,
+.form-control,
+.form-select {
+  border-radius: var(--radius-sharp) !important;
+}
+
+body.bg-dark .form-control,
+body.bg-dark .form-select {
+  background: var(--surface-panel-soft);
+  border-color: var(--surface-border);
+  color: var(--text-primary);
+}
+
+body.bg-dark .form-control:focus,
+body.bg-dark .form-select:focus {
+  background: var(--surface-panel-soft);
+  border-color: var(--fenrir-cyan);
+  color: var(--text-primary);
+  box-shadow: 0 0 0 0.2rem rgba(94, 207, 255, 0.2);
+}
+
+body.bg-dark .form-label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Theme toggle */
+.fenrir-theme-btn {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  border-radius: var(--radius-sharp) !important;
+}
+
+.fenrir-theme-btn .bi {
+  font-size: 1.05rem;
+}
+
+/* Glow accent line (logo shard feel) */
+.fenrir-accent-line {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--fenrir-cyan), var(--fenrir-gold), transparent);
+}
+
+/* Price highlight */
+.fenrir-price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--fenrir-gold);
+}
+
+body.bg-light .fenrir-price {
+  color: #8a6800;
+  font-weight: 800;
+}
+
+.btn-fenrir-danger {
+  background: #a32d3f !important;
+  border: 1px solid #c83a4f !important;
+  color: #ffe9ed !important;
+  border-radius: var(--radius-sharp);
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.88rem;
+}
+
+.btn-fenrir-danger:hover {
+  background: #c83a4f !important;
+  box-shadow: 0 0 12px rgba(200, 58, 79, 0.35);
+}
+
+/* SweetAlert2 — Fenrir theme */
+.fenrir-swal-popup {
+  background: var(--surface-panel) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--surface-border) !important;
+  border-radius: var(--radius-panel) !important;
+  box-shadow: var(--shadow-panel) !important;
+  padding: 1.25rem 1rem 1rem !important;
+}
+
+.fenrir-swal-title {
+  font-family: var(--font-display) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  color: var(--text-primary) !important;
+}
+
+.fenrir-swal-text {
+  color: var(--text-muted) !important;
+  font-size: 0.95rem !important;
+}
+
+.fenrir-swal-actions {
+  gap: 0.5rem !important;
+  margin-top: 0.75rem !important;
+}
+
+.fenrir-swal-btn {
+  margin: 0 !important;
+  min-width: 6.5rem;
+}
+
+.swal2-icon.swal2-warning {
+  border-color: var(--fenrir-gold) !important;
+  color: var(--fenrir-gold) !important;
+}
+
+.swal2-icon.swal2-success {
+  border-color: var(--fenrir-cyan) !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: var(--fenrir-cyan) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(94, 207, 255, 0.35) !important;
+}
+
+.swal2-icon.swal2-error {
+  border-color: #c83a4f !important;
+}
+
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+  background-color: #c83a4f !important;
+}
+
+.swal2-icon.swal2-question {
+  border-color: var(--fenrir-cyan) !important;
+  color: var(--fenrir-cyan) !important;
+}
+
+/* Paginación catálogo */
+.fenrir-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  padding: 0.85rem 1rem;
+  background: linear-gradient(155deg, var(--surface-panel), var(--surface-panel-soft));
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+.fenrir-page-info {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  min-width: 9rem;
+  text-align: center;
+}
+
+.fenrir-page-info strong {
+  color: var(--text-accent);
+}
+
+.fenrir-page-count {
+  display: block;
+  font-size: 0.78rem;
+  margin-top: 0.15rem;
+  color: var(--text-muted);
+}
+
+.fenrir-page-btn {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--radius-sharp);
+  padding: 0.45rem 0.85rem;
+  transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+
+body.bg-dark .fenrir-page-btn {
+  border: 1px solid var(--fenrir-cyan);
+  background: transparent;
+  color: var(--fenrir-cyan-light);
+}
+
+body.bg-light .fenrir-page-btn {
+  border: 1.5px solid #1a4f9f;
+  background: rgba(30, 91, 184, 0.08);
+  color: #0a1628;
+}
+
+body.bg-dark .fenrir-page-btn:hover:not(:disabled) {
+  background: rgba(94, 207, 255, 0.12);
+  color: var(--fenrir-white);
+  box-shadow: 0 0 10px rgba(94, 207, 255, 0.2);
+}
+
+body.bg-light .fenrir-page-btn:hover:not(:disabled) {
+  background: rgba(30, 91, 184, 0.08);
+  color: var(--fenrir-navy);
+}
+
+.fenrir-page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

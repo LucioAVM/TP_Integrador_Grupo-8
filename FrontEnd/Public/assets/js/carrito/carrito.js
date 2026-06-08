@@ -1,6 +1,12 @@
 import { renderCarrito } from '../components/carrito.js';
 import { renderMiniCarrito } from '../components/miniCarrito.js';
 import { animarMiniCarrito, animarAccionMiniCarrito, mostrarFeedbackMiniCarrito } from '../animations/miniCarrito.animations.js';
+import {
+  fenrirConfirmDelete,
+  fenrirConfirmAction,
+  fenrirAlertSuccess,
+  fenrirAlertError,
+} from '../utils/fenrirSwal.js';
 
 const MAX_CANTIDAD_POR_PRODUCTO = 99;
 
@@ -140,15 +146,10 @@ export function renderMiniCarritoEnDOM(options = {}) {
       btnVaciar.addEventListener('click', async () => {
         if (carrito.length === 0) return;
 
-        const result = await Swal.fire({
+        const result = await fenrirConfirmDelete({
           title: 'Vaciar carrito',
-          text: 'Se eliminaran todos los productos seleccionados.',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#6c757d',
-          confirmButtonText: 'Si, vaciar',
-          cancelButtonText: 'Cancelar'
+          text: 'Se eliminarán todos los productos seleccionados.',
+          confirmButtonText: 'Sí, vaciar',
         });
 
         if (result.isConfirmed) {
@@ -205,20 +206,19 @@ export function initCarrito() {
 const btnConfirmar = document.getElementById("confirmar-btn");
 if (btnConfirmar) {
   btnConfirmar.addEventListener("click", async function () {
-    const confirmacion = await Swal.fire({
+    const confirmacion = await fenrirConfirmAction({
       title: '¿Finalizar compra?',
       text: '¿Estás seguro de que deseas confirmar tu pedido?',
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#28a745',
-      cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, comprar',
-      cancelButtonText: 'Cancelar'
     });
 
     if (!confirmacion.isConfirmed) return;
 
-    const nombre_usuario = localStorage.getItem('nombre_usuario') || localStorage.getItem('nombreCliente') || 'Invitado';
+    const nombre_usuario = localStorage.getItem('nombre_usuario')?.trim();
+    if (!nombre_usuario) {
+      window.location.href = '/';
+      return;
+    }
     const productos = carrito.map(item => ({
       producto_id: item.id,
       cantidad: item.cantidad,
@@ -245,11 +245,9 @@ if (btnConfirmar) {
         localStorage.setItem('ultimo_ticket', JSON.stringify(ticketData));
 
         // Confirmación visual al usuario
-        await Swal.fire({
-          title: '¡Éxito!',
-          text: '¡Compra confirmada!',
-          icon: 'success',
-          confirmButtonText: 'Aceptar'
+        await fenrirAlertSuccess({
+          title: '¡Compra confirmada!',
+          text: 'Tu pedido fue registrado correctamente.',
         });
 
         // Limpiar el carrito localmente SOLO después de la confirmación
@@ -267,22 +265,15 @@ if (btnConfirmar) {
         } catch (e) {
           // ignore JSON parse errors
         }
-        Swal.fire({
-          title: 'Error',
-          text: 'Error al registrar la venta: ' + msg,
-          icon: 'error',
-          confirmButtonText: 'Aceptar'
-        });
+        fenrirAlertError('Error', 'Error al registrar la venta: ' + msg);
       }
     } catch (err) {
       // Error de red o excepción: NO BORRAR carrito
       console.error('Error enviando venta:', err);
-      Swal.fire({
-        title: 'Error de conexión',
-        text: 'Error de conexión al registrar la venta. Verificá tu conexión y reintentá.',
-        icon: 'error',
-        confirmButtonText: 'Aceptar'
-      });
+      fenrirAlertError(
+        'Error de conexión',
+        'No se pudo registrar la venta. Verificá tu conexión y reintentá.',
+      );
     }
   });
 }
@@ -303,15 +294,9 @@ if (btnConfirmar) {
           guardarYActualizar();
         } else {
           const nombre = carrito[idx].nombre || carrito[idx].name || "este producto";
-          Swal.fire({
+          fenrirConfirmDelete({
             title: '¿Eliminar producto?',
             text: `¿Seguro que deseas eliminar ${nombre} del carrito?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Sí, eliminar',
-            cancelButtonText: 'Cancelar'
           }).then((result) => {
             if (result.isConfirmed) {
               carrito.splice(idx, 1);
@@ -345,15 +330,9 @@ if (btnConfirmar) {
       btn.addEventListener("click", function () {
         const idx = parseInt(this.getAttribute("data-idx"));
         const nombre = carrito[idx].nombre || carrito[idx].name || "este producto";
-        Swal.fire({
+        fenrirConfirmDelete({
           title: '¿Eliminar producto?',
           text: `¿Seguro que deseas eliminar ${nombre} del carrito?`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Sí, eliminar',
-          cancelButtonText: 'Cancelar'
         }).then((result) => {
           if (result.isConfirmed) {
             carrito.splice(idx, 1);

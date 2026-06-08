@@ -27,18 +27,27 @@ export function initProductoDetalle() {
 
 function renderDetail(p) {
   return `
-    <div class="row">
-      <div class="col-md-5">
-        <img src="${p.imagen}" class="img-fluid" alt="${p.nombre}" />
-      </div>
-      <div class="col-md-7 text-white">
-        <h2>${p.nombre}</h2>
-        <p>${p.descripcion || ''}</p>
-        <h4>$${p.precio}</h4>
-        <div class="d-flex align-items-center gap-2 mb-3">
-          <input id="input-cantidad" type="number" min="1" value="1" class="form-control" style="width:100px;" />
-          <button id="btn-add-carrito" class="btn btn-primary">Agregar al carrito</button>
-          <a href="/producto.html" class="btn btn-outline-light">Volver al catálogo</a>
+    <div class="detalle-panel fenrir-panel">
+      <div class="row g-4 align-items-start">
+        <div class="col-md-5">
+          <div class="detalle-img-wrap">
+            <img src="${p.imagen}" class="detalle-img" alt="${p.nombre}" />
+          </div>
+        </div>
+        <div class="col-md-7">
+          <p class="fenrir-eyebrow mb-1">${p.categoria || 'Producto'} · ${p.tipo || ''}</p>
+          <h2 class="detalle-title">${p.nombre}</h2>
+          <p class="detalle-desc">${p.descripcion || ''}</p>
+          <p class="fenrir-price mb-3">$${p.precio}</p>
+          <div class="detalle-actions">
+            <input id="input-cantidad" type="number" min="1" value="1" class="form-control detalle-qty" />
+            <button id="btn-add-carrito" class="btn btn-primary btn-fenrir-primary">
+              <i class="bi bi-cart-plus me-1"></i> Agregar
+            </button>
+            <a href="/producto.html" class="btn btn-fenrir-secondary">
+              <i class="bi bi-arrow-left me-1"></i> Catálogo
+            </a>
+          </div>
         </div>
       </div>
     </div>

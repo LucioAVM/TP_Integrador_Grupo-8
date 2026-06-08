@@ -1,0 +1,58 @@
+.encuesta-page {
+  color: var(--text-primary);
+}
+
+.encuesta-card.fenrir-panel {
+  padding: 0;
+}
+
+.encuesta-card .encuesta-inner {
+  padding: 1.5rem 1.75rem 1.75rem;
+}
+
+.encuesta-card h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+}
+
+.encuesta-card .encuesta-intro {
+  color: var(--text-muted);
+}
+
+.encuesta-scale-hint {
+  color: var(--text-muted) !important;
+  font-size: 0.85rem;
+}
+
+.encuesta-omitir {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+#form-encuesta .invalid-feedback {
+  display: block;
+  color: #f8a5a5;
+}
+
+#form-encuesta .is-invalid {
+  border-color: #dc3545 !important;
+}
+
+#puntuacion-valor {
+  background: var(--fenrir-gold) !important;
+  color: var(--fenrir-gold-text) !important;
+  border-radius: var(--radius-sharp);
+  min-width: 2rem;
+}
+
+@media (max-width: 576px) {
+  .encuesta-card .encuesta-inner {
+    padding: 1.25rem !important;
+  }
+
+  .encuesta-card h1 {
+    font-size: 1.35rem;
+  }
+}

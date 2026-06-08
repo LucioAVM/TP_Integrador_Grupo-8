@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
   <%- include('partials/head.ejs') %>
-  <body>
-    <%- include('partials/nav.ejs') %>
+  <body class="bg-dark admin-root">
+    <%- include('partials/nav.ejs', { activePage: 'asistencia' }) %>
     <main class="container mt-4">
       <div class="d-flex align-items-center justify-content-between mb-4">
-        <h1>Asistencia - Encuestas de Satisfacción</h1>
+        <div>
+          <p class="fenrir-eyebrow mb-1">Encuestas</p>
+          <h1 class="admin-page-title h3 mb-0">Asistencia — encuestas</h1>
+        </div>
       </div>
 
       <div class="card mb-4 shadow-sm admin-card border-top-primary">

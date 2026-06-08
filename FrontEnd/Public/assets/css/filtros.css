@@ -1,10 +1,47 @@
 #filtros-container .card {
-  background: var(--azul-oscuro);
-  color: var(--blanco);
-  border: 2px solid var(--celeste);
+  background: linear-gradient(160deg, var(--surface-panel), var(--surface-panel-soft));
+  color: var(--text-primary);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
 }
-body.bg-light #filtros-container .card {
-  background: var(--azul-hielo);
-  color: var(--azul-oscuro);
-  border: 2px solid var(--azul);
+
+#filtros-container .card-header {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  background: transparent;
+  border-bottom: 1px solid var(--surface-border);
+  color: var(--text-accent);
+}
+
+#filtros-container .list-group-item {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--surface-border);
+}
+
+#filtros-container .list-group-item.active {
+  background: rgba(94, 207, 255, 0.15);
+  border-color: var(--fenrir-cyan-dim);
+  color: var(--text-primary);
+}
+
+#filtros-container .list-group-item label {
+  color: var(--text-primary);
+  margin-left: 0.4rem;
+  margin-bottom: 0;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+body.bg-light #filtros-container .list-group-item.active {
+  background: rgba(30, 91, 184, 0.1);
+  color: var(--fenrir-navy);
+}
+
+body.bg-light #filtros-container .list-group-item label {
+  color: var(--fenrir-navy);
 }

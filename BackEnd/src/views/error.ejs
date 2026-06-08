@@ -1,12 +1,23 @@
 <!DOCTYPE html>
 <html lang="es">
   <%- include('partials/head.ejs') %>
-  <body>
-    <%- include('partials/nav.ejs') %>
-    <main class="contenedor">
-      <h1 class="titulo">Error</h1>
-      <p><%= mensaje %></p>
-      <a href="/" class="boton boton-secundario">Volver al inicio</a>
+  <body class="bg-dark admin-root">
+    <%- include('partials/nav.ejs', { activePage: '' }) %>
+    <main class="container my-5">
+      <div class="fenrir-panel mx-auto" style="max-width: 520px;">
+        <div class="fenrir-panel-body text-center py-4">
+          <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2.5rem;"></i>
+          <p class="fenrir-eyebrow mt-3 mb-1">Error</p>
+          <h1 class="admin-page-title h4 mb-3">Algo salió mal</h1>
+          <p class="admin-panel-copy mb-4"><%= mensaje %></p>
+          <a href="/dashboard" class="btn btn-admin-primary me-2">
+            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+          </a>
+          <a href="/" class="btn btn-fenrir-secondary">
+            <i class="bi bi-house me-1"></i> Inicio cliente
+          </a>
+        </div>
+      </div>
     </main>
     <%- include('partials/footer.ejs') %>
   </body>

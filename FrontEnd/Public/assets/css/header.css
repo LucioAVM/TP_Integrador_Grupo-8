@@ -1,27 +1,113 @@
 body.bg-dark header,
-body.bg-dark .navbar {
-  background-color: var(--azul-oscuro) !important;
-  color: var(--blanco) !important;
-  border-bottom: 3px solid var(--celeste);
+body.bg-dark .navbar,
+body.bg-dark .client-header {
+  background-color: var(--fenrir-navy-mid) !important;
+  color: var(--fenrir-white) !important;
 }
 
 body.bg-light header,
-body.bg-light .navbar {
-  background-color: var(--celeste) !important;
-  color: var(--azul-oscuro) !important;
-  border-bottom: 3px solid var(--azul);
+body.bg-light .navbar,
+body.bg-light .client-header {
+  background-color: #ffffff !important;
+  color: var(--fenrir-navy) !important;
 }
 
-/* Enlaces dentro del header/navbar */
+.client-header .fenrir-accent-line {
+  margin: 0;
+}
+
 body.bg-dark header .nav-link,
 body.bg-dark .navbar .nav-link,
 body.bg-dark header .navbar-brand,
-body.bg-dark .navbar .navbar-brand {
-  color: var(--blanco) !important;
+body.bg-dark .navbar .navbar-brand,
+body.bg-dark .client-header a {
+  color: var(--fenrir-white) !important;
 }
+
 body.bg-light header .nav-link,
 body.bg-light .navbar .nav-link,
 body.bg-light header .navbar-brand,
-body.bg-light .navbar .navbar-brand {
-  color: var(--azul-oscuro) !important;
+body.bg-light .navbar .navbar-brand,
+body.bg-light .client-header a {
+  color: var(--fenrir-navy) !important;
+}
+
+.client-header .brand-name {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.client-header .alumnos-line {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+body.bg-dark .client-header .alumnos-line {
+  color: var(--fenrir-cyan-light);
+  opacity: 0.85;
+}
+
+.client-header .client-navbar {
+  border-color: rgba(94, 207, 255, 0.2) !important;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+body.bg-light .client-header .client-navbar {
+  background: var(--surface-panel-soft);
+  border-color: var(--surface-border) !important;
+}
+
+.client-header .client-nav-link {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  border-radius: var(--radius-sharp);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.client-header .client-nav-link.active {
+  font-weight: 700;
+  background: rgba(94, 207, 255, 0.12);
+  color: var(--fenrir-cyan) !important;
+  text-decoration: none;
+  box-shadow: inset 0 -2px 0 var(--fenrir-gold);
+}
+
+body.bg-light .client-header .client-nav-link.active {
+  background: rgba(30, 91, 184, 0.08);
+  color: var(--fenrir-royal) !important;
+}
+
+.client-header .client-nav-link:hover {
+  background: rgba(94, 207, 255, 0.08);
+}
+
+.client-header .client-navbar .nav {
+  gap: 0.15rem;
+}
+
+.client-header .client-nav-link .bi {
+  font-size: 0.9rem;
+  margin-right: 0.25rem;
+}
+
+@media (max-width: 576px) {
+  .client-header .container.py-2 {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .client-header .client-navbar .nav-link {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .client-header .brand-name {
+    font-size: 1.1rem;
+  }
 }

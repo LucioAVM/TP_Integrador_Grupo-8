@@ -13,7 +13,9 @@ export function inicializarTema() {
 
   function actualizarIconoTema() {
     if (!btn) return;
-    btn.textContent = body.classList.contains('bg-light') ? '☀️' : '🌙';
+    btn.innerHTML = body.classList.contains('bg-light')
+      ? '<i class="bi bi-sun-fill"></i>'
+      : '<i class="bi bi-moon-stars-fill"></i>';
   }
 
   const savedTheme = localStorage.getItem('theme');

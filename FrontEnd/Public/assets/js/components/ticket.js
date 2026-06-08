@@ -3,21 +3,26 @@ export function renderTicket(cart, total, fecha, nombre_usuario) {
     return `<div class="alert alert-warning">El carrito está vacío.</div>`;
   }
   return `
-    <div class="ticket-wrapper p-4 bg-dark rounded border border-secondary">
-        <h2 class="text-light mb-4 text-center">Ticket de Compra</h2>
-        <div class="d-flex justify-content-between align-items-center mb-2">
-          <span class="text-light fs-5"><strong>Fenrir 3D</strong></span>
-          <span id="ticket-date" class="text-light">${fecha}</span>
+    <div class="ticket-wrapper fenrir-panel">
+      <div class="ticket-header">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+          <div>
+            <p class="fenrir-eyebrow mb-1">Comprobante</p>
+            <h2 class="ticket-brand mb-0">Fenrir 3D</h2>
+          </div>
+          <span id="ticket-date" class="ticket-date"><i class="bi bi-calendar3 me-1"></i>${fecha}</span>
         </div>
-        <div class="mb-4">
-          <span class="text-light"><strong>Cliente:</strong> ${nombre_usuario || 'Consumidor Final'}</span>
-        </div>
-        <table class="table table-dark table-striped">
+      </div>
+      <div class="ticket-meta">
+        <i class="bi bi-person me-1"></i><strong>Cliente:</strong> ${nombre_usuario || 'Consumidor Final'}
+      </div>
+      <div class="ticket-table-wrap">
+        <table class="ticket-table">
           <thead>
             <tr>
               <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Precio Unitario</th>
+              <th>Cant.</th>
+              <th>P. unit.</th>
               <th>Subtotal</th>
             </tr>
           </thead>
@@ -36,18 +41,22 @@ export function renderTicket(cart, total, fecha, nombre_usuario) {
             }).join('')}
           </tbody>
         </table>
-        <div class="card bg-secondary text-light p-3 mb-4">
-          <div class="d-flex justify-content-between fs-5">
-            <span><strong>Total:</strong></span>
-            <span id="cart-total">$${total.toFixed(2)}</span>
-          </div>
-        </div>
-        <div class="text-center mt-3">
-            <div class="d-flex justify-content-center mt-4">
-                <button id="btn-descargar-pdf" class="btn btn-success me-3">📄 Descargar PDF</button>
-                <a href="/encuesta" class="btn btn-outline-light">Salir</a>
-            </div>
-        </div>
+      </div>
+      <div class="ticket-total-panel">
+        <span>Total</span>
+        <span id="cart-total">$${total.toFixed(2)}</span>
+      </div>
+      <div class="ticket-actions">
+        <button id="btn-descargar-pdf" class="btn btn-fenrir-success">
+          <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+        </button>
+        <a href="/encuesta" class="btn btn-fenrir-secondary">
+          <i class="bi bi-chat-square-text me-1"></i> Encuesta
+        </a>
+        <button id="btn-reiniciar" type="button" class="btn btn-primary btn-fenrir-primary">
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Reiniciar
+        </button>
+      </div>
     </div>
   `;
 }

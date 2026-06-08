@@ -1,101 +1,75 @@
 <!DOCTYPE html>
 <html lang="es">
   <%- include('partials/head.ejs') %>
-  <body class="bg-light">
-    <%- include('partials/nav.ejs') %>
-    <main class="container my-4 crear-producto-page">
-      <div class="row justify-content-center">
-        <div class="col-12 col-xl-10">
-          <div class="card admin-card shadow-sm border-0 overflow-hidden">
-            <div class="card-header admin-card-header border-top-primary py-3">
-              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
-                <div>
-                  <p class="admin-eyebrow mb-1">Catálogo admin</p>
-                  <h1 class="admin-page-title h4 mb-0">Crear nuevo producto</h1>
-                </div>
-                <a href="/dashboard" class="btn btn-outline-secondary btn-sm">Volver al dashboard</a>
-              </div>
-            </div>
+  <body class="bg-dark admin-root">
+    <%- include('partials/nav.ejs', { activePage: 'dashboard' }) %>
+    <main class="contenedor-editar">
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+        <div>
+          <p class="fenrir-eyebrow mb-1">ABM Productos</p>
+          <h1 class="titulo mb-0">Alta de producto</h1>
+        </div>
+        <a href="/dashboard" class="btn btn-fenrir-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1"></i> Volver
+        </a>
+      </div>
 
-            <div class="card-body p-4 p-lg-5">
-              <div class="row g-4 align-items-start">
-                <div class="col-12 col-lg-4">
-                  <div class="p-4 rounded-4 h-100 crear-producto-panel">
-                    <p class="admin-eyebrow mb-2">Pauta visual</p>
-                    <h2 class="admin-section-title h5 mb-3">Alta unificada para el modelo <span class="text-accent">Producto</span></h2>
-                    <p class="admin-panel-copy mb-0">
-                      Completá categoría, tipo e imagen para mantener la coherencia del catálogo público y del panel de administración.
-                    </p>
-                  </div>
-                </div>
+      <form action="/crearProducto" method="POST" enctype="multipart/form-data" class="form-admin">
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input type="text" id="nombre" name="nombre" class="form-control" required />
+        </div>
 
-                <div class="col-12 col-lg-8">
-                  <form action="/crearProducto" method="POST" enctype="multipart/form-data" class="form-admin">
-                    <div class="row g-3">
-                      <div class="col-12 col-md-6">
-                        <label for="categoria" class="form-label">Categoría</label>
-                        <select id="categoria" name="categoria" class="form-select" required>
-                          <option value="">Seleccione una categoría</option>
-                          <option value="impresora">Impresora</option>
-                          <option value="insumo">Insumo</option>
-                        </select>
-                      </div>
+        <div class="mb-3">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <textarea id="descripcion" name="descripcion" rows="4" class="form-control" required></textarea>
+        </div>
 
-                      <div class="col-12 col-md-6">
-                        <label for="tipo" class="form-label">Tipo</label>
-                        <select id="tipo" name="tipo" class="form-select" required>
-                          <option value="">Seleccione un tipo</option>
-                          <option value="filamento">Filamento</option>
-                          <option value="resina">Resina</option>
-                          <option value="otro">Otro</option>
-                        </select>
-                      </div>
-
-                      <div class="col-12">
-                        <label for="nombre" class="form-label">Nombre</label>
-                        <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Ej: Impresora 3D Pro" required />
-                      </div>
-
-                      <div class="col-12 col-md-6">
-                        <label for="precio" class="form-label">Precio</label>
-                        <div class="input-group">
-                          <span class="input-group-text">$</span>
-                          <input type="number" id="precio" name="precio" class="form-control" step="0.01" min="0" placeholder="0.00" required />
-                        </div>
-                      </div>
-
-                      <div class="col-12 col-md-6">
-                        <label for="activo" class="form-label">Estado</label>
-                        <select id="activo" name="activo" class="form-select" required>
-                          <option value="true">Activo</option>
-                          <option value="false">Inactivo</option>
-                        </select>
-                      </div>
-
-                      <div class="col-12">
-                        <label for="descripcion" class="form-label">Descripción</label>
-                        <textarea id="descripcion" name="descripcion" class="form-control" rows="4" placeholder="Describí el producto para el catálogo..." required></textarea>
-                      </div>
-
-                      <div class="col-12">
-                        <label for="imagen" class="form-label">Imagen</label>
-                        <input type="file" id="imagen" name="imagen" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
-                        <div class="form-text">Formatos admitidos: JPG, PNG y WEBP.</div>
-                      </div>
-
-                      <div class="col-12 d-flex flex-column flex-sm-row gap-2 pt-2">
-                        <button type="submit" class="btn btn-primary px-4">Crear producto</button>
-                        <a href="/dashboard" class="btn btn-outline-secondary px-4">Cancelar</a>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <label for="precio" class="form-label">Precio</label>
+            <input type="number" id="precio" name="precio" step="0.01" min="0" class="form-control" required />
+          </div>
+          <div class="col-sm-6">
+            <label for="activo" class="form-label">Activo</label>
+            <select id="activo" name="activo" class="form-select" required>
+              <option value="true" selected>Sí</option>
+              <option value="false">No</option>
+            </select>
           </div>
         </div>
-      </div>
+
+        <div class="row g-3 mt-0">
+          <div class="col-sm-6 mb-3 mb-sm-0">
+            <label for="categoria" class="form-label">Categoría</label>
+            <select id="categoria" name="categoria" class="form-select" required>
+              <option value="">Seleccionar...</option>
+              <option value="impresora">Impresora</option>
+              <option value="insumo">Insumo</option>
+            </select>
+          </div>
+          <div class="col-sm-6">
+            <label for="tipo" class="form-label">Tipo</label>
+            <select id="tipo" name="tipo" class="form-select" required>
+              <option value="">Seleccionar...</option>
+              <option value="filamento">Filamento</option>
+              <option value="resina">Resina</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <label for="imagen" class="form-label">Imagen</label>
+          <input type="file" id="imagen" name="imagen" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
+        </div>
+
+        <button type="submit" class="btn btn-admin-primary">
+          <i class="bi bi-check2-circle me-1"></i> Guardar producto
+        </button>
+      </form>
     </main>
     <%- include('partials/footer.ejs') %>
+    <script type="module" src="/assets/js/adminThemeInit.js"></script>
   </body>
 </html>

@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html lang="es">
   <%- include('partials/head.ejs') %>
-  <body>
-    <%- include('partials/nav.ejs') %>
+  <body class="bg-dark admin-root">
+    <%- include('partials/nav.ejs', { activePage: 'dashboard' }) %>
     <main class="container my-4">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="h4 mb-0">Gestión de Productos</h2>
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
         <div>
-          <a href="/crearProducto" class="btn btn-primary me-2">+ Nuevo</a>
-          <a href="/registros" class="btn btn-outline-secondary">Registros</a>
+          <p class="fenrir-eyebrow mb-1">Panel admin</p>
+          <h2 class="admin-page-title h4 mb-0">Gestión de productos</h2>
+        </div>
+        <div class="dashboard-actions">
+          <a href="/crearProducto" class="btn btn-admin-primary me-2">
+            <i class="bi bi-plus-lg me-1"></i> Nuevo
+          </a>
+          <a href="/registros" class="btn btn-fenrir-secondary">
+            <i class="bi bi-bar-chart-line me-1"></i> Registros
+          </a>
         </div>
       </div>
 
@@ -39,41 +46,12 @@
         </div>
       </div>
 
-      <div class="table-responsive shadow-sm rounded-3 admin-card">
-        <table class="table table-sm table-hover align-middle mb-0 table-accent-primary">
-          <thead class="table-light table-head-neutral">
-            <tr>
-              <th style="width:64px">Imagen</th>
-              <th>Nombre</th>
-              <th style="width:100px">Stock</th>
-              <th style="width:120px">Precio</th>
-              <th style="width:160px">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% productos.forEach(producto => { %>
-            <tr data-id="<%= producto.id %>" class="<%= producto.activo ? '' : 'table-secondary' %>">
-              <td>
-                <img src="<%= producto.imagen || '/assets/img/favicon.png' %>" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
-              </td>
-              <td><strong><%= producto.nombre %></strong><br/><small class="text-muted"><%= producto.categoria %> · <%= producto.tipo %></small></td>
-              <td><%= producto.stock || '-' %></td>
-              <td>$<%= Number(producto.precio).toFixed(2) %></td>
-              <td>
-                <a href="/productos/<%= producto.id %>/editar" class="btn btn-sm btn-warning text-white me-1">Editar</a>
-                <% if (producto.activo) { %>
-                  <button class="btn btn-sm btn-danger desactivar" data-id="<%= producto.id %>">Desactivar</button>
-                <% } else { %>
-                  <button class="btn btn-sm btn-success reactivar" data-id="<%= producto.id %>">Reactivar</button>
-                <% } %>
-              </td>
-            </tr>
-            <% }) %>
-          </tbody>
-        </table>
-      </div>
+      <h3 class="h5 mb-3">Insumos</h3>
+      <%- include('partials/tablaProductos.ejs', { productosLista: insumos }) %>
+
+      <h3 class="h5 mb-3">Impresoras</h3>
+      <%- include('partials/tablaProductos.ejs', { productosLista: impresoras }) %>
     </main>
     <%- include('partials/footer.ejs') %>
-    <script src="/assets/js/animations/admin.animations.js"></script>
   </body>
 </html>

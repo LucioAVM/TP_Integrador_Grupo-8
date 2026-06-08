@@ -1,0 +1,53 @@
+<div class="table-responsive shadow-sm rounded-3 admin-card mb-4">
+  <table class="table table-sm table-hover align-middle mb-0 table-accent-primary">
+    <thead class="table-light table-head-neutral">
+      <tr>
+        <th style="width:64px">Imagen</th>
+        <th>Nombre</th>
+        <th>Descripción</th>
+        <th style="width:90px">Estado</th>
+        <th style="width:110px">Precio</th>
+        <th style="width:200px">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (productosLista.length === 0) { %>
+        <tr>
+          <td colspan="6" class="text-center text-muted py-4">No hay productos en esta categoría</td>
+        </tr>
+      <% } %>
+      <% productosLista.forEach(producto => { %>
+      <% const descripcion = producto.descripcion || ''; %>
+      <% const descripcionCorta = descripcion.length > 80 ? descripcion.substring(0, 80) + '…' : descripcion; %>
+      <tr data-id="<%= producto.id %>" class="<%= producto.activo ? '' : 'table-secondary' %>">
+        <td>
+          <img src="<%= producto.imagen || '/assets/img/favicon.png' %>" alt="" style="width:56px;height:56px;object-fit:cover;border-radius:6px">
+        </td>
+        <td>
+          <strong><%= producto.nombre %></strong><br/>
+          <small class="text-muted"><%= producto.categoria %> · <%= producto.tipo %></small>
+        </td>
+        <td>
+          <span title="<%= descripcion %>"><%= descripcionCorta || '—' %></span>
+        </td>
+        <td>
+          <% if (producto.activo) { %>
+            <span class="badge bg-success">Activo</span>
+          <% } else { %>
+            <span class="badge bg-secondary">Inactivo</span>
+          <% } %>
+        </td>
+        <td>$<%= Number(producto.precio).toFixed(2) %></td>
+        <td class="dashboard-actions">
+          <a href="/productos/<%= producto.id %>/editar" class="btn btn-sm btn-warning text-white me-1">Editar</a>
+          <% if (producto.activo) { %>
+            <button class="btn btn-sm btn-danger desactivar" data-id="<%= producto.id %>">Desactivar</button>
+          <% } else { %>
+            <button class="btn btn-sm btn-success reactivar" data-id="<%= producto.id %>">Reactivar</button>
+          <% } %>
+        </td>
+      </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>

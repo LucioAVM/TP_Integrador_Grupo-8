@@ -75,7 +75,7 @@ body.bg-light #mini-carrito-container {
 
 #mini-carrito-container .mini-cart-card {
   border: 1px solid var(--mc-card-border);
-  border-radius: 16px;
+  border-radius: var(--radius-panel, 6px);
   overflow: hidden;
   background: linear-gradient(160deg, var(--mc-card-bg), var(--mc-card-bg-2));
   background-color: var(--mc-card-bg);
@@ -106,7 +106,7 @@ body.bg-light #mini-carrito-container {
   min-width: 72px;
   padding: 4px 10px;
   font-size: 0.78rem;
-  border-radius: 999px;
+  border-radius: var(--radius-sharp, 4px);
   background: var(--mc-chip-bg);
   color: var(--mc-chip-text);
   border: 1px solid transparent;
@@ -124,7 +124,7 @@ body.bg-light #mini-carrito-container {
 }
 
 .mini-cart-list::-webkit-scrollbar-thumb {
-  border-radius: 999px;
+  border-radius: var(--radius-sharp, 4px);
   background: var(--mc-scrollbar);
 }
 
@@ -141,8 +141,9 @@ body.bg-light #mini-carrito-container {
 }
 
 #mini-carrito-container .mini-cart-thumb {
-  border-radius: 10px;
-  object-fit: cover;
+  border-radius: var(--radius-sharp, 4px);
+  object-fit: contain;
+  background: var(--mc-summary-bg);
   border: 1px solid var(--mc-thumb-border);
 }
 
@@ -188,7 +189,7 @@ body.bg-light #mini-carrito-container {
   width: 24px;
   height: 24px;
   border: none;
-  border-radius: 7px;
+  border-radius: var(--radius-sharp, 4px);
   font-weight: 800;
   line-height: 1;
   color: var(--mc-qty-text);
@@ -216,7 +217,7 @@ body.bg-light #mini-carrito-container {
 #mini-carrito-container .mini-cart-remove {
   margin-left: auto;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sharp, 4px);
   padding: 3px 8px;
   font-size: 0.72rem;
   font-weight: 800;
@@ -257,7 +258,7 @@ body.bg-light #mini-carrito-container {
 
 #mini-carrito-container .mini-cart-primary,
 #mini-carrito-container .mini-cart-secondary {
-  border-radius: 11px;
+  border-radius: var(--radius-sharp, 4px);
   font-weight: 800;
   letter-spacing: 0.2px;
   padding: 10px 12px;
@@ -352,7 +353,7 @@ body.bg-light #mini-carrito-container {
 }
 
 .mini-cart-toast {
-  border-radius: 10px;
+  border-radius: var(--radius-sharp, 4px);
   padding: 8px 12px;
   font-size: 0.82rem;
   font-weight: 700;

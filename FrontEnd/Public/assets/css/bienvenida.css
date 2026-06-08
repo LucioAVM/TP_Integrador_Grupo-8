@@ -11,39 +11,98 @@ body {
 }
 
 #header-container {
-  flex: 0 0 auto; /* Altura automática según contenido */
+  flex: 0 0 auto;
 }
 
 #bienvenida-container {
-  flex: 1 1 auto; /* Ocupa el resto del espacio */
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 0; /* Para evitar overflow */
+  min-height: 0;
+  padding: 1.5rem 0;
+  position: relative;
+}
+
+#bienvenida-container::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(94, 207, 255, 0.08), transparent),
+    radial-gradient(ellipse 40% 30% at 80% 90%, rgba(255, 215, 0, 0.05), transparent);
+  pointer-events: none;
 }
 
 .bienvenida-card {
   position: relative;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 1rem;
+  z-index: 1;
+}
+
+.bienvenida-hero-logo {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 0.75rem;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(94, 207, 255, 0.25));
+}
+
+.bienvenida-title {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.bienvenida-tagline {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  margin-bottom: 1.35rem;
 }
 
 .admin-access-link {
   position: absolute;
-  top: 0.6rem;
-  right: 0.7rem;
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
+  top: 0.65rem;
+  right: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
-  color: inherit;
-  opacity: 0.18;
-  padding: 0.15rem 0.35rem;
-  border-radius: 999px;
-  transition: opacity 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+  color: var(--text-muted);
+  opacity: 0.35;
+  padding: 0.2rem 0.4rem;
+  border-radius: var(--radius-sharp);
+  border: 1px solid transparent;
+  transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .admin-access-link:hover,
 .admin-access-link:focus {
-  opacity: 0.75;
-  background: rgba(127, 127, 127, 0.12);
-  transform: translateY(-1px);
+  opacity: 0.9;
+  color: var(--fenrir-cyan);
+  border-color: rgba(94, 207, 255, 0.35);
+}
+
+@media (max-width: 576px) {
+  .bienvenida-card {
+    min-width: 0 !important;
+  }
+
+  .bienvenida-hero-logo {
+    width: 72px;
+    height: 72px;
+  }
+
+  .bienvenida-title {
+    font-size: 1.5rem;
+  }
 }

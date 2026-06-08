@@ -1,26 +1,31 @@
 /* Badge cantidad */
 .badge.bg-primary {
-  background: var(--celeste) !important;
-  color: var(--azul-oscuro) !important;
-}
-body.bg-light .badge.bg-primary {
-  background: var(--azul) !important;
-  color: var(--blanco) !important;
+  background: var(--fenrir-cyan) !important;
+  color: var(--fenrir-navy) !important;
 }
 
-/* Otros detalles de enlaces */
-a, .navbar-brand, .nav-link {
-  color: var(--celeste) !important;
+body.bg-light .badge.bg-primary {
+  background: var(--fenrir-royal) !important;
+  color: var(--fenrir-white) !important;
 }
-a:hover, .nav-link:hover {
-  color: var(--dorado) !important;
+
+/* Enlaces en contenido — solo tema oscuro usa cyan claro */
+body.bg-dark main a:not(.btn):not(.nav-link):not(.admin-access-link),
+body.bg-dark .encuesta-page a.encuesta-omitir {
+  color: var(--fenrir-cyan-light) !important;
 }
-body.bg-light a, 
-body.bg-light .navbar-brand, 
-body.bg-light .nav-link {
-  color: var(--azul) !important;
+
+body.bg-dark main a:not(.btn):not(.nav-link):not(.admin-access-link):hover,
+body.bg-dark .encuesta-page a.encuesta-omitir:hover {
+  color: var(--fenrir-gold) !important;
 }
-body.bg-light a:hover, 
-body.bg-light .nav-link:hover {
-  color: var(--dorado) !important;
+
+body.bg-light main a:not(.btn):not(.nav-link):not(.admin-access-link),
+body.bg-light .encuesta-page a.encuesta-omitir {
+  color: var(--fenrir-royal) !important;
+}
+
+body.bg-light main a:not(.btn):not(.nav-link):not(.admin-access-link):hover,
+body.bg-light .encuesta-page a.encuesta-omitir:hover {
+  color: #b89600 !important;
 }

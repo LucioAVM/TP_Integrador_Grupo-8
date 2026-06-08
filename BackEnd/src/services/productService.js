@@ -15,7 +15,8 @@ async function list({ page = 1, limit = 6, q = null, categoria = null, tipo = nu
 
   const { count, rows } = await Producto.findAndCountAll({ where, limit, offset, order: [['id', 'ASC']] });
   const totalPages = Math.max(Math.ceil(count / limit), 1);
-  return { products: rows, totalPages, page };
+  const safePage = Math.min(page, totalPages);
+  return { products: rows, total: count, totalPages, page: safePage, limit };
 }
 
 async function getById(id) {

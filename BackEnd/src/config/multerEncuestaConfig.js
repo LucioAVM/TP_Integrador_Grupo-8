@@ -1,19 +1,24 @@
 import multer from 'multer';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import fs from 'fs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const uploadDir = path.join(__dirname, '..', '..', 'FrontEnd', 'Public', 'uploads', 'encuestas');
+const uploadDir = path.resolve(process.cwd(), 'FrontEnd', 'Public', 'uploads', 'encuestas');
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
+  destination: (req, file, cb) => {
+    if (!fs.existsSync(uploadDir)) {
+      try {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      } catch (e) {
+        return cb(e);
+      }
+    }
+    cb(null, uploadDir);
+  },
   filename: (req, file, cb) => {
     const timestamp = Date.now();
     const safeName = file.originalname.replace(/\s+/g, '_');

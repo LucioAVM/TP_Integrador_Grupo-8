@@ -54,7 +54,7 @@ body.bg-light .cart-screen {
 .cart-empty-panel {
   background: linear-gradient(160deg, var(--cart-panel), var(--cart-panel-soft));
   border: 1px solid var(--cart-border);
-  border-radius: 16px;
+  border-radius: var(--radius-panel, 6px);
   box-shadow: var(--cart-shadow);
 }
 
@@ -82,7 +82,7 @@ body.bg-light .cart-screen {
   font-weight: 700;
   color: var(--cart-secondary-text);
   background: var(--cart-secondary);
-  border-radius: 999px;
+  border-radius: var(--radius-sharp, 4px);
   padding: 0.25rem 0.6rem;
 }
 
@@ -106,8 +106,9 @@ body.bg-light .cart-screen {
 .cart-item-image {
   width: 88px;
   height: 88px;
-  border-radius: 10px;
-  object-fit: cover;
+  border-radius: var(--radius-sharp, 4px);
+  object-fit: contain;
+  background: var(--cart-panel-soft);
   border: 1px solid var(--cart-border);
 }
 
@@ -136,7 +137,7 @@ body.bg-light .cart-screen {
   border: none;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: var(--radius-sharp, 4px);
   background: var(--cart-qty-bg);
   color: var(--cart-qty-text);
   font-weight: 800;
@@ -150,7 +151,7 @@ body.bg-light .cart-screen {
   width: 58px;
   text-align: center;
   border: 1px solid var(--cart-border);
-  border-radius: 8px;
+  border-radius: var(--radius-sharp, 4px);
   background: var(--cart-input-bg);
   color: var(--cart-title);
   font-weight: 700;
@@ -184,7 +185,7 @@ body.bg-light .cart-screen {
 
 .cart-remove-btn {
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sharp, 4px);
   background: var(--cart-danger);
   color: #fff;
   font-size: 0.78rem;
@@ -235,7 +236,7 @@ body.bg-light .cart-screen {
 .cart-primary-btn,
 .cart-secondary-btn {
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-sharp, 4px);
   padding: 0.62rem 0.85rem;
   font-weight: 800;
 }

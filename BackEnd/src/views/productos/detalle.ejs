@@ -1,16 +1,42 @@
 <!DOCTYPE html>
 <html lang="es">
   <%- include('../partials/head.ejs') %>
-  <body>
-    <%- include('../partials/nav.ejs') %>
-    <main class="contenedor">
-      <h1 class="titulo"><%= producto.nombre %></h1>
-      <img src="<%= producto.imagen %>" alt="Imagen <%= producto.nombre %>" class="imagen-producto">
-      <p><strong>Descripción:</strong> <%= producto.descripcion %></p>
-      <p><strong>Precio:</strong> $<%= producto.precio %></p>
-      <p><strong>Stock:</strong> <%= producto.stock %></p>
-      <p><strong>Categoría:</strong> <%= producto.id_categoria %></p>
-      <a href="/dashboard/productos" class="boton boton-secundario">Volver</a>
+  <body class="bg-dark admin-root">
+    <%- include('../partials/nav.ejs', { activePage: 'dashboard' }) %>
+    <main class="contenedor-editar">
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
+        <div>
+          <p class="fenrir-eyebrow mb-1">Detalle</p>
+          <h1 class="titulo mb-0"><%= producto.nombre %></h1>
+        </div>
+        <a href="/dashboard" class="btn btn-fenrir-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1"></i> Volver
+        </a>
+      </div>
+
+      <div class="fenrir-panel">
+        <div class="fenrir-panel-body">
+          <div class="row g-4 align-items-start">
+            <div class="col-md-5">
+              <% if (producto.imagen) { %>
+                <img src="<%= producto.imagen %>" alt="<%= producto.nombre %>" class="img-fluid img-thumbnail w-100" style="border-radius: var(--radius-sharp); max-height: 280px; object-fit: cover;" />
+              <% } %>
+            </div>
+            <div class="col-md-7">
+              <p class="admin-panel-copy mb-2"><strong>Descripción:</strong> <%= producto.descripcion %></p>
+              <p class="fenrir-price mb-2">$<%= producto.precio %></p>
+              <p class="admin-panel-copy mb-1"><strong>Categoría:</strong> <%= producto.categoria %></p>
+              <p class="admin-panel-copy mb-1"><strong>Tipo:</strong> <%= producto.tipo %></p>
+              <p class="admin-panel-copy mb-0">
+                <strong>Estado:</strong>
+                <span class="badge <%= producto.activo ? 'bg-success' : 'bg-secondary' %>">
+                  <%= producto.activo ? 'Activo' : 'Inactivo' %>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
     <%- include('../partials/footer.ejs') %>
   </body>
