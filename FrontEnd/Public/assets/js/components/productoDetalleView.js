@@ -28,19 +28,21 @@ export function renderProductoDetallePanel(producto, options = {}) {
           <p class="fenrir-eyebrow mb-1">${meta}</p>
           <h2 class="detalle-title"${titleIdAttr}>${p.nombre || 'Producto'}</h2>
           <p class="detalle-desc">${p.descripcion || ''}</p>
-          <p class="fenrir-price mb-3">$${p.precio}</p>
+          <p class="fenrir-price detalle-price">$${p.precio}</p>
           <div class="detalle-actions">
-            <label class="visually-hidden" for="input-cantidad">Cantidad</label>
-            <input
-              id="input-cantidad"
-              type="number"
-              min="1"
-              max="99"
-              step="1"
-              inputmode="numeric"
-              value="1"
-              class="form-control detalle-qty"
-            />
+            <div class="detalle-qty-field">
+              <label class="detalle-qty-label" for="input-cantidad">Cantidad</label>
+              <input
+                id="input-cantidad"
+                type="number"
+                min="1"
+                max="99"
+                step="1"
+                inputmode="numeric"
+                value="1"
+                class="form-control detalle-qty"
+              />
+            </div>
             <button type="button" id="btn-add-carrito" class="btn btn-primary btn-fenrir-primary">
               <i class="bi bi-cart-plus me-1"></i> Agregar al carrito
             </button>

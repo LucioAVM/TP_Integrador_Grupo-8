@@ -54,6 +54,24 @@ export function validarInputCantidad(input) {
   return parsed;
 }
 
+export function intentarAgregarConCantidad(producto, valorInput) {
+  const parsed = parseCantidadProducto(valorInput);
+
+  if (parsed.bloquear) {
+    if (parsed.error) {
+      mostrarFeedbackMiniCarrito(parsed.error);
+    }
+    return { ok: false, parsed };
+  }
+
+  if (parsed.error) {
+    mostrarFeedbackMiniCarrito(parsed.error);
+  }
+
+  agregarAlCarrito({ ...producto, cantidad: parsed.cantidad });
+  return { ok: true, parsed };
+}
+
 // --- Funciones globales para el mini carrito ---
 export function agregarAlCarrito(producto) {
   const parsed = parseCantidadProducto(producto.cantidad ?? 1);

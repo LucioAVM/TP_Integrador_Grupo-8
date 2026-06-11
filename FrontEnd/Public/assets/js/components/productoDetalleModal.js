@@ -1,4 +1,4 @@
-import { agregarAlCarrito, validarInputCantidad } from '../carrito/carrito.js';
+import { intentarAgregarConCantidad, validarInputCantidad } from '../carrito/carrito.js';
 import { renderProductoDetallePanel } from './productoDetalleView.js';
 
 const MODAL_ID = 'producto-detalle-modal';
@@ -20,23 +20,32 @@ function renderModalShell() {
 
 function bindCarritoListeners() {
   const cantidadEl = document.getElementById('input-cantidad');
+  const btnAdd = document.getElementById('btn-add-carrito');
 
-  const validarCantidadEnInput = () => {
+  cantidadEl?.addEventListener('input', () => {
+    cantidadEl.classList.remove('is-invalid');
+  });
+
+  cantidadEl?.addEventListener('blur', () => {
     validarInputCantidad(cantidadEl);
-  };
+    cantidadEl.classList.remove('is-invalid');
+  });
 
-  cantidadEl?.addEventListener('blur', validarCantidadEnInput);
-  cantidadEl?.addEventListener('change', validarCantidadEnInput);
+  btnAdd?.addEventListener('mousedown', (event) => {
+    event.preventDefault();
+  });
 
-  document.getElementById('btn-add-carrito')?.addEventListener('click', () => {
-    if (!productoActual) return;
+  btnAdd?.addEventListener('click', () => {
+    if (!productoActual || !cantidadEl) return;
 
-    const parsed = validarInputCantidad(cantidadEl);
-    if (!parsed || parsed.bloquear) {
+    const { ok, parsed } = intentarAgregarConCantidad(productoActual, cantidadEl.value);
+    if (!ok) {
+      cantidadEl.classList.add('is-invalid');
       return;
     }
 
-    agregarAlCarrito({ ...productoActual, cantidad: parsed.cantidad });
+    cantidadEl.value = String(parsed.cantidad);
+    cantidadEl.classList.remove('is-invalid');
     modalInstance?.hide();
   });
 }
