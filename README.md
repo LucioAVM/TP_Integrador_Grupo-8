@@ -21,7 +21,7 @@ https://fenrir3d-cfa9awf3fjhmfab7.eastus-01.azurewebsites.net/
 |---------|-----------|
 | `FrontEnd/Public/` | Cliente: HTML, CSS, JS (catálogo, carrito, ticket, encuesta) |
 | `BackEnd/src/` | Admin EJS, controllers, models, rutas API `/api` |
-| `scripts/` | Seed histórico, guion de defensa, checklist pre-entrega |
+| `scripts/` | Scripts locales (seed histórico) |
 | `server.js` | Punto de entrada Express (estáticos + API + vistas admin) |
 
 ---
