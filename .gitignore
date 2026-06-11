@@ -11,7 +11,17 @@ fenrir3d.sql
 
 # Documentación interna de QA (no parte del entregable)
 QA_CHECKLIST.md
+# Apuntes de defensa oral (solo local)
+scripts/GUION_DEFENSA.md
+scripts/TARJETAS_DEFENSA.md
+scripts/FLUJO_DEFENSA_VISUAL.md
+scripts/PRE_ENTREGA_CHECKLIST.md
+scripts/fenrir-flujo-defensa.excalidraw
+scripts/generate_excalidraw.js
 
+# Seeds de datos históricos (solo local)
+scripts/seed_datos_historicos.sql
+scripts/run_seed_historicos.js
 # --- Herramientas / IDE (no específicas del proyecto) ---
 
 # Cursor
