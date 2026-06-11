@@ -23,23 +23,42 @@ function normalizarCantidad(valor) {
 
 // --- Funciones globales para el mini carrito ---
 export function agregarAlCarrito(producto) {
+  const cantidadAgregar = normalizarCantidad(producto.cantidad ?? 1);
   const existe = carrito.find(item => item.id === producto.id);
+
   if (existe) {
-    if (existe.cantidad >= MAX_CANTIDAD_POR_PRODUCTO) {
-      mostrarFeedbackMiniCarrito(`Máximo ${MAX_CANTIDAD_POR_PRODUCTO} unidades por producto`);
-      renderMiniCarritoEnDOM({ action: 'limit', productId: producto.id });
+    const nuevoTotal = existe.cantidad + cantidadAgregar;
+    if (nuevoTotal > MAX_CANTIDAD_POR_PRODUCTO) {
+      const espacio = MAX_CANTIDAD_POR_PRODUCTO - existe.cantidad;
+      if (espacio <= 0) {
+        mostrarFeedbackMiniCarrito(`Máximo ${MAX_CANTIDAD_POR_PRODUCTO} unidades por producto`);
+        renderMiniCarritoEnDOM({ action: 'limit', productId: producto.id });
+        return;
+      }
+      existe.cantidad = MAX_CANTIDAD_POR_PRODUCTO;
+      renderMiniCarritoEnDOM({ action: 'increase', productId: producto.id });
+      guardarCarritoEnLocalStorage();
+      mostrarFeedbackMiniCarrito(`+${espacio} ${producto.nombre} (máx. ${MAX_CANTIDAD_POR_PRODUCTO})`);
       return;
     }
 
-    existe.cantidad += 1;
+    existe.cantidad = nuevoTotal;
     renderMiniCarritoEnDOM({ action: 'increase', productId: producto.id });
     guardarCarritoEnLocalStorage();
-    mostrarFeedbackMiniCarrito(`+1 ${producto.nombre}`);
+    mostrarFeedbackMiniCarrito(
+      cantidadAgregar === 1
+        ? `+1 ${producto.nombre}`
+        : `+${cantidadAgregar} ${producto.nombre}`
+    );
   } else {
-    carrito.push({ ...producto, cantidad: 1 });
+    carrito.push({ ...producto, cantidad: cantidadAgregar });
     renderMiniCarritoEnDOM({ action: 'add', productId: producto.id });
     guardarCarritoEnLocalStorage();
-    mostrarFeedbackMiniCarrito(`${producto.nombre} agregado`);
+    mostrarFeedbackMiniCarrito(
+      cantidadAgregar === 1
+        ? `${producto.nombre} agregado`
+        : `${cantidadAgregar} × ${producto.nombre} agregado`
+    );
   }
 }
 

@@ -10,9 +10,9 @@ export function renderProductCard(producto) {
         <p class="card-text flex-grow-1" style="min-height: 60px;">${producto.descripcion}</p>
         <p class="fenrir-price mb-2">$${producto.precio}</p>
         <div class="d-grid gap-2 mt-auto">
-          <a class="btn btn-fenrir-secondary btn-sm" href="/producto_detalle.html?id=${producto.id}">
+          <button type="button" class="btn btn-fenrir-secondary btn-sm btn-detalle" data-id="${producto.id}">
             <i class="bi bi-eye me-1"></i> Detalle
-          </a>
+          </button>
           <button class="btn btn-primary btn-fenrir-primary btn-sm" data-id="${producto.id}">
             <i class="bi bi-cart-plus me-1"></i> Agregar
           </button>
