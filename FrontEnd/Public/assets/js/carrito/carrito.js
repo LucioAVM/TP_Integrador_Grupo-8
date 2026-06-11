@@ -12,18 +12,60 @@ const MAX_CANTIDAD_POR_PRODUCTO = 99;
 
 let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
-function normalizarCantidad(valor) {
-  const cantidad = Number.parseInt(valor, 10);
-  if (!Number.isFinite(cantidad) || cantidad < 1) {
-    return 1;
+export function parseCantidadProducto(valor) {
+  const cantidad = Number.parseInt(String(valor ?? '').trim(), 10);
+
+  if (!Number.isFinite(cantidad)) {
+    return {
+      cantidad: 1,
+      error: 'Ingresá una cantidad válida.',
+      bloquear: true,
+    };
   }
 
-  return Math.min(cantidad, MAX_CANTIDAD_POR_PRODUCTO);
+  if (cantidad < 1) {
+    return {
+      cantidad: 1,
+      error: 'La cantidad debe ser al menos 1. No se permiten valores negativos ni cero.',
+      bloquear: true,
+    };
+  }
+
+  if (cantidad > MAX_CANTIDAD_POR_PRODUCTO) {
+    return {
+      cantidad: MAX_CANTIDAD_POR_PRODUCTO,
+      error: `Máximo ${MAX_CANTIDAD_POR_PRODUCTO} unidades por producto.`,
+      bloquear: false,
+    };
+  }
+
+  return { cantidad, error: null, bloquear: false };
+}
+
+export function validarInputCantidad(input) {
+  if (!input) return null;
+
+  const parsed = parseCantidadProducto(input.value);
+  if (parsed.error) {
+    mostrarFeedbackMiniCarrito(parsed.error);
+  }
+
+  input.value = String(parsed.cantidad);
+  return parsed;
 }
 
 // --- Funciones globales para el mini carrito ---
 export function agregarAlCarrito(producto) {
-  const cantidadAgregar = normalizarCantidad(producto.cantidad ?? 1);
+  const parsed = parseCantidadProducto(producto.cantidad ?? 1);
+
+  if (parsed.error) {
+    mostrarFeedbackMiniCarrito(parsed.error);
+    if (parsed.bloquear) {
+      return;
+    }
+  }
+
+  const cantidadAgregar = parsed.cantidad;
   const existe = carrito.find(item => item.id === producto.id);
 
   if (existe) {
@@ -110,13 +152,14 @@ function actualizarCantidadManual(idx, valor) {
   const item = carrito[idx];
   if (!item) return;
 
-  const nuevaCantidad = normalizarCantidad(valor);
+  const parsed = parseCantidadProducto(valor);
+  const nuevaCantidad = parsed.cantidad;
 
-  if (item.cantidad === nuevaCantidad) return;
-
-  if (Number.parseInt(valor, 10) > MAX_CANTIDAD_POR_PRODUCTO) {
-    mostrarFeedbackMiniCarrito(`Máximo ${MAX_CANTIDAD_POR_PRODUCTO} unidades por producto`);
+  if (parsed.error) {
+    mostrarFeedbackMiniCarrito(parsed.error);
   }
+
+  if (item.cantidad === nuevaCantidad && !parsed.error) return;
 
   item.cantidad = nuevaCantidad;
   guardarCarritoEnLocalStorage();

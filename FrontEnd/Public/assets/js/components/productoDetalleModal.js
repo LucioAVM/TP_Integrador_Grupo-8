@@ -1,4 +1,4 @@
-import { agregarAlCarrito } from '../carrito/carrito.js';
+import { agregarAlCarrito, validarInputCantidad } from '../carrito/carrito.js';
 import { renderProductoDetallePanel } from './productoDetalleView.js';
 
 const MODAL_ID = 'producto-detalle-modal';
@@ -19,12 +19,24 @@ function renderModalShell() {
 }
 
 function bindCarritoListeners() {
+  const cantidadEl = document.getElementById('input-cantidad');
+
+  const validarCantidadEnInput = () => {
+    validarInputCantidad(cantidadEl);
+  };
+
+  cantidadEl?.addEventListener('blur', validarCantidadEnInput);
+  cantidadEl?.addEventListener('change', validarCantidadEnInput);
+
   document.getElementById('btn-add-carrito')?.addEventListener('click', () => {
     if (!productoActual) return;
 
-    const cantidadEl = document.getElementById('input-cantidad');
-    const cantidad = Number(cantidadEl?.value || 1);
-    agregarAlCarrito({ ...productoActual, cantidad });
+    const parsed = validarInputCantidad(cantidadEl);
+    if (!parsed || parsed.bloquear) {
+      return;
+    }
+
+    agregarAlCarrito({ ...productoActual, cantidad: parsed.cantidad });
     modalInstance?.hide();
   });
 }

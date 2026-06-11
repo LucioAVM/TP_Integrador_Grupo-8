@@ -36,6 +36,8 @@ export function renderProductoDetallePanel(producto, options = {}) {
               type="number"
               min="1"
               max="99"
+              step="1"
+              inputmode="numeric"
               value="1"
               class="form-control detalle-qty"
             />
