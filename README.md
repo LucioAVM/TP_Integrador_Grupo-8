@@ -1,3 +1,31 @@
+# TP Integrador — Fenrir 3D (Grupo 8)
+
+**Integrantes:** Monsalbo Lucio · Rodrigo (commits históricos en el repo)
+
+E-commerce de insumos e impresoras 3D: cliente en HTML/JS vanilla + panel admin y API REST en Node/Express + SQL Server.
+
+## Demo en producción
+
+https://fenrir3d-cfa9awf3fjhmfab7.eastus-01.azurewebsites.net/
+
+## Ejecutar en local
+
+1. `npm install`
+2. Crear `.env` con variables de BD (`DB_SERVER`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, etc.)
+3. Autorizar tu IP en el firewall de Azure SQL si la BD está en la nube
+4. `npm start` → abrir http://localhost:8080
+
+## Estructura del repo
+
+| Carpeta | Contenido |
+|---------|-----------|
+| `FrontEnd/Public/` | Cliente: HTML, CSS, JS (catálogo, carrito, ticket, encuesta) |
+| `BackEnd/src/` | Admin EJS, controllers, models, rutas API `/api` |
+| `scripts/` | Seed histórico, guion de defensa, checklist pre-entrega |
+| `server.js` | Punto de entrada Express (estáticos + API + vistas admin) |
+
+---
+
 # TP_Integrador_Grupo-8
 
 ## Condiciones de aprobación

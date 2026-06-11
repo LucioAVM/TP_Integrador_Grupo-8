@@ -1,6 +1,5 @@
 import express from 'express';
 import 'dotenv/config';
-import bcrypt from 'bcryptjs';
 import session from 'express-session';
 import Admin from './BackEnd/src/Models/admin.js';
 import Producto from './BackEnd/src/Models/producto.js';
